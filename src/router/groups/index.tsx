@@ -1,6 +1,7 @@
 import { ErrorBoundary } from "@/components";
 import { MainLayout } from "@/layouts";
 import Groups from "@/pages/groups";
+import CreateGroup from "@/pages/groups/create-group";
 import { RouteObject } from "react-router-dom";
 
 const GroupsRoutes: RouteObject[] = [
@@ -12,6 +13,10 @@ const GroupsRoutes: RouteObject[] = [
       {
         path: "",
         element: <Groups />,
+      },
+      {
+        path: "create",
+        element: <CreateGroup />,
       },
       {
         path: ":id",

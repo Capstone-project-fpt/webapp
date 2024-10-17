@@ -1,17 +1,16 @@
-import SemesterFilter from "@/components/shared/SemesterFilter";
 import { setBreadCrumb } from "@/store/slice/app";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  dispatch(setBreadCrumb([{ title: "Home", link: "/" }]));
+  useEffect(() => {
+    dispatch(setBreadCrumb([{ title: "Home", link: "/" }]));
+  }, [dispatch]);
 
   return (
     <>
-      <div>
-        <SemesterFilter />
-      </div>
+      <div>Homepage</div>
     </>
   );
 };
