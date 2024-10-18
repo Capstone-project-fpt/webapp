@@ -13,6 +13,7 @@ import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
+import SelectStudent from "./components/select-student";
 
 enum MemberRole {
   LEADER = "leader",
@@ -176,7 +177,7 @@ const CreateGroup: React.FC = () => {
         {members.length < 5 && (
           <div className="space-y-2">
             <Label htmlFor="newMemberName">Add member</Label>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <Input
                 type="text"
                 id="newMemberName"
@@ -192,7 +193,8 @@ const CreateGroup: React.FC = () => {
                 placeholder="name@example.com"
               />
               <Button onClick={handleAddMember}>Add</Button>
-            </div>
+            </div> */}
+            <SelectStudent />
           </div>
         )}
         {/* Create Group Button */}

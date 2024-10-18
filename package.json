@@ -48,6 +48,8 @@
         "react-resizable-panels": "^2.0.16",
         "react-router": "^6.22.3",
         "react-router-dom": "^6.22.3",
+        "react-select": "^5.8.1",
+        "react-select-async-paginate": "^0.7.6",
         "recharts": "^2.12.4",
         "tabler-icons-react": "^1.56.0",
         "tailwind-merge": "^2.2.2",
