@@ -1,17 +1,18 @@
 import { LectureType, StudentType, UserType, UserTypes } from "@/types/accounts";
 import { api } from "..";
 
+export interface Item {
+  common_info: UserType;
+  extra_info: {
+    student?: StudentType;
+    lecture?: LectureType;
+  }
+}
 interface UsersResponse {
   code: number;
   message: boolean;
   data: {
-    items: {
-      common_info: UserType;
-      extra_info: {
-        student?: StudentType;
-        lecture?: LectureType;
-      }
-    }[],
+    items: Item[],
     meta: {
       current_page: number;
       total: number;

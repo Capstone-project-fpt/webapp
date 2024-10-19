@@ -1,73 +1,67 @@
 import { useLazyGetUsersQuery } from "@/store/api/v1/endpoints/admin";
 import { UserTypes } from "@/types/accounts";
-import React, { useState } from "react";
-
+import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { Member, OptionType } from "../type";
+import { ActionMeta, SingleValue } from "react-select";
 
-type AdditionalType = {
-  page: number;
-};
+const defaultAdditional = { page: 1 };
 
-const defaultAdditional: AdditionalType = {
-  page: 1,
-};
+interface SelectStudentProps {
+  value: OptionType | null;
+  onChangeValue: ((newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void) | undefined;
+  selectedMembers: Member[];
+}
 
-export type OptionType = {
-  value: number;
-  label: string;
-};
-
-const SelectStudent: React.FC = () => {
+const SelectStudent: React.FC<SelectStudentProps> = ({
+  value,
+  onChangeValue,
+  selectedMembers,
+}) => {
   const [getUsers] = useLazyGetUsersQuery();
 
   const loadPageOptions = async (
     q: string,
     prevOptions: unknown,
-    { page }: AdditionalType
+    { page }: { page: number }
   ) => {
-    const limit = 2;
+    const limit = 10;
+    try {
+      const {
+        data: { items, meta },
+      } = await getUsers({
+        email: q,
+        limit,
+        page,
+        user_types: UserTypes.STUDENT,
+      }).unwrap();
 
-    const data = await getUsers({
-      email: q,
-      limit,
-      page,
-      user_types: UserTypes.STUDENT,
-    })
-      .unwrap()
-      .then((queryData) => {
-        const { items, meta } = queryData.data;
+      const options = items.map((item) => ({
+        value: item,
+        label: item.common_info.email,
+        disabled: selectedMembers.some((m) => m.id === item.common_info.id),
+      }));
 
-        const { current_page, total } = meta;
-        const options = items.map((item) => ({
-          value: item.common_info.id,
-          label: item.common_info.email,
-        }));
-        return { options, current_page, total };
-      })
-      .catch(() => {
-        // Need to retry the request
-        return { options: [], current_page: 0, total: 0 };
-      });
-
-    const { options, current_page, total } = data;
-    return {
-      options: options,
-      hasMore: current_page * limit < total,
-      additional: {
-        page: page + 1,
-      },
-    };
+      return {
+        options,
+        hasMore: meta.current_page * limit < meta.total,
+        additional: { page: page + 1 },
+      };
+    } catch {
+      return { options: [], hasMore: false, additional: { page: 1 } };
+    }
   };
 
-  const [value, onChange] = useState<OptionType | null>(null);
   return (
     <AsyncPaginate
+      cacheUniqs={[selectedMembers]}
       debounceTimeout={300}
       additional={defaultAdditional}
       value={value}
       loadOptions={loadPageOptions}
-      onChange={onChange}
+      onChange={onChangeValue}
       placeholder="Search by email"
+      isOptionDisabled={(option) => option.disabled}
     />
   );
 };
