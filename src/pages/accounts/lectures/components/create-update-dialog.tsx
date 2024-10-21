@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import {lectureSchema } from "@/services/schemas/accounts";
+import { lectureSchema } from "@/services/schemas/accounts";
 import {
   useCreateLectureMutation,
   useUpdateLectureMutation,
@@ -53,7 +53,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
       toast({
         duration: 1000,
         variant: "default",
-        title: lecture? "Update Lecture" : "Create Lecture",
+        title: lecture ? "Update Lecture" : "Create Lecture",
         description: lecture
           ? "Update Lecture Successfully"
           : "Create Lecture Successfully.",
@@ -76,13 +76,19 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
         description: messageError,
       });
     }
-  }, [createLectureData, onOpenChange]);
+  }, [
+    createLectureData,
+    lecture,
+    onOpenChange,
+    updateLectureData.error,
+    updateLectureData.isSuccess,
+  ]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] lg:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>{lecture? "Update" : "Create"} Lecturer</DialogTitle>
+          <DialogTitle>{lecture ? "Update" : "Create"} Lecturer</DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
