@@ -5,7 +5,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
+import InviteMentorDialog from "../components/invite-mentor-dialog";
 
 const Peoples = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -41,12 +43,19 @@ const Peoples = () => {
       sub_major: 1,
     },
   ];
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
   return (
     <div className="mt-4 flex flex-col gap-4">
+      <InviteMentorDialog
+        open={isInviteModalOpen}
+        onOpenChange={setIsInviteModalOpen}
+        groupId={parseInt(groupId!)}
+      />
       <SettingCard
         title="Mentors"
         actions={
-          <Button onClick={() => console.log("Add Mentor")}>Add Mentor</Button>
+          <Button onClick={() => setIsInviteModalOpen(true)}>Add Mentor</Button>
         }
       >
         <Table>
