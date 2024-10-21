@@ -73,16 +73,32 @@ const studentEndPoint = api.injectEndpoints({
       invalidatesTags: ["Account"],
     }),
     importLectures: builder.mutation({
-      query: (body: { file: FormData }) => ({
+      query: (body: FormData ) => ({
         url: "admin/teachers/import-data",
         method: "POST",
         body,
       }),
       invalidatesTags: ["Account"],
     }),
+    updateLecture:builder.mutation({
+      query: (body: LectureType) => ({
+        url: "admin/teachers/update-account",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Account"],
+    }),
+    deleteLecture:builder.mutation({
+        query: ({ email }: { email: string }) => ({
+        url: `admin/students/delete/${email}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Account"],
+    }),
+    })
+    
     // #endregion
-  })
-});
+  });
 
 export const {
   useGetUsersQuery,
@@ -94,4 +110,6 @@ export const {
 
   useCreateLectureMutation,
   useImportLecturesMutation,
+  useUpdateLectureMutation,
+  useDeleteLectureMutation,
 } = studentEndPoint;
