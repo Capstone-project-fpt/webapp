@@ -15,8 +15,12 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import SelectStudent from "./components/select-student";
 import { Member, MemberRole, OptionType } from "./type";
+import { useCreateGroupMutation } from "@/store/api/v1/endpoints/groups";
+import { useToast } from "@/hooks/use-toast";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const CreateGroup: React.FC = () => {
+  const { toast } = useToast();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -27,11 +31,14 @@ const CreateGroup: React.FC = () => {
       ])
     );
   }, [dispatch]);
+  const [createGroup, createGroupData] = useCreateGroupMutation();
+  const { isLoading } = createGroupData;
 
   const [groupName, setGroupName] = useState("");
   const [members, setMembers] = useState<Member[]>([]);
   const [formValid, setFormValid] = useState(false);
   const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
+  const [currentLeader, setCurrentLeader] = useState<Member | null>(null);
 
   useEffect(() => {
     setFormValid(groupName.trim() === "" || members.length < 4);
@@ -55,17 +62,57 @@ const CreateGroup: React.FC = () => {
 
   const updateRoleMember = (member: Member, role: MemberRole) => {
     setMembers((prevMembers) =>
-      prevMembers.map((m) => (m.id === member.id ? { ...m, role } : m))
+      prevMembers.map((m) => {
+        if (m.id === member.id) {
+          return { ...m, role };
+        }
+        if (role === MemberRole.LEADER && m.role === MemberRole.LEADER) {
+          return { ...m, role: MemberRole.MEMBER };
+        }
+        return m;
+      })
     );
+    if (role === MemberRole.LEADER) {
+      setCurrentLeader(member);
+    }
   };
 
   const handleRemoveMember = (member: Member) => {
     setMembers((prevMembers) => prevMembers.filter((m) => m.id !== member.id));
+    if (member.role === MemberRole.LEADER) {
+      setCurrentLeader(null);
+    }
   };
 
-  const createGroup = () => {
-    console.log("Create Group");
+  const handleCreateForm = async () => {
+    const studentIds = members.map((member) => member.id);
+    await createGroup({
+      major_id: 1,
+      semester_id: 1,
+      student_ids: studentIds,
+      name_group: groupName,
+    });
   };
+
+  useEffect(() => {
+    if (createGroupData.isSuccess) {
+      toast({
+        duration: 1000,
+        variant: "default",
+        title: "Create Capstone Group",
+        description: "Create Capstone Group Successfully",
+      });
+    }
+
+    if (createGroupData.error) {
+      toast({
+        title: "Create Capstone Group",
+        description:
+          "Something went wrong, please try again. If the problem persists, contact support.",
+        variant: "destructive",
+      });
+    }
+  }, [createGroupData.error, createGroupData.isSuccess, toast]);
 
   return (
     <div className="max-w-lg mx-auto p-4 space-y-6">
@@ -148,7 +195,8 @@ const CreateGroup: React.FC = () => {
       )}
 
       <div className="flex justify-end">
-        <Button onClick={createGroup} disabled={formValid}>
+        <Button onClick={handleCreateForm} disabled={formValid}>
+          {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
           Create Group
         </Button>
       </div>
