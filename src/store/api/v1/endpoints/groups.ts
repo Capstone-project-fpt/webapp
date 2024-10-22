@@ -39,8 +39,15 @@ const groupsApi = api.injectEndpoints({
         body: { teacher_id, semester_id },
       }),
       invalidatesTags: ["Group"],
-    })
-
+    }),
+    acceptInvitation: builder.mutation<void, { group_id: number, token: string }>({
+      query: ({ group_id, token }) => ({
+        url: `/capstone-groups/${group_id}/mentors/invitation`,
+        method: 'POST',
+        body: { token },
+      }),
+      invalidatesTags: ["Group"],
+    }),
   }),
 });
 
@@ -49,6 +56,7 @@ export const {
   useCreateGroupMutation,
   useGetGroupQuery,
   useUpdateGroupMutation,
-  useInviteMentorMutation,
 
+  useInviteMentorMutation,
+  useAcceptInvitationMutation
 } = groupsApi;
