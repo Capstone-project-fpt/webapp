@@ -15,7 +15,7 @@ export interface LectureType {
 }
 
 export interface UserType {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone_number: string;

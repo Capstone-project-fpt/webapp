@@ -1,17 +1,18 @@
 import { LectureType, StudentType, UserType, UserTypes } from "@/types/accounts";
 import { api } from "..";
 
+export interface Item {
+  common_info: UserType;
+  extra_info: {
+    student?: StudentType;
+    lecture?: LectureType;
+  }
+}
 interface UsersResponse {
   code: number;
   message: boolean;
   data: {
-    items: {
-      common_info: UserType;
-      extra_info: {
-        student?: StudentType;
-        lecture?: LectureType;
-      }
-    }[],
+    items: Item[],
     meta: {
       current_page: number;
       total: number;
@@ -21,10 +22,10 @@ interface UsersResponse {
 
 const studentEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<UsersResponse, { limit?: number; page?: number; user_types?: UserTypes }>({
-      query: ({ limit = 10, page = 1, user_types }) => ({
+    getUsers: builder.query<UsersResponse, { limit?: number; page?: number; user_types?: UserTypes, email?: string }>({
+      query: ({ limit = 10, page = 1, user_types, email }) => ({
         url: 'admin/users/',
-        params: { limit, page, user_types },
+        params: { limit, page, user_types, email },
       }),
       providesTags: ["Account"],
     }),
@@ -102,6 +103,7 @@ const studentEndPoint = api.injectEndpoints({
 
 export const {
   useGetUsersQuery,
+  useLazyGetUsersQuery,
 
   useCreateStudentMutation,
   useImportStudentsMutation,
