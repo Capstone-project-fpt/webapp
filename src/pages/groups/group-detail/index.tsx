@@ -6,10 +6,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import About from "./about";
 import Peoples from "./peoples";
 import Reports from "./reports";
+import Reviews from "./reviews";
 
 const TABS = [
   { name: "about", label: "About", component: About },
   { name: "reports", label: "Reports", component: Reports },
+  { name: "reviews", label: "Reviews", component: Reviews },
   { name: "peoples", label: "Peoples", component: Peoples },
 ];
 
@@ -47,7 +49,11 @@ const GroupDetail: React.FC = () => {
       <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>
         <TabsList>
           {TABS.map((tab) => (
-            <TabsTrigger key={tab.name} value={tab.name} className="lg:w-[150px] w-full">
+            <TabsTrigger
+              key={tab.name}
+              value={tab.name}
+              className="lg:w-[150px] w-full"
+            >
               {tab.label}
             </TabsTrigger>
           ))}

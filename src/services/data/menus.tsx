@@ -47,12 +47,6 @@ const menus: MenuItem[] = [
     isOpen: false,
   },
   {
-    icon: <IoMdBook size={18} strokeWidth={2} />,
-    title: "Major",
-    link: "/majors",
-    isOpen: false,
-  },
-  {
     icon: <Settings2 size={18} strokeWidth={2} />,
     title: "Settings",
     link: "/settings",
