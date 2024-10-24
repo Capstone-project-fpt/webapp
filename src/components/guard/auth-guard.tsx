@@ -55,7 +55,7 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
     if (!fetched && !isLoading) {
       if (userInfoData && userInfoData.message) {
         const { data: userInfo } = userInfoData;
-        dispatch(setUserInfo(userInfo.common_info));
+        dispatch(setUserInfo(userInfo));
         setFetched(true);
       }
     }
