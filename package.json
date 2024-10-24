@@ -47,6 +47,7 @@
         "clsx": "^2.1.0",
         "cmdk": "1.0.0",
         "date-fns": "^4.1.0",
+        "embla-carousel-autoplay": "^8.3.0",
         "embla-carousel-react": "^8.3.0",
         "export-to-csv": "^1.4.0",
         "formik": "^2.4.5",

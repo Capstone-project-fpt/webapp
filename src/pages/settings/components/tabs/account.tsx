@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -5,6 +6,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RootState } from "@/store/index";
 import { FaUser } from "react-icons/fa";
 import SubMajor from "@/components/common/major";
+=======
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { RootState } from "@/store/index";
+import SubMajor from "@/components/common/major";
+
+
+>>>>>>> Stashed changes
 const Account: React.FC = () => {
 
   const dispatch = useDispatch();
@@ -12,6 +23,10 @@ const Account: React.FC = () => {
   const { name, email, phone_number, user_type } = currentUser.common_info || {};
   const { code, sub_major_id, capstone_group_id } = currentUser.extra_info?.student || currentUser.extra_info?.teacher || {};
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
   const isAdmin = user_type === "admin";
   const isTeacher = user_type === "teacher";
 
@@ -28,7 +43,11 @@ const Account: React.FC = () => {
             <Card className="p-12 shadow-lg rounded-lg transition-shadow duration-300 hover:shadow-xl h-full">
               <CardHeader className="flex flex-col items-center">
                 <Avatar className="w-48 h-48 mb-6">
+<<<<<<< Updated upstream
                   <AvatarFallback><FaUser></FaUser></AvatarFallback>
+=======
+                  <AvatarFallback>{currentUser ? name.charAt(0) : "User"}</AvatarFallback>
+>>>>>>> Stashed changes
                 </Avatar>
                 <h2 className="text-4xl font-bold tracking-tight mt-4">{name}</h2>
               </CardHeader>
@@ -81,7 +100,11 @@ const Account: React.FC = () => {
                   {user_type !== "admin" && (
                     <div className="flex justify-between mb-4">
                       <p className="text-xl font-semibold">Sub Major</p>
+<<<<<<< Updated upstream
                       <p className="text-xl"><SubMajor id={sub_major_id}></SubMajor></p>
+=======
+                      <p className="text-xl"><SubMajor id={sub_major_id} /></p>
+>>>>>>> Stashed changes
                     </div>
                   )}
                 </CardContent>
