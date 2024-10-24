@@ -67,7 +67,7 @@ const TopHeader: React.FC = () => {
           >
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <Link to="/profile">
+            <Link to="/settings">
               <DropdownMenuItem className=" flex items-center gap-2 ">
                 <UserCircle2 size={17} />
                 Profile
