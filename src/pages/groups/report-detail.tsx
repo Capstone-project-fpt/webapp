@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
+import Comment from "./components/comment";
 
 interface Attachment {
   id: number;
@@ -167,7 +168,7 @@ const ReportDetail: React.FC = () => {
       </div>
 
       <Separator />
-      <Tabs defaultValue="comments" className="mt-4">
+      <Tabs defaultValue="comments" className="my-4">
         <TabsList>
           <TabsTrigger value="comments" className="lg:w-[150px] w-full">
             Comments
@@ -189,6 +190,9 @@ const ReportDetail: React.FC = () => {
                 <p className="text-sm ">{comment.timeAgo}</p>
               </Card>
             ))}
+          </div>
+          <div>
+            <Comment />
           </div>
         </TabsContent>
         <TabsContent value="activities">

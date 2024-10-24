@@ -29,6 +29,13 @@ const studentEndPoint = api.injectEndpoints({
       }),
       providesTags: ["Account"],
     }),
+    deleteUser: builder.mutation({
+      query: ({ id }: { id: number }) => ({
+        url: `admin/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Account"],
+    }),
 
     //#region Students
     createStudent: builder.mutation({
@@ -55,13 +62,6 @@ const studentEndPoint = api.injectEndpoints({
       }),
       invalidatesTags: ["Account"],
     }),
-    deleteStudent: builder.mutation({
-      query: ({ id }: { id: number }) => ({
-        url: `admin/students/delete/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Account"],
-    }),
     //#endregion
 
     //#region Lecturers
@@ -83,21 +83,13 @@ const studentEndPoint = api.injectEndpoints({
     }),
     updateLecture:builder.mutation({
       query: (body: LectureType) => ({
-        url: "admin/teachers/update-account",
+        url: "admin/teachers/update",
         method: "PUT",
         body,
       }),
       invalidatesTags: ["Account"],
     }),
-    deleteLecture:builder.mutation({
-        query: ({ email }: { email: string }) => ({
-        url: `admin/students/delete/${email}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Account"],
-    }),
     })
-    
     // #endregion
   });
 
@@ -108,10 +100,9 @@ export const {
   useCreateStudentMutation,
   useImportStudentsMutation,
   useUpdateStudentMutation,
-  useDeleteStudentMutation,
+  useDeleteUserMutation,
 
   useCreateLectureMutation,
   useImportLecturesMutation,
-  useUpdateLectureMutation,
-  useDeleteLectureMutation,
+  useUpdateLectureMutation
 } = studentEndPoint;

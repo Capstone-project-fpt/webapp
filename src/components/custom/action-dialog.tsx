@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { Label } from "../ui/label";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 export type ActionDialogProps = {
   trigger?: React.ReactNode;
@@ -28,6 +29,7 @@ export type ActionDialogProps = {
     | Readonly<{
         label?: string;
         onClick?: () => Promise<"prevent-close" | undefined | void>;
+        isLoading?: boolean;
         props?: Partial<React.ComponentProps<typeof Button>>;
       }>;
   cancelButton?:
@@ -126,6 +128,9 @@ export function ActionDialog(props: ActionDialogProps) {
                 }}
                 {...okButton.props}
               >
+                {okButton.isLoading && (
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 {okButton.label ?? "OK"}
               </Button>
             )}
