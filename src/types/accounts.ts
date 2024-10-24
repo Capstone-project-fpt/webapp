@@ -8,6 +8,7 @@ export interface StudentType {
 }
 
 export interface LectureType {
+  id?: number;
   name: string;
   email: string;
   phone_number: string;
