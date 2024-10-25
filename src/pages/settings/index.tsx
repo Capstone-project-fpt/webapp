@@ -27,9 +27,9 @@ const Settings: React.FC = () => {
           <TabsTrigger value="change-password" className="lg:w-[150px] w-full">
             Change Password
           </TabsTrigger>
-          <TabsTrigger value="apperance" className=" lg:w-[150px] w-full ">
+          {/* <TabsTrigger value="apperance" className=" lg:w-[150px] w-full ">
             Appearance
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
         <TabsContent value="account" className=" mt-4 ">
           <Account />
@@ -37,9 +37,9 @@ const Settings: React.FC = () => {
         <TabsContent value="change-password" className=" mt-4 ">
           <ChangePassword />
         </TabsContent>
-        <TabsContent value="apperance" className=" mt-4 ">
+        {/* <TabsContent value="apperance" className=" mt-4 ">
           <Appearance />
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );
