@@ -1,4 +1,7 @@
+import { LoadingTableLottie } from "@/components";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useGetGroupQuery } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -7,6 +10,7 @@ import About from "./about";
 import Peoples from "./peoples";
 import Reports from "./reports";
 import Reviews from "./reviews";
+import { setCurrentGroup } from "@/store/slice/resource";
 
 const TABS = [
   { name: "about", label: "About", component: About },
@@ -22,6 +26,14 @@ const TABS_NAMES = TABS.reduce((acc, tab) => {
 
 const GroupDetail: React.FC = () => {
   const { groupId, tab } = useParams<{ groupId: string; tab?: string }>();
+
+  const {
+    data: groupData,
+    isLoading,
+    error,
+  } = useGetGroupQuery({ id: Number(groupId) }, { skip: !groupId });
+
+  const group = groupData?.data;
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(tab || "about");
   const navigate = useNavigate();
@@ -30,43 +42,69 @@ const GroupDetail: React.FC = () => {
     const breadcrumb = [
       { title: "Home", link: "/" },
       { title: "Groups", link: "/groups" },
-      { title: "Group Name", link: `/groups/${groupId}` }, //TODO: Replace Group Name with actual group name
+      {
+        title: `${group?.name_group || "Group " + groupId}`,
+        link: `/groups/${groupId}`,
+      },
       {
         title: `${TABS_NAMES[currentTab]}`,
         link: `/groups/${groupId}/${currentTab}`,
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, groupId]);
+  }, [currentTab, dispatch, group, groupId]);
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
     navigate(`/groups/${groupId}/${tab}`);
   };
 
-  return (
-    <div>
-      <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>
-        <TabsList>
-          {TABS.map((tab) => (
-            <TabsTrigger
-              key={tab.name}
-              value={tab.name}
-              className="lg:w-[150px] w-full"
-            >
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+  useEffect(() => {
+    if (groupData && group) {
+      dispatch(setCurrentGroup(group));
+    }
+  }, [dispatch, group, groupData]);
 
-        {TABS.map((tab) => (
-          <TabsContent key={tab.name} value={tab.name} className="mt-4">
-            <tab.component />
-          </TabsContent>
-        ))}
-      </Tabs>
-    </div>
-  );
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
+  } else {
+    if (error) {
+      return (
+        <div className="h-full">
+          <ErrorBoundaryComponent />;
+        </div>
+      );
+    }
+    return (
+      <div>
+        <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>
+          <TabsList>
+            {TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.name}
+                value={tab.name}
+                className="lg:w-[150px] w-full"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {TABS.map((tab) => (
+            <TabsContent key={tab.name} value={tab.name} className="mt-4">
+              <tab.component />
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
+    );
+  }
 };
 
 export default GroupDetail;

@@ -20,7 +20,7 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
-    getGroup: builder.query<void, { id: number }>({
+    getGroup: builder.query<ResponseType<GroupType>, { id: number }>({
       query: ({ id }) => ({
         url: `/capstone-groups/${id}`,
       }),
