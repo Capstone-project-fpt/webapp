@@ -1,4 +1,4 @@
-import { useLazyGetUsersQuery } from "@/store/api/v1/endpoints/admin";
+import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
 import { UserTypes } from "@/types/accounts";
 import React from "react";
 import { ActionMeta, SingleValue } from "react-select";
@@ -21,7 +21,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
   value,
   onChangeValue,
 }) => {
-  const [getUsers] = useLazyGetUsersQuery();
+  const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
     q: string,

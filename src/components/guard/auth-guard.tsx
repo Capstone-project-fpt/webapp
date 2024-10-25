@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { getCookie } from "typescript-cookie";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/hooks/use-toast"
 
 const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
   const token = useSelector((state: RootState) => state?.auth?.token);
@@ -55,7 +55,7 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
     if (!fetched && !isLoading) {
       if (userInfoData && userInfoData.message) {
         const { data: userInfo } = userInfoData;
-        dispatch(setUserInfo(userInfo.common_info));
+        dispatch(setUserInfo(userInfo));
         setFetched(true);
       }
     }

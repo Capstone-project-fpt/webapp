@@ -1,21 +1,18 @@
 import { SubMajor } from "@/services/schemas/major";
+import { PaginationType, ResponseType } from "@/types";
 import { api } from "..";
 
-interface SubMajorResponse {
- code: number;
-  data: {
-    items: SubMajor[];
-    meta: {
-      current_page: number;
-      total: number;
-    };
+interface SubMajorData {
+  items: SubMajor[];
+  meta: {
+    current_page: number;
+    total: number;
   };
-  message: boolean;
 }
 
 const majorEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
-    getSubMajors: builder.query<SubMajorResponse, { limit?: number; page?: number }>({
+    getSubMajors: builder.query<ResponseType<SubMajorData>, PaginationType>({
       query: ({ limit = 100, page = 1 }) => ({
         url: '/sub-majors/',
         params: { limit, page },

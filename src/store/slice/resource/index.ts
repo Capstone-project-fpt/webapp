@@ -1,12 +1,15 @@
 import { SubMajor } from "@/services/schemas/major";
+import { GroupType } from "@/types/group";
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface InitialStateType {
   subMajors?: SubMajor[];
+  currentGroup: GroupType | null;
 }
 
 const initialState: InitialStateType = {
-  subMajors: []
+  subMajors: [],
+  currentGroup: null,
 };
 
 export const resourceSlice = createSlice({
@@ -15,9 +18,12 @@ export const resourceSlice = createSlice({
   reducers: {
     setSubMajors: (state: InitialStateType, action) => {
       state.subMajors = action.payload;
+    },
+    setCurrentGroup: (state: InitialStateType, action) => {
+      state.currentGroup = action.payload;
     }
   },
 });
 
-export const { setSubMajors} = resourceSlice.actions;
+export const { setSubMajors, setCurrentGroup } = resourceSlice.actions;
 export default resourceSlice.reducer;

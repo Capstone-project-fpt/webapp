@@ -1,33 +1,21 @@
-import { LectureType, StudentType, UserType, UserTypes } from "@/types/accounts";
+import { GetUsersResponse, LectureType, StudentType, UsersPaginationType } from "@/types/accounts";
 import { api } from "..";
 
-export interface Item {
-  common_info: UserType;
-  extra_info: {
-    student?: StudentType;
-    lecture?: LectureType;
-  }
-}
-interface UsersResponse {
-  code: number;
-  message: boolean;
-  data: {
-    items: Item[],
-    meta: {
-      current_page: number;
-      total: number;
-    }
-  }
-}
-
-const studentEndPoint = api.injectEndpoints({
+const adminEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<UsersResponse, { limit?: number; page?: number; user_types?: UserTypes, email?: string }>({
+    getUsers: builder.query<GetUsersResponse, UsersPaginationType>({
       query: ({ limit = 10, page = 1, user_types, email }) => ({
         url: 'admin/users/',
         params: { limit, page, user_types, email },
       }),
       providesTags: ["Account"],
+    }),
+    deleteUser: builder.mutation({
+      query: ({ id }: { id: number }) => ({
+        url: `admin/users/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Account"],
     }),
 
     //#region Students
@@ -55,13 +43,6 @@ const studentEndPoint = api.injectEndpoints({
       }),
       invalidatesTags: ["Account"],
     }),
-    deleteStudent: builder.mutation({
-      query: ({ id }: { id: number }) => ({
-        url: `admin/students/delete/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Account"],
-    }),
     //#endregion
 
     //#region Lecturers
@@ -83,21 +64,13 @@ const studentEndPoint = api.injectEndpoints({
     }),
     updateLecture:builder.mutation({
       query: (body: LectureType) => ({
-        url: "admin/teachers/update-account",
+        url: "admin/teachers/update",
         method: "PUT",
         body,
       }),
       invalidatesTags: ["Account"],
     }),
-    deleteLecture:builder.mutation({
-        query: ({ email }: { email: string }) => ({
-        url: `admin/students/delete/${email}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Account"],
-    }),
     })
-    
     // #endregion
   });
 
@@ -108,10 +81,9 @@ export const {
   useCreateStudentMutation,
   useImportStudentsMutation,
   useUpdateStudentMutation,
-  useDeleteStudentMutation,
+  useDeleteUserMutation,
 
   useCreateLectureMutation,
   useImportLecturesMutation,
-  useUpdateLectureMutation,
-  useDeleteLectureMutation,
-} = studentEndPoint;
+  useUpdateLectureMutation
+} = adminEndPoint;
