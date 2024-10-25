@@ -1,5 +1,5 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast"
 import { useDeleteTopicMutation } from "@/store/api/v1/endpoints/topics";
 import { TopicType } from "@/types/topic";
 import React from "react";

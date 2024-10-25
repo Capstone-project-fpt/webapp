@@ -2,7 +2,7 @@ import { InputPassword } from "@/components";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast"
 import { useTheme } from "@/services/providers/theme-provider";
 import { signInSchema } from "@/services/schemas";
 import { useSignInMutation } from "@/store/api/v1/endpoints/auth";

@@ -1,7 +1,7 @@
 import { Copy } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
-import { useToast } from "../ui/use-toast";
+import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils";
 
 const CopyButton = React.forwardRef<

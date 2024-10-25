@@ -7,7 +7,7 @@ import { InputPassword } from "@/components";
 import { ChangePasswordType } from "@/types";
 import { ChangePasswordSchema } from "@/services/schemas/settings";
 import { useChangePasswordMutation } from "@/store/api/v1/endpoints/auth";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast"
 
 const ChangePassword: React.FC = () => {
   const [changePassword, changePasswordData] = useChangePasswordMutation();
