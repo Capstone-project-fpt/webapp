@@ -6,3 +6,11 @@ export interface TopicType {
   path: string;
   teacher: LectureType;
 }
+
+export interface TopicsType {
+  items: TopicType[];
+  meta: {
+    current_page: number;
+    total: number;
+  };
+}

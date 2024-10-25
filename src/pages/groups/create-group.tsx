@@ -9,19 +9,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
+import { useCreateGroupMutation } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import SelectStudent from "./components/select-student";
 import { Member, MemberRole, OptionType } from "./type";
-import { useCreateGroupMutation } from "@/store/api/v1/endpoints/groups";
-import { useToast } from "@/hooks/use-toast";
-import { ReloadIcon } from "@radix-ui/react-icons";
 
 const CreateGroup: React.FC = () => {
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [createGroup, createGroupData] = useCreateGroupMutation();
+  const { isLoading } = createGroupData;
+
+  const initialMembers: Member[] = user
+    ? [{ ...user.common_info, role: MemberRole.LEADER }]
+    : [];
+  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const initGroupName = user ? `${user.common_info.name}'s Group` : "";
+  const [groupName, setGroupName] = useState(initGroupName);
+  const [formValid, setFormValid] = useState(false);
+  const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
+  const [currentLeader, setCurrentLeader] = useState<Member | null>(
+    user ? { ...user.common_info, role: MemberRole.LEADER } : null
+  );
+
   useEffect(() => {
     dispatch(
       setBreadCrumb([
@@ -31,14 +50,6 @@ const CreateGroup: React.FC = () => {
       ])
     );
   }, [dispatch]);
-  const [createGroup, createGroupData] = useCreateGroupMutation();
-  const { isLoading } = createGroupData;
-
-  const [groupName, setGroupName] = useState("");
-  const [members, setMembers] = useState<Member[]>([]);
-  const [formValid, setFormValid] = useState(false);
-  const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
-  const [currentLeader, setCurrentLeader] = useState<Member | null>(null);
 
   useEffect(() => {
     setFormValid(groupName.trim() === "" || members.length < 4);
@@ -49,16 +60,40 @@ const CreateGroup: React.FC = () => {
       const { value } = selectStudent;
       setMembers((prevMembers) => [
         ...prevMembers,
-        {
-          id: value.common_info.id,
-          name: value.common_info.name,
-          email: value.common_info.email,
-          role: MemberRole.MEMBER,
-        },
+        { ...value.common_info, role: MemberRole.MEMBER },
       ]);
       setSelectStudent(null);
     }
   }, [selectStudent]);
+
+  useEffect(() => {
+    if (createGroupData.isSuccess) {
+      toast({
+        duration: 1000,
+        variant: "default",
+        title: "Create Capstone Group",
+        description: "Create Capstone Group Successfully",
+      });
+      const { data } = createGroupData.data;
+      const groupId = data.id;
+      navigate(`/groups/${groupId}`);
+    }
+
+    if (createGroupData.error) {
+      toast({
+        title: "Create Capstone Group",
+        description:
+          "Something went wrong, please try again. If the problem persists, contact support.",
+        variant: "destructive",
+      });
+    }
+  }, [
+    createGroupData.data,
+    createGroupData.error,
+    createGroupData.isSuccess,
+    navigate,
+    toast,
+  ]);
 
   const updateRoleMember = (member: Member, role: MemberRole) => {
     setMembers((prevMembers) =>
@@ -94,25 +129,49 @@ const CreateGroup: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    if (createGroupData.isSuccess) {
-      toast({
-        duration: 1000,
-        variant: "default",
-        title: "Create Capstone Group",
-        description: "Create Capstone Group Successfully",
-      });
-    }
-
-    if (createGroupData.error) {
-      toast({
-        title: "Create Capstone Group",
-        description:
-          "Something went wrong, please try again. If the problem persists, contact support.",
-        variant: "destructive",
-      });
-    }
-  }, [createGroupData.error, createGroupData.isSuccess, toast]);
+  const MemberItem: React.FC<{ member: Member }> = ({ member }) => (
+    <div className="flex items-center justify-between p-2 border rounded-md border-gray-300">
+      <div className="flex items-center space-x-2">
+        <Avatar>
+          <AvatarImage
+            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+              member.name
+            )}&size=32`}
+            alt={member.name}
+          />
+          <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <p>{member.name}</p>
+          <p className="text-sm text-gray-500">{member.email}</p>
+        </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        <Select
+          value={member.role}
+          onValueChange={(value) =>
+            updateRoleMember(member, value as MemberRole)
+          }
+          disabled={true}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={MemberRole.LEADER}>Leader</SelectItem>
+            <SelectItem value={MemberRole.MEMBER}>Member</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={() => handleRemoveMember(member)}
+        >
+          <FaRegTrashAlt className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="max-w-lg mx-auto p-4 space-y-6">
@@ -136,49 +195,7 @@ const CreateGroup: React.FC = () => {
         </p>
         <div className="mt-2 space-y-2">
           {members.map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between p-2 border rounded-md border-gray-300"
-            >
-              <div className="flex items-center space-x-2">
-                <Avatar>
-                  <AvatarImage
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      member.name
-                    )}&size=32`}
-                    alt={member.name}
-                  />
-                  <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p>{member.name}</p>
-                  <p className="text-sm text-gray-500">{member.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Select
-                  value={member.role}
-                  onValueChange={(value) =>
-                    updateRoleMember(member, value as MemberRole)
-                  }
-                >
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={MemberRole.LEADER}>Leader</SelectItem>
-                    <SelectItem value={MemberRole.MEMBER}>Member</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => handleRemoveMember(member)}
-                >
-                  <FaRegTrashAlt className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <MemberItem key={member.id} member={member} />
           ))}
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { RootState } from "@/store";
 import { setBreadCrumb } from "@/store/slice/app";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, Navigate } from "react-router-dom";
 
 const EmptyGroup: React.FC = () => {
   return (
@@ -33,12 +34,14 @@ const Groups: React.FC = () => {
     );
   }, [dispatch]);
 
-  const [hasGroup, setHasGroup] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
 
+  const { capstone_group_id: groupId } = user?.extra_info.student || {};
+  const hasGroup = !!groupId;
   if (!hasGroup) {
     return <EmptyGroup />;
   } else {
-    return <div>Group</div>;
+    return <Navigate to={`/groups/${groupId}`} />;
   }
 };
 
