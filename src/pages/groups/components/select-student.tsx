@@ -1,15 +1,20 @@
-import { useLazyGetUsersQuery } from "@/store/api/v1/endpoints/admin";
 import { UserTypes } from "@/types/accounts";
 import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Member, OptionType } from "../type";
 import { ActionMeta, SingleValue } from "react-select";
+import { useLazyGetUsersQuery } from "@/store/api/v1/endpoints/user";
 
 const defaultAdditional = { page: 1 };
 
 interface SelectStudentProps {
   value: OptionType | null;
-  onChangeValue: ((newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => void) | undefined;
+  onChangeValue:
+    | ((
+        newValue: SingleValue<OptionType>,
+        actionMeta: ActionMeta<OptionType>
+      ) => void)
+    | undefined;
   selectedMembers: Member[];
 }
 

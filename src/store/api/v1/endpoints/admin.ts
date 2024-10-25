@@ -1,28 +1,9 @@
-import { LectureType, StudentType, UserType, UserTypes } from "@/types/accounts";
+import { GetUsersResponse, LectureType, StudentType, UserTypes } from "@/types/accounts";
 import { api } from "..";
 
-export interface Item {
-  common_info: UserType;
-  extra_info: {
-    student?: StudentType;
-    lecture?: LectureType;
-  }
-}
-interface UsersResponse {
-  code: number;
-  message: boolean;
-  data: {
-    items: Item[],
-    meta: {
-      current_page: number;
-      total: number;
-    }
-  }
-}
-
-const studentEndPoint = api.injectEndpoints({
+const adminEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<UsersResponse, { limit?: number; page?: number; user_types?: UserTypes, email?: string }>({
+    getUsers: builder.query<GetUsersResponse, { limit?: number; page?: number; user_types?: UserTypes, email?: string }>({
       query: ({ limit = 10, page = 1, user_types, email }) => ({
         url: 'admin/users/',
         params: { limit, page, user_types, email },
@@ -74,14 +55,14 @@ const studentEndPoint = api.injectEndpoints({
       invalidatesTags: ["Account"],
     }),
     importLectures: builder.mutation({
-      query: (body: FormData ) => ({
+      query: (body: FormData) => ({
         url: "admin/teachers/import-data",
         method: "POST",
         body,
       }),
       invalidatesTags: ["Account"],
     }),
-    updateLecture:builder.mutation({
+    updateLecture: builder.mutation({
       query: (body: LectureType) => ({
         url: "admin/teachers/update",
         method: "PUT",
@@ -89,9 +70,9 @@ const studentEndPoint = api.injectEndpoints({
       }),
       invalidatesTags: ["Account"],
     }),
-    })
-    // #endregion
-  });
+  })
+  // #endregion
+});
 
 export const {
   useGetUsersQuery,
@@ -105,4 +86,4 @@ export const {
   useCreateLectureMutation,
   useImportLecturesMutation,
   useUpdateLectureMutation
-} = studentEndPoint;
+} = adminEndPoint;

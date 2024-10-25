@@ -27,3 +27,22 @@ export enum UserTypes {
   STUDENT = "student",
   TEACHER = "teacher",
 }
+
+export interface UserItem {
+  common_info: UserType;
+  extra_info: {
+    student?: StudentType;
+    lecture?: LectureType;
+  }
+}
+export interface GetUsersResponse {
+  code: number;
+  message: boolean;
+  data: {
+    items: UserItem[],
+    meta: {
+      current_page: number;
+      total: number;
+    }
+  }
+}
