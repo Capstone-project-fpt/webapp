@@ -1,19 +1,16 @@
-import { Item } from "@/store/api/v1/endpoints/admin";
+import { UserItem, UserType } from "@/types/accounts";
 
 export enum MemberRole {
   LEADER = "leader",
   MEMBER = "member",
 }
 
-export interface Member {
-  id: number;
-  name: string;
-  email: string;
-  role: MemberRole;
+export interface Member extends UserType {
+  role?: MemberRole;
 }
 
 export interface OptionType {
-  value: Item;
+  value: UserItem;
   label: string;
   disabled: boolean;
 }

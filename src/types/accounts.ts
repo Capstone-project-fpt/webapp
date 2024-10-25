@@ -1,3 +1,5 @@
+import { PaginationType, ResponseType } from "./utils";
+
 export interface StudentType {
   id?: number;
   code: string;
@@ -5,6 +7,7 @@ export interface StudentType {
   name: string;
   phone_number: string;
   sub_major_id: number;
+  capstone_group_id?: number;
 }
 
 export interface LectureType {
@@ -35,14 +38,17 @@ export interface UserItem {
     lecture?: LectureType;
   }
 }
-export interface GetUsersResponse {
-  code: number;
-  message: boolean;
-  data: {
-    items: UserItem[],
-    meta: {
-      current_page: number;
-      total: number;
-    }
+interface UsersType {
+  items: UserItem[];
+  meta: {
+    current_page: number;
+    total: number;
   }
+}
+
+export interface GetUsersResponse extends ResponseType<UsersType> { }
+
+export interface UsersPaginationType extends PaginationType {
+  user_types?: UserTypes;
+  email?: string;
 }

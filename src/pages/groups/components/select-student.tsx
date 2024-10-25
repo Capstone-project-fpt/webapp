@@ -3,7 +3,7 @@ import React from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Member, OptionType } from "../type";
 import { ActionMeta, SingleValue } from "react-select";
-import { useLazyGetUsersQuery } from "@/store/api/v1/endpoints/user";
+import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
 
 const defaultAdditional = { page: 1 };
 
@@ -23,7 +23,7 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
   onChangeValue,
   selectedMembers,
 }) => {
-  const [getUsers] = useLazyGetUsersQuery();
+  const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
     q: string,

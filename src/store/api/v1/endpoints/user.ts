@@ -1,4 +1,4 @@
-import { GetUsersResponse, UserTypes } from "@/types/accounts";
+import { GetUsersResponse, UsersPaginationType } from "@/types/accounts";
 import { api } from "..";
 
 const userApi = api.injectEndpoints({
@@ -7,12 +7,12 @@ const userApi = api.injectEndpoints({
       query: () => "/users/me",
       providesTags: ["User"],
     }),
-    getUsers: builder.query<GetUsersResponse, { limit?: number; page?: number; user_types?: UserTypes, email?: string }>({
+    getUsersByUser: builder.query<GetUsersResponse, UsersPaginationType>({
       query: ({ limit = 10, page = 1, user_types, email }) => ({
         url: '/users/',
         params: { limit, page, user_types, email },
       }),
-      providesTags: ["Account"],
+      providesTags: ["User"],
     }),
     getUser: builder.query({
       query: (id) => ({
@@ -24,4 +24,4 @@ const userApi = api.injectEndpoints({
   }),
 });
 
-export const { useGetMeQuery, useGetUserQuery, useLazyGetUsersQuery } = userApi;
+export const { useGetMeQuery, useGetUserQuery, useLazyGetUsersByUserQuery } = userApi;

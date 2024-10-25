@@ -1,10 +1,10 @@
-import { UserType } from "@/types/accounts";
+import { UserItem } from "@/types/accounts";
 import { createSlice } from "@reduxjs/toolkit";
-import { setCookie, removeCookie } from "typescript-cookie";
+import { removeCookie, setCookie } from "typescript-cookie";
 
 export interface InitialStateType {
   token: string;
-  user: UserType | null;
+  user: UserItem | null;
 }
 
 const initialState: InitialStateType = {
