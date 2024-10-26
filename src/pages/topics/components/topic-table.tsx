@@ -4,10 +4,15 @@ import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useGetTopicsQuery } from "@/store/api/v1/endpoints/topics";
 import { TopicType } from "@/types/topic";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { columns } from "./columns";
+import React from "react";
 
-export function TopicTable() {
+interface TopicTableProps {
+  isAdminAction: boolean;
+}
+
+export const TopicTable: React.FC<TopicTableProps> = ({ isAdminAction }) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -52,7 +57,7 @@ export function TopicTable() {
     return (
       <DataTable
         data={tableData}
-        columns={columns}
+        columns={columns(isAdminAction)}
         state={{ pagination }}
         options={
           {
@@ -64,4 +69,4 @@ export function TopicTable() {
       />
     );
   }
-}
+};

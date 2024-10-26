@@ -23,12 +23,13 @@ export interface UserType {
   name: string;
   email: string;
   phone_number: string;
-  user_type: string;
+  user_type: UserTypes;
 }
 
 export enum UserTypes {
   STUDENT = "student",
   TEACHER = "teacher",
+  ADMIN = "admin",
 }
 
 export interface UserItem {
@@ -36,17 +37,17 @@ export interface UserItem {
   extra_info: {
     student?: StudentType;
     lecture?: LectureType;
-  }
+  };
 }
 interface UsersType {
   items: UserItem[];
   meta: {
     current_page: number;
     total: number;
-  }
+  };
 }
 
-export interface GetUsersResponse extends ResponseType<UsersType> { }
+export interface GetUsersResponse extends ResponseType<UsersType> {}
 
 export interface UsersPaginationType extends PaginationType {
   user_types?: UserTypes;

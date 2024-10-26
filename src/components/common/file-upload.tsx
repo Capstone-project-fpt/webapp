@@ -163,14 +163,14 @@ export function FileUploader(props: FileUploaderProps) {
         const target =
           updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
 
-        // toast.promise(onUpload(updatedFiles), {
-        //   loading: `Uploading ${target}...`,
-        //   success: () => {
-        //     setFiles([]);
-        //     return `${target} uploaded`;
-        //   },
-        //   error: `Failed to upload ${target}`,
-        // });
+        toast.promise(onUpload(updatedFiles), {
+          loading: `Uploading ${target}...`,
+          success: () => {
+            setFiles([]);
+            return `${target} uploaded`;
+          },
+          error: `Failed to upload ${target}`,
+        });
       }
     },
 
