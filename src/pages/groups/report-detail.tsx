@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { setBreadCrumb } from "@/store/slice/app";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import Comment from "./components/comment";
@@ -140,9 +140,9 @@ const ReportDetail: React.FC = () => {
 
       {/* Attachments */}
       <div className="my-6">
-        <div className="flex gap-4">
-          <h2 className="mb-2">Attachments</h2>
-          <Button variant="outline">Add</Button>
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="">Attachments</h2>
+          <FaRegEdit />
         </div>
         <div className="flex gap-4">
           {attachments.map((file) => (
@@ -184,7 +184,18 @@ const ReportDetail: React.FC = () => {
           <div className="mt-4">
             {comments.map((comment) => (
               <Card key={comment.id} className="mb-4 p-4">
-                <p className="font-semibold">{comment.author}</p>
+                <div className="flex gap-1 items-center mb-2">
+                  <Avatar>
+                    <AvatarImage
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        comment.author
+                      )}&size=32`}
+                      alt={comment.author}
+                    />
+                    <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-semibold">{comment.author}</span>
+                </div>
                 <p>{comment.message}</p>
                 <p className="text-sm ">{comment.timeAgo}</p>
               </Card>

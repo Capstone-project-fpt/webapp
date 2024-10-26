@@ -77,7 +77,7 @@ const CategoryColumn: React.FC<{
 
   return (
     <div ref={columnRef}>
-      <h2 className="text-xl font-bold mb-4">{category}</h2>
+      <div className=" text-xl ">{category}</div>
       {reports.map((report, index) => (
         <DraggableReportCard key={index} report={report} />
       ))}
