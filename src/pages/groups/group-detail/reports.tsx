@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import {
+  draggable,
+  dropTargetForElements,
+} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 const Reports: React.FC = () => {
-  const navigate = useNavigate();
   const [reports, setReports] = useState([
     {
       id: 1,
@@ -84,6 +86,7 @@ const CategoryColumn: React.FC<{
 };
 
 const DraggableReportCard: React.FC<{ report: any }> = ({ report }) => {
+  const navigate = useNavigate();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -101,6 +104,7 @@ const DraggableReportCard: React.FC<{ report: any }> = ({ report }) => {
     <Card
       ref={cardRef}
       className={`p-4 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
+      onClick={() => navigate(`./${report.id}`)}
     >
       <CardHeader>
         <CardTitle>{report.title}</CardTitle>

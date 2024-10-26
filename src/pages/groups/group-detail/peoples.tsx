@@ -215,10 +215,10 @@ const Peoples = () => {
                           window.location.href = `mailto:${member.email}`;
                         },
                       },
-                      {
-                        item: "Change role",
-                        onClick: () => console.log("Change role"),
-                      },
+                      // {
+                      //   item: "Change role",
+                      //   onClick: () => console.log("Change role"),
+                      // },
                     ]}
                   />
                 </TableCell>

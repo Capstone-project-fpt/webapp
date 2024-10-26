@@ -50,6 +50,40 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
+
+    //#region Topic
+    getTopics: builder.query<void, { group_id: number }>({
+      query: ({ group_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+      }),
+    }),
+    createTopic: builder.mutation<void, { group_id: number, document_path: string, topic: string }>({
+      query: ({ group_id, document_path, topic }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+        method: 'POST',
+        body: { document_path, topic },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    getTopic: builder.query<void, { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+      }),
+    }),
+    updateTopic: builder.mutation<void, { group_id: number, topic_id: number, document_path: string, topic: string }>({
+      query: ({ group_id, topic_id, document_path, topic }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+        method: 'PUT',
+        body: { document_path, topic },
+      }),
+    }),
+    deleteTopic: builder.mutation<void, { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+        method: 'DELETE',
+      }),
+    }),
+    //#endregion
   }),
 });
 
@@ -60,5 +94,11 @@ export const {
   useUpdateGroupMutation,
 
   useInviteMentorMutation,
-  useAcceptInvitationMutation
+  useAcceptInvitationMutation,
+
+  useGetTopicsQuery,
+  useCreateTopicMutation,
+  useGetTopicQuery,
+  useUpdateTopicMutation,
+  useDeleteTopicMutation,
 } = groupsApi;

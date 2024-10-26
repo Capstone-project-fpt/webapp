@@ -115,8 +115,7 @@ const ReportDetail: React.FC = () => {
   };
   return (
     <div>
-      <h1 className="mb-4">Report 1 - Project Introduction</h1>
-
+      <div className=" text-xl ">Report 1 - Project Introduction</div>
       {/* Status and Due Date */}
       <div className="flex flex-col mb-6">
         <div className="flex items-center gap-4">
@@ -124,7 +123,7 @@ const ReportDetail: React.FC = () => {
           <Badge variant="outline">On Progress</Badge>
         </div>
         <div>
-          <span>Due date:</span> <span>5 March 2024</span>
+          <span>Due date:</span> <span>5 Oct 2024</span>
         </div>
       </div>
 
