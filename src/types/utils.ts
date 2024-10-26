@@ -21,6 +21,7 @@ export interface PaginationType {
   limit?: number;
   page?: number;
 }
+
 export interface ListPaginationType<T> {
   items: T[];
   meta: {

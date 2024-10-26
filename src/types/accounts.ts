@@ -1,13 +1,12 @@
 import { PaginationType, ResponseType } from "./utils";
 
 export interface StudentType {
-  id?: number;
+  student_id: number;
   code: string;
   email: string;
   name: string;
   phone_number: string;
   sub_major_id: number;
-  capstone_group_id?: number;
 }
 
 export interface LectureType {

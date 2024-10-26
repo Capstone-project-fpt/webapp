@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -5,14 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import React, { useEffect, useState } from "react";
-import SelectLecture from "./select-lecture";
-import { OptionType } from "../type";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useInviteMentorMutation } from "@/store/api/v1/endpoints/groups";
 import { useToast } from "@/hooks/use-toast";
+import { useInviteMentorMutation } from "@/store/api/v1/endpoints/groups";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import React, { useEffect, useState } from "react";
+import { OptionType } from "../type";
+import SelectLecture from "./select-lecture";
 
 interface Props {
   open: boolean;
@@ -57,7 +57,7 @@ const InviteMentorDialog: React.FC<Props> = ({
         description: "Invite Mentor Failed.",
       });
     }
-  }, [isError, isSuccess, toast]);
+  }, [isError, isSuccess, onOpenChange, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

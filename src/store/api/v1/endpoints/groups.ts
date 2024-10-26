@@ -1,5 +1,5 @@
-import { PaginationType, ResponseType } from "@/types";
-import { CreateGroupBody, GroupType } from "@/types/group";
+import { ListPaginationType, PaginationType, ResponseType } from "@/types";
+import { CreateGroupBody, GroupType, InvitationMentor, MembersType } from "@/types/group";
 import { api } from "..";
 
 
@@ -84,6 +84,18 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     //#endregion
+    getMembers: builder.query<ResponseType<MembersType>, { group_id: number }>({
+      query: ({ group_id }) => ({
+        url: `/capstone-groups/${group_id}/members`,
+      }),
+    }),
+
+    getInvitationMentors: builder.query<ListPaginationType<InvitationMentor>, PaginationType & { group_id: number }>({
+      query: ({ limit = 10, page = 1, group_id }) => ({
+        url: `/capstone-groups/${group_id}/mentors/invitations`,
+        params: { limit, page },
+      }),
+    }),
   }),
 });
 
@@ -101,4 +113,7 @@ export const {
   useGetTopicQuery,
   useUpdateTopicMutation,
   useDeleteTopicMutation,
+
+  useGetMembersQuery,
+  useGetInvitationMentorsQuery
 } = groupsApi;

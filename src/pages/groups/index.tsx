@@ -36,7 +36,9 @@ const Groups: React.FC = () => {
 
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const { capstone_group_id: groupId } = user?.extra_info.student || {};
+  // TODO: Get group id from user
+  // const { capstone_group_id: groupId } = user?.extra_info.student || {};
+  const groupId = "";
   const hasGroup = !!groupId;
   if (!hasGroup) {
     return <EmptyGroup />;
