@@ -7,3 +7,4 @@ export { default as Categories } from "./categories";
 export { default as Products } from "./products";
 export { default as Settings } from "./settings";
 export { default as Topics } from "./topics";
+export { default as Semesters} from "./semesters";
