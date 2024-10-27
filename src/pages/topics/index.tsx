@@ -12,7 +12,7 @@ import { UserTypes } from "@/types/accounts";
 const Topics: React.FC = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector((state: RootState) => userInfo(state.auth));
-  const isAdminAction = currentUser?.common_info.user_type === UserTypes.ADMIN;
+  const currentUserType = currentUser?.common_info.user_type as UserTypes;
   useEffect(() => {
     dispatch(
       setBreadCrumb([
@@ -38,12 +38,12 @@ const Topics: React.FC = () => {
           <CreateUpdateDialog
             open={isCreateModalOpen}
             onOpenChange={setIsCreateModalOpen}
-            isAdminAction={isAdminAction}
+            currentUserType={currentUserType}
           />
         )}
       </div>
 
-      <TopicTable isAdminAction={isAdminAction} />
+      <TopicTable currentUserType={currentUserType} />
     </>
   );
 };

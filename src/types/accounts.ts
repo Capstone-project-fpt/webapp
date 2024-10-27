@@ -11,10 +11,7 @@ export interface StudentType {
 }
 
 export interface LectureType {
-  id?: number;
-  name: string;
-  email: string;
-  phone_number: string;
+  teacher_id: number;
   sub_major_id: number;
 }
 
@@ -36,7 +33,7 @@ export interface UserItem {
   common_info: UserType;
   extra_info: {
     student?: StudentType;
-    lecture?: LectureType;
+    teacher?: LectureType;
   };
 }
 interface UsersType {

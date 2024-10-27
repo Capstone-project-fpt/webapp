@@ -13,7 +13,7 @@ const topicApi = api.injectEndpoints({
     }),
     adminCreateTopic: builder.mutation<void, { name: string, path: string, teacher_id: number }>({
       query: (data) => ({
-        url: '/topic-references/admins/',
+        url: '/topic_references/admins/',
         method: 'POST',
         body: data,
       }),

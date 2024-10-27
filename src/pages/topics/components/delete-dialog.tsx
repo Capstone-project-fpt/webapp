@@ -8,20 +8,11 @@ const DeleteDialog: React.FC<{
   topic: TopicType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isAdminAction: boolean;
-}> = ({ topic, open, onOpenChange, isAdminAction }) => {
+}> = ({ topic, open, onOpenChange }) => {
   const { toast } = useToast();
   const [deleteTopicMutation, data] = useTeacherDeleteTopicMutation();
 
   const handleDelete = async () => {
-    if (isAdminAction) {
-      toast({
-        title: "Delete topic",
-        description: "Just teacher can delete the topic",
-        variant: "destructive",
-      });
-    }
-
     await deleteTopicMutation({ id: topic.id });
     if (data.isSuccess) {
       toast({
