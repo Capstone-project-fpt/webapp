@@ -65,12 +65,18 @@ export interface InvitationMentor {
   updated_at: Date;
 }
 
+export enum TopicReviewStatus {
+  Reviewing = "reviewing",
+  Approved = "approved",
+  Rejected = "rejected",
+}
+
 export interface TopicGroup {
   id: number;
   topic: string;
   document_path: string;
   capstone_group_id: number;
-  status_review: string;
+  status_review: TopicReviewStatus;
   approved_at?: Date;
   approved_by?: GroupMentor;
   approved_by_id?: number;

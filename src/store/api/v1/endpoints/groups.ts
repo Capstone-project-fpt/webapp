@@ -56,15 +56,16 @@ const groupsApi = api.injectEndpoints({
       query: ({ group_id, limit = 10, page = 1, order_by = 'DESC' }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/`,
         params: { limit, page, order_by },
+        providesTags: ["Topic"],
       }),
     }),
     createTopic: builder.mutation<void, { group_id: number, document_path: string, topic: string }>({
       query: ({ group_id, document_path, topic }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+        url: `/capstone-groups/${group_id}/capstone-group-topics/`,
         method: 'POST',
         body: { document_path, topic },
       }),
-      invalidatesTags: ["Group"],
+      invalidatesTags: ["Topic"],
     }),
     getTopic: builder.query<void, { group_id: number, topic_id: number }>({
       query: ({ group_id, topic_id }) => ({

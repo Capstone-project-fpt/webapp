@@ -105,7 +105,7 @@ const MentorTable: React.FC<{
           </TableCell>
         </TableRow>
       )}
-      {invitationMentors.map((invitationMentor) => {
+      {(invitationMentors || []).map((invitationMentor) => {
         const { mentor } = invitationMentor;
         return (
           <TableRow key={invitationMentor.id}>
@@ -279,7 +279,7 @@ const Peoples = () => {
           <Button onClick={() => setIsInviteModalOpen(true)}>Add Mentor</Button>
         }
       >
-        {mentor || invitationMentors.length ? (
+        {mentor || (invitationMentors || []).length ? (
           <MentorTable mentor={mentor} invitationMentors={invitationMentors} />
         ) : (
           <Alert variant="destructive">
