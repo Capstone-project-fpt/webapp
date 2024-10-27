@@ -37,7 +37,7 @@ const SignIn: React.FC = () => {
     action: FormikHelpers<SignInType>
   ) => {
     await signIn(values);
-    if (signInData.isSuccess) signInData.isSuccess && action.resetForm();
+    signInData.isSuccess && action.resetForm();
   };
 
   useEffect(() => {
