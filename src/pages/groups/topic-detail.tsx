@@ -1,20 +1,22 @@
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DateCell } from "@/components/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
+import { RootState } from "@/store";
+import {
+  useGetTopicFeedbacksQuery,
+  useGetTopicQuery,
+} from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import Comment from "./components/comment";
+import ReviewStatus from "./components/topic-review-status";
 
 interface Attachment {
   id: number;
@@ -28,38 +30,40 @@ const TopicDetail: React.FC = () => {
     groupId: string;
     topicId?: string;
   }>();
+
+  const { currentGroup } = useSelector((state: RootState) => state.resource);
+  const { data: topicData } = useGetTopicQuery({
+    group_id: parseInt(groupId!),
+    topic_id: parseInt(topicId!),
+  });
+
+  const { data: feedbacksData } = useGetTopicFeedbacksQuery({
+    group_id: parseInt(groupId!),
+    topic_id: parseInt(topicId!),
+  });
+
+  const topic = topicData?.data;
+
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: "Group Name", link: `/groups/${groupId}` }, //TODO: Replace Group Name with actual group name
-        { title: "Reports", link: `/groups/${groupId}/reports` },
         {
-          title: "Report Name",
-          link: `/groups/${groupId}/topics/${topicId}`, //TODO: Replace Report Name with actual report name
+          title: `${currentGroup?.name_group || "Group " + groupId}`,
+          link: `/groups/${groupId}`,
+        },
+        { title: "Topics", link: `/groups/${groupId}/topics` },
+        {
+          title: `${topic?.topic || "Topic " + topicId}`,
+          link: `/groups/${groupId}/topics/${topicId}`,
         },
       ])
     );
-  }, [dispatch, groupId, topicId]);
+  }, [currentGroup?.name_group, dispatch, groupId, topic?.topic, topicId]);
 
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      author: "Calum Tyler",
-      message:
-        "Hey @dawtar, wanted to discuss the upcoming KPI & Employee statistics page design!",
-      timeAgo: "2 hours ago",
-    },
-    {
-      id: 2,
-      author: "Calum Tyler",
-      message:
-        "Absolutely, @calty I think the design should prioritize simplicity and accessibility.",
-      timeAgo: "2 hours ago",
-    },
-  ]);
+  const [reviews, setReviews] = useState([]);
 
   const attachments: Attachment[] = [
     {
@@ -75,201 +79,77 @@ const TopicDetail: React.FC = () => {
       downloadLink: "#",
     },
   ];
-
-  const initialMembers = [
-    { name: "Alice", score: 85, feedback: "Good job!" },
-    { name: "Bob", score: 78, feedback: "Well done!" },
-    { name: "Charlie", score: 92, feedback: "Excellent work!" },
-  ];
-
-  const [members, setMembers] = useState(initialMembers);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newScore, setNewScore] = useState<number | null>(null);
-  const [newFeedback, setNewFeedback] = useState<string>("");
-
-  const handleEdit = (index: number) => {
-    setEditingIndex(index);
-    setNewScore(members[index].score);
-    setNewFeedback(members[index].feedback);
-  };
-
-  const cancelUpdateScore = () => {
-    setEditingIndex(null);
-    setNewScore(null);
-    setNewFeedback("");
-  };
-
-  const handleUpdate = () => {
-    if (editingIndex !== null && newScore !== null) {
-      const updatedMembers = [...members];
-      updatedMembers[editingIndex] = {
-        ...updatedMembers[editingIndex],
-        score: newScore,
-        feedback: newFeedback,
-      };
-      setMembers(updatedMembers);
-      setEditingIndex(null);
-      setNewScore(null);
-      setNewFeedback("");
-    }
-  };
   return (
-    <div>
-      <div className=" text-xl ">Report 1 - Project Introduction</div>
-      {/* Status and Due Date */}
-      <div className="flex flex-col mb-6">
-        <div className="flex items-center gap-4">
-          <span>Status:</span>
-          <Badge variant="outline">On Progress</Badge>
-        </div>
+    <>
+      {topic && (
         <div>
-          <span>Due date:</span> <span>5 Oct 2024</span>
-        </div>
-      </div>
+          <div className=" text-xl ">{topic.topic}</div>
+          <div className="flex flex-col mb-6">
+            <div className="flex items-center gap-4">
+              <span>Status:</span>
+              <ReviewStatus status={topic.status_review} />
+            </div>
+            <div className="flex items-center gap-4">
+              <span>Submit date:</span>
+              <DateCell date={new Date(topic.created_at)} />
+            </div>
+          </div>
 
-      {/* Description */}
-      <div>
-        <h2 className="mb-2">Description</h2>
-        <Alert>
-          <AlertDescription>
-            This page aims to provide real-time insights into employee
-            performance metrics and key business indicators.
-          </AlertDescription>
-        </Alert>
-      </div>
-
-      {/* Attachments */}
-      <div className="my-6">
-        <div className="flex items-center gap-2 mb-2">
-          <h2 className="">Attachments</h2>
-          <FaRegEdit />
-        </div>
-        <div className="flex gap-4">
-          {attachments.map((file) => (
-            <Card key={file.id}>
-              <CardHeader>
-                <FaRegTrashAlt className="ml-auto" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col">
-                  <div>
-                    <FileIcon className="mr-2" />
-                    <div>
-                      <p>{file.name}</p>
+          <div className="my-6">
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="">Attachments</h2>
+              <FaRegEdit />
+            </div>
+            <div className="flex gap-4">
+              {attachments.map((file) => (
+                <Card key={file.id}>
+                  <CardHeader>
+                    <FaRegTrashAlt className="ml-auto" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col">
+                      <div>
+                        <FileIcon className="mr-2" />
+                        <div>
+                          <p>{file.name}</p>
+                        </div>
+                      </div>
+                      <Button size="sm">Download</Button>
                     </div>
-                  </div>
-                  <Button size="sm">Download</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
 
-      <Separator />
-      <Tabs defaultValue="comments" className="my-4">
-        <TabsList>
-          <TabsTrigger value="comments" className="lg:w-[150px] w-full">
-            Comments
-          </TabsTrigger>
-          <TabsTrigger value="activities" className="lg:w-[150px] w-full">
-            Activities
-          </TabsTrigger>
-          <TabsTrigger value="grade" className="lg:w-[150px] w-full">
-            Grade
-          </TabsTrigger>
-        </TabsList>
+          <Separator />
 
-        <TabsContent value="comments">
           <div className="mt-4">
-            {comments.map((comment) => (
-              <Card key={comment.id} className="mb-4 p-4">
+            {reviews.map((review) => (
+              <Card key={review.id} className="mb-4 p-4">
                 <div className="flex gap-1 items-center mb-2">
                   <Avatar>
                     <AvatarImage
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        comment.author
+                        review.author
                       )}&size=32`}
-                      alt={comment.author}
+                      alt={review.author}
                     />
-                    <AvatarFallback>{comment.author.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{review.author.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span className="font-semibold">{comment.author}</span>
+                  <span className="font-semibold">{review.author}</span>
                 </div>
-                <p>{comment.message}</p>
-                <p className="text-sm ">{comment.timeAgo}</p>
+                <p>{review.message}</p>
+                <p className="text-sm ">{review.timeAgo}</p>
               </Card>
             ))}
           </div>
           <div>
             <Comment />
           </div>
-        </TabsContent>
-        <TabsContent value="activities">
-          <div className="mt-4">
-            <p>No activities yet.</p>
-          </div>
-        </TabsContent>
-        <TabsContent value="grade">
-          {members.length > 0 ? (
-            members.map((member, index) => (
-              <div key={index} className="mb-4 flex gap-4">
-                <div className="flex items-center space-x-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        member.name
-                      )}&size=32`}
-                      alt={member.name}
-                    />
-                    <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p>{member.name}</p>
-                  </div>
-                </div>
-                {editingIndex === index ? (
-                  <>
-                    <div>
-                      <Label>Score</Label>
-                      <Input
-                        type="number"
-                        value={newScore ?? ""}
-                        onChange={(e) => setNewScore(Number(e.target.value))}
-                      />
-                      <Label>Feedback</Label>
-                      <Textarea
-                        placeholder="Type your message here."
-                        value={newFeedback}
-                        onChange={(e) => setNewFeedback(e.target.value)}
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <Button onClick={cancelUpdateScore} variant="outline">
-                        Cancel
-                      </Button>
-                      <Button onClick={handleUpdate}>Update</Button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <Label>Score</Label>
-                      <p>{member.score}</p>
-                      <Label>Feedback</Label>
-                      <p>{member.feedback}</p>
-                    </div>
-                    <Button onClick={() => handleEdit(index)}>Edit</Button>
-                  </>
-                )}
-              </div>
-            ))
-          ) : (
-            <p>No grade yet.</p>
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

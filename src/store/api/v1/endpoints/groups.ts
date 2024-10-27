@@ -67,9 +67,15 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Topic"],
     }),
-    getTopic: builder.query<void, { group_id: number, topic_id: number }>({
+    getTopic: builder.query<ResponseType<TopicGroup>, { group_id: number, topic_id: number }>({
       query: ({ group_id, topic_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+      }),
+    }),
+    getTopicFeedbacks: builder.query<ResponseType<TopicGroup>, PaginationType & { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks`,
+        params: { limit, page },
       }),
     }),
     updateTopic: builder.mutation<void, { group_id: number, topic_id: number, document_path: string, topic: string }>({
@@ -113,6 +119,7 @@ export const {
   useGetTopicsQuery,
   useCreateTopicMutation,
   useGetTopicQuery,
+  useGetTopicFeedbacksQuery,
   useUpdateTopicMutation,
   useDeleteTopicMutation,
 

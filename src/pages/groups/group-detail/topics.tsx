@@ -1,7 +1,7 @@
 import FileDownload from "@/components/common/file-download";
 import { SettingCard } from "@/components/custom/setting";
+import { ActionCell, DateCell } from "@/components/data-table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,40 +12,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetTopicsQuery } from "@/store/api/v1/endpoints/groups";
-import { TopicGroup, TopicReviewStatus } from "@/types/group";
+import { TopicGroup } from "@/types/group";
 import { AlertCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FiFilePlus } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
+import ReviewStatus from "../components/topic-review-status";
 import UploadTopicDialog from "../components/upload-topic-dialog";
-import { ActionCell, DateCell } from "@/components/data-table";
-
-type BadgeVariant = "success" | "info" | "destructive" | "outline";
-
-const ReviewStatus: React.FC<{ status: TopicReviewStatus | string }> = ({
-  status,
-}) => {
-  let variant: BadgeVariant;
-  switch (status) {
-    case TopicReviewStatus.Approved:
-      variant = "success";
-      break;
-    case TopicReviewStatus.Reviewing:
-      variant = "info";
-      break;
-    case TopicReviewStatus.Rejected:
-      variant = "destructive";
-      break;
-    default:
-      variant = "outline";
-  }
-
-  return (
-    <Badge variant={variant} className="capitalize">
-      {status}
-    </Badge>
-  );
-};
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();

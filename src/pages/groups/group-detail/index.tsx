@@ -35,7 +35,7 @@ const GroupDetail: React.FC = () => {
 
   const group = groupData?.data;
   const dispatch = useDispatch();
-  const [currentTab, setCurrentTab] = useState(tab || "about");
+  const [currentTab, setCurrentTab] = useState(tab || "topics");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,13 +74,13 @@ const GroupDetail: React.FC = () => {
       </div>
     );
   } else {
-    if (error) {
-      return (
-        <div className="h-full">
-          <ErrorBoundaryComponent />;
-        </div>
-      );
-    }
+    // if (error) {
+    //   return (
+    //     <div className="h-full">
+    //       <ErrorBoundaryComponent />;
+    //     </div>
+    //   );
+    // }
     return (
       <div>
         <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>
