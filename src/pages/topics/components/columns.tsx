@@ -3,7 +3,7 @@ import { TopicType } from "@/types/topic";
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
 
-export const columns: ColumnDef<TopicType>[] = [
+export const columns = (isAdminAction: boolean): ColumnDef<TopicType>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -29,6 +29,6 @@ export const columns: ColumnDef<TopicType>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <Actions row={row} />,
+    cell: ({ row }) => <Actions row={row} isAdminAction={isAdminAction} />,
   },
 ];

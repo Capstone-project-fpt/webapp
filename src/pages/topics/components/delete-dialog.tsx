@@ -1,6 +1,6 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/hooks/use-toast"
-import { useDeleteTopicMutation } from "@/store/api/v1/endpoints/topics";
+import { useToast } from "@/hooks/use-toast";
+import { useTeacherDeleteTopicMutation } from "@/store/api/v1/endpoints/topics";
 import { TopicType } from "@/types/topic";
 import React from "react";
 
@@ -8,11 +8,20 @@ const DeleteDialog: React.FC<{
   topic: TopicType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}> = ({ topic, open, onOpenChange }) => {
+  isAdminAction: boolean;
+}> = ({ topic, open, onOpenChange, isAdminAction }) => {
   const { toast } = useToast();
-  const [deleteTopicMutation, data] = useDeleteTopicMutation();
+  const [deleteTopicMutation, data] = useTeacherDeleteTopicMutation();
 
   const handleDelete = async () => {
+    if (isAdminAction) {
+      toast({
+        title: "Delete topic",
+        description: "Just teacher can delete the topic",
+        variant: "destructive",
+      });
+    }
+
     await deleteTopicMutation({ id: topic.id });
     if (data.isSuccess) {
       toast({

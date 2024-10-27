@@ -33,5 +33,6 @@ export const authSlice = createSlice({
 });
 
 export const token = (state: InitialStateType) => state.token;
+export const userInfo = (state: InitialStateType) => state.user;
 export const { saveUserInfo, removeUserInfo, setUserInfo } = authSlice.actions;
 export default authSlice.reducer;

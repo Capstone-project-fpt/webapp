@@ -2,11 +2,11 @@ import { InputPassword } from "@/components";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/services/providers/theme-provider";
 import { signInSchema } from "@/services/schemas";
 import { useSignInMutation } from "@/store/api/v1/endpoints/auth";
-import { saveUserInfo } from "@/store/slice/auth";
+import { saveUserInfo, setUserInfo } from "@/store/slice/auth";
 import { SignInType } from "@/types";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
@@ -16,10 +16,12 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "./components/logo";
 import MobileLogo from "./components/mobile-logo";
 import { FaGoogle } from "react-icons/fa";
+import { useLazyGetMeQuery } from "@/store/api/v1/endpoints/user";
 
 const SignIn: React.FC = () => {
   const { theme } = useTheme();
   const [signIn, signInData] = useSignInMutation();
+  const [triggerGetMe] = useLazyGetMeQuery();
   const navigate = useNavigate();
   const { toast } = useToast();
   const dispatch = useDispatch();
@@ -47,6 +49,12 @@ const SignIn: React.FC = () => {
         })
       );
       navigate("/");
+      triggerGetMe({})
+        .unwrap()
+        .then((data) => {
+          dispatch(setUserInfo(data?.data));
+        })
+        .catch((error) => console.log("Failed to fetch user data:", error));
     }
     // Toast
     if (signInData?.data || signInData?.error) {
