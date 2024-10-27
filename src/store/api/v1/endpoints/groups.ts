@@ -1,5 +1,5 @@
 import { ListPaginationType, PaginationType, ResponseType } from "@/types";
-import { CreateGroupBody, GroupType, InvitationMentor, MembersType } from "@/types/group";
+import { CreateGroupBody, GroupType, InvitationMentor, MembersType, TopicGroup } from "@/types/group";
 import { api } from "..";
 
 
@@ -52,9 +52,10 @@ const groupsApi = api.injectEndpoints({
     }),
 
     //#region Topic
-    getTopics: builder.query<void, { group_id: number }>({
-      query: ({ group_id }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+    getTopics: builder.query<ResponseType<ListPaginationType<TopicGroup>>, PaginationType & { group_id: number }>({
+      query: ({ group_id, limit = 10, page = 1, order_by = 'DESC' }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/`,
+        params: { limit, page, order_by },
       }),
     }),
     createTopic: builder.mutation<void, { group_id: number, document_path: string, topic: string }>({

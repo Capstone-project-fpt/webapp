@@ -64,3 +64,19 @@ export interface InvitationMentor {
   expired_at: Date;
   updated_at: Date;
 }
+
+export interface TopicGroup {
+  id: number;
+  topic: string;
+  document_path: string;
+  capstone_group_id: number;
+  status_review: string;
+  approved_at?: Date;
+  approved_by?: GroupMentor;
+  approved_by_id?: number;
+  rejected_at?: Date;
+  rejected_by?: GroupMentor;
+  rejected_by_id?: number;
+  created_at: Date;
+  updated_at: Date;
+}
