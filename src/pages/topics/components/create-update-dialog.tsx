@@ -25,7 +25,7 @@ import { ErrorMessage, Form, Formik } from "formik";
 import { useState } from "react";
 import SelectTeacher from "./select-teacher";
 import { OptionType } from "../type";
-import { UserType } from "@/types/accounts";
+import { UserType, UserTypes } from "@/types/accounts";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { isNil } from "@/utils/lodash";
 import { PRE_PATH_S3 } from "@/constant";
@@ -33,20 +33,20 @@ interface CreateUpdateDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   topic?: TopicType;
-  isAdminAction: boolean;
+  currentUserType: UserTypes;
 }
 
 const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
   topic,
   open,
   onOpenChange,
-  isAdminAction,
+  currentUserType,
 }) => {
   const { toast } = useToast();
   const initialValues = {
     name: topic?.name || "",
     path: topic?.path || "",
-    teacherId: topic?.teacher.id || 0,
+    teacherId: topic?.teacher.teacher_id || 0,
   };
 
   const [files, setFiles] = useState<File[]>([]);
@@ -88,7 +88,7 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
       });
     }
 
-    if (isAdminAction && isNil(selectTeacher)) {
+    if (currentUserType === UserTypes.ADMIN && isNil(selectTeacher)) {
       toast({
         title: "Create Topic",
         description: "Please select a teacher",
@@ -97,14 +97,14 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
     }
 
     const path = await onUploadFile();
-
-    if (isAdminAction) {
+    if (currentUserType === UserTypes.ADMIN) {      
       await adminCreateTopic({
         name,
         path,
-        teacher_id: selectTeacher!.value.extra_info.lecture!.id!,
+        teacher_id: selectTeacher!.value.extra_info.teacher!.teacher_id!,
       }).unwrap();
-    } else {
+    }
+    if (currentUserType === UserTypes.TEACHER) {
       await teacherCreateTopic({
         name,
         path,
@@ -116,27 +116,19 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
     topicUpdate: TopicType,
     nameTopic: string
   ) => {
-    if (isAdminAction) {
-      toast({
-        title: "Update Topic",
-        description: "Just teacher can update the topic reference",
-        variant: "destructive",
-      });
-    } else {
-      let path = topicUpdate.path;
-      if (files.length > 0) {
-        path = await onUploadFile();
-      }
-      await teacherUpdateTopic({
-        name: nameTopic,
-        id: topicUpdate.id,
-        path,
-      }).unwrap();
-      toast({
-        title: "Update Topic",
-        description: "Topic updated successfully",
-      });
+    let path = topicUpdate.path;
+    if (files.length > 0) {
+      path = await onUploadFile();
     }
+    await teacherUpdateTopic({
+      name: nameTopic,
+      id: topicUpdate.id,
+      path,
+    }).unwrap();
+    toast({
+      title: "Update Topic",
+      description: "Topic updated successfully",
+    });
   };
 
   const handleForm = async (values: { name: string }) => {
@@ -150,6 +142,8 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
       }
       onOpenChange(false);
     } catch (error) {
+      console.log("🚀 ~ handleForm ~ error:", error)
+      
       toast({
         title: `${topic ? "Update" : "Create"} Topic`,
         description:
@@ -223,7 +217,7 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
                   className="text-sm text-danger"
                 />
               </div>
-              {isAdminAction && (
+              {currentUserType === UserTypes.ADMIN && (
                 <>
                   <Label htmlFor="code">Teacher</Label>
                   <TeacherItem

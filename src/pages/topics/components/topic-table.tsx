@@ -7,12 +7,13 @@ import { PaginationState, TableOptions } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { columns } from "./columns";
 import React from "react";
+import { UserTypes } from "@/types/accounts";
 
 interface TopicTableProps {
-  isAdminAction: boolean;
+  currentUserType: UserTypes;
 }
 
-export const TopicTable: React.FC<TopicTableProps> = ({ isAdminAction }) => {
+export const TopicTable: React.FC<TopicTableProps> = ({ currentUserType }) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -57,7 +58,7 @@ export const TopicTable: React.FC<TopicTableProps> = ({ isAdminAction }) => {
     return (
       <DataTable
         data={tableData}
-        columns={columns(isAdminAction)}
+        columns={columns(currentUserType)}
         state={{ pagination }}
         options={
           {
