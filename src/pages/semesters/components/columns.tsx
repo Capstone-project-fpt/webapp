@@ -2,6 +2,7 @@ import { DataTableColumnHeader, TextCell } from "@/components/data-table";
 import { SemesterType } from "@/types/semester";
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
+import { Link } from "react-router-dom";
 
 export const columns: ColumnDef<SemesterType>[] = [
   {
@@ -16,7 +17,11 @@ export const columns: ColumnDef<SemesterType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Name" />
     ),
-    cell: ({ row }) => <TextCell size={200}>{row.original.name}</TextCell>,
+    cell: ({ row }) => (
+      <Link to={`/semesters/${row.original.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <TextCell size={200}>{row.original.name}</TextCell>
+      </Link>
+    ),
   },
   {
     accessorKey: "start-time",

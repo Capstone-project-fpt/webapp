@@ -21,6 +21,11 @@ const semesterApi = api.injectEndpoints({
       }),
       providesTags: ["Semester"],
     }),
+    getSemester: builder.query<GetSemestersResponse, { id: number }>({
+      query: ({ id }) => ({
+        url: `/semesters/${id}`,
+      }),
+    }),
     createSemesters: builder.mutation<void, {name: string, start_time:string, end_time:string}>({
       query: (data) => ({
         url: '/semesters/',
@@ -49,6 +54,7 @@ const semesterApi = api.injectEndpoints({
 
 export const {
 useGetSemestersQuery, 
+useGetSemesterQuery,
 useCreateSemestersMutation,
 useUpdateSemestersMutation,
 useDeleteSemestersMutation
