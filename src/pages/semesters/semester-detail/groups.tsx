@@ -4,16 +4,15 @@ import { useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
-import { Button } from '@/components/ui/button';
 import { useGetGroupsQuery } from '@/store/api/v1/endpoints/groups';
+import { GroupType } from '@/types/group';
 
 
 const Groups: React.FC = () => {
-  const { semesterId } = useParams<{ semesterId: string }>(); 
+  const { semesterid } = useParams<{ semesterid: string }>(); 
   const { data, error, isLoading } = useGetGroupsQuery({ limit: 10, page: 1 });
-  const groups = data?.items || [];
-  
-  const filteredGroups = groups.filter((group) => group.semester_id === Number(semesterId)); 
+  const groups: GroupType[] = Array.isArray(data?.data?.items) ? data.data.items : []; 
+  const filteredGroups = groups.filter((group) => group.semester_id === Number(semesterid)); 
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -22,14 +21,9 @@ const Groups: React.FC = () => {
   if (error) {
     return <div>Error fetching groups</div>;
   }
-  const handleAddGroup = () => {
-      console.log("Adding a new evaluation group");
-    };
+ 
   return (
     <div>
-      <div className="flex justify-end mb-4">
-        <Button onClick={handleAddGroup}>Add New Group</Button>
-      </div>
 
       <SettingCard title={`Capstone Group (${filteredGroups.length})`}>
         <Table>

@@ -4,3 +4,11 @@ export interface SemesterType {
   start_time: string;
   end_time: string;
 }
+
+export interface SemestersType {
+  items: SemesterType[];
+  meta: {
+    current_page: number;
+    total: number;
+  };
+}
