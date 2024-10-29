@@ -20,7 +20,9 @@ export interface ResponseType<T> {
 export interface PaginationType {
   limit?: number;
   page?: number;
+  order_by?: 'DESC' | 'ASC';
 }
+
 export interface ListPaginationType<T> {
   items: T[];
   meta: {

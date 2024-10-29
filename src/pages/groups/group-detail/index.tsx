@@ -3,17 +3,17 @@ import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetGroupQuery } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { setCurrentGroup } from "@/store/slice/resource";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import About from "./about";
 import Peoples from "./peoples";
 import Reports from "./reports";
 import Reviews from "./reviews";
-import { setCurrentGroup } from "@/store/slice/resource";
+import Topics from "./topics";
 
 const TABS = [
-  { name: "about", label: "About", component: About },
+  { name: "topics", label: "Topics", component: Topics },
   { name: "reports", label: "Reports", component: Reports },
   { name: "reviews", label: "Reviews", component: Reviews },
   { name: "peoples", label: "Peoples", component: Peoples },
@@ -35,7 +35,7 @@ const GroupDetail: React.FC = () => {
 
   const group = groupData?.data;
   const dispatch = useDispatch();
-  const [currentTab, setCurrentTab] = useState(tab || "about");
+  const [currentTab, setCurrentTab] = useState(tab || "topics");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,13 +74,13 @@ const GroupDetail: React.FC = () => {
       </div>
     );
   } else {
-    if (error) {
-      return (
-        <div className="h-full">
-          <ErrorBoundaryComponent />;
-        </div>
-      );
-    }
+    // if (error) {
+    //   return (
+    //     <div className="h-full">
+    //       <ErrorBoundaryComponent />;
+    //     </div>
+    //   );
+    // }
     return (
       <div>
         <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>

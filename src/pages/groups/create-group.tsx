@@ -29,16 +29,29 @@ const CreateGroup: React.FC = () => {
   const [createGroup, createGroupData] = useCreateGroupMutation();
   const { isLoading } = createGroupData;
 
-  const initialMembers: Member[] = user
-    ? [{ ...user.common_info, role: MemberRole.LEADER }]
-    : [];
+  const initialMembers: Member[] =
+    user && user.extra_info.student
+      ? [
+          {
+            ...user.common_info,
+            studentId: user.extra_info.student.student_id,
+            role: MemberRole.LEADER,
+          },
+        ]
+      : [];
   const [members, setMembers] = useState<Member[]>(initialMembers);
   const initGroupName = user ? `${user.common_info.name}'s Group` : "";
   const [groupName, setGroupName] = useState(initGroupName);
   const [formValid, setFormValid] = useState(false);
   const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
   const [currentLeader, setCurrentLeader] = useState<Member | null>(
-    user ? { ...user.common_info, role: MemberRole.LEADER } : null
+    user && user.extra_info.student
+      ? {
+          ...user.common_info,
+          studentId: user.extra_info.student.student_id,
+          role: MemberRole.LEADER,
+        }
+      : null
   );
 
   useEffect(() => {
@@ -60,7 +73,11 @@ const CreateGroup: React.FC = () => {
       const { value } = selectStudent;
       setMembers((prevMembers) => [
         ...prevMembers,
-        { ...value.common_info, role: MemberRole.MEMBER },
+        {
+          ...value.common_info,
+          studentId: value.extra_info.student?.student_id as number,
+          role: MemberRole.MEMBER,
+        },
       ]);
       setSelectStudent(null);
     }
@@ -120,7 +137,8 @@ const CreateGroup: React.FC = () => {
   };
 
   const handleCreateForm = async () => {
-    const studentIds = members.map((member) => member.id);
+    const studentIds = members.map((member) => member.studentId);
+
     await createGroup({
       major_id: 1,
       semester_id: 1,

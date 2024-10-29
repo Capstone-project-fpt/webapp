@@ -8,43 +8,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PRE_PATH_S3 } from "@/constant";
 import { useToast } from "@/hooks/use-toast";
 import { useCreateTopicMutation } from "@/store/api/v1/endpoints/groups";
+import { useGeneratePresignUrlMutation } from "@/store/api/v1/endpoints/upload";
+import { generateKeyS3 } from "@/utils/generate-key-s3";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect, useState } from "react";
 interface UploadTopicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  groupId: string;
 }
 
 const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   open,
   onOpenChange,
+  groupId,
 }) => {
   const [createTopic, createTopicData] = useCreateTopicMutation();
+  const [generatePresignUrl] = useGeneratePresignUrlMutation();
   const { toast } = useToast();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-
-  const createTopicForm = async () => {
-    console.log("");
-    // const file = files[0];
-    // if (file) {
-    //   const formData = new FormData();
-    //   formData.append("file", file);
-    //   setIsSubmitting(true);
-    // }
-  };
 
   useEffect(() => {
     if (createTopicData.isSuccess) {
       toast({
         duration: 1000,
         variant: "default",
-        title: "Create Topic",
-        description: "Create Topic Successfully.",
+        title: "Submit Topic",
+        description: "Submit Topic Successfully.",
       });
-      setIsSubmitting(false);
       onOpenChange(false);
     }
 
@@ -62,46 +59,126 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
         title: "Create Topic",
         description: messageError,
       });
-      setIsSubmitting(false);
     }
   }, [createTopicData, onOpenChange, toast]);
+
+  const initialValues = {
+    name: "",
+    path: "",
+  };
+
+  const handleForm = async (values: { name: string }) => {
+    try {
+      await submitTopic(values.name);
+    } catch (error) {
+      toast({
+        title: `Submit Topic`,
+        description:
+          "Something went wrong, please try again. If the problem persists, contact support.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onUploadFile = async (): Promise<string> => {
+    const file = files[0];
+    const key = generateKeyS3(PRE_PATH_S3.GroupTopic, file.name);
+    const { data: url } = await generatePresignUrl({ key }).unwrap();
+
+    await fetch(url, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+
+    toast({
+      title: "Create Topic",
+      description: "Topic created successfully",
+    });
+    onOpenChange(false);
+
+    return key;
+  };
+
+  const submitTopic = async (name: string) => {
+    if (files.length === 0) {
+      toast({
+        title: "Create Topic",
+        description: "Please select a file",
+        variant: "destructive",
+      });
+    }
+
+    const path = await onUploadFile();
+    await createTopic({
+      group_id: parseInt(groupId),
+      topic: name,
+      document_path: path,
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] lg:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Create Topic</DialogTitle>
-          <DialogDescription>Upload a file to create Topic.</DialogDescription>
+          <DialogTitle>Submit Topic</DialogTitle>
+          <DialogDescription>Upload a file to submit Topic.</DialogDescription>
         </DialogHeader>
-
-        <div>
-          <FileUploader
-            maxFileCount={2}
-            maxSize={8 * 1024 * 1024}
-            onValueChange={setFiles}
-            accept={{}}
-          />
-        </div>
-        <DialogFooter className="gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              onOpenChange(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            onClick={createTopicForm}
-          >
-            {isSubmitting && (
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Create
-          </Button>
-        </DialogFooter>
+        <Formik initialValues={initialValues} onSubmit={handleForm}>
+          {({ values, handleBlur, handleChange, isSubmitting }) => (
+            <Form className=" flex flex-col gap-3 ">
+              <div className="flex flex-col gap-2 ">
+                <Label htmlFor="code">Name</Label>
+                <Input
+                  name="name"
+                  id="name"
+                  value={values.name}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  placeholder="Enter name"
+                />
+                <ErrorMessage
+                  name="name"
+                  component={"div"}
+                  className="text-sm text-danger"
+                />
+              </div>
+              <div className="flex flex-col gap-2 ">
+                <FileUploader
+                  maxFileCount={1}
+                  maxSize={8 * 1024 * 1024}
+                  onValueChange={setFiles}
+                  accept={{
+                    "document/*": [
+                      ".doc",
+                      "application/msword",
+                      ".docx",
+                      ".pdf",
+                    ],
+                  }}
+                />
+              </div>
+              <DialogFooter className="gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    onOpenChange(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Submit
+                </Button>
+              </DialogFooter>
+            </Form>
+          )}
+        </Formik>
       </DialogContent>
     </Dialog>
   );

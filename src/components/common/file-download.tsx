@@ -1,10 +1,10 @@
 import { FaFile } from "react-icons/fa";
 
-export interface DownloadDialogProps {
+export interface FileDownloadProps {
   pathFile: string;
 }
 
-const DownloadAction: React.FC<DownloadDialogProps> = ({ pathFile }) => {  
+const FileDownload: React.FC<FileDownloadProps> = ({ pathFile }) => {
   const nameFile = pathFile.split("/")[pathFile.split("/").length - 1];
   const urlFile = `${import.meta.env.VITE_APP_S3_BUCKET_URL}/${pathFile}`;
 
@@ -23,4 +23,4 @@ const DownloadAction: React.FC<DownloadDialogProps> = ({ pathFile }) => {
   );
 };
 
-export default DownloadAction;
+export default FileDownload;

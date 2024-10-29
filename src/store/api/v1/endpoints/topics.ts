@@ -4,7 +4,7 @@ import { api } from "..";
 
 const topicApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getTopics: builder.query<ResponseType<TopicsType>, { limit?: number; page?: number }>({
+    getTopicReferences: builder.query<ResponseType<TopicsType>, { limit?: number; page?: number }>({
       query: ({ limit = 10, page = 1 }) => ({
         url: '/topic_references/',
         params: { limit, page },
@@ -46,9 +46,9 @@ const topicApi = api.injectEndpoints({
 });
 
 export const {
-  useGetTopicsQuery,
   useAdminCreateTopicMutation,
   useTeacherCreateTopicMutation,
   useTeacherUpdateTopicMutation,
-  useTeacherDeleteTopicMutation
+  useTeacherDeleteTopicMutation,
+  useGetTopicReferencesQuery,
 } = topicApi;

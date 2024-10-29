@@ -1,7 +1,4 @@
-export interface IPrePathS3 {
-  TopicReference: string;
+export enum PRE_PATH_S3 {
+  TopicReference = "topic-references",
+  GroupTopic = "group-topics"
 }
-
-export const PRE_PATH_S3: IPrePathS3 = {
-  TopicReference: "topic-references",
-};

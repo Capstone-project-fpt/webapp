@@ -3,7 +3,7 @@ import { TopicType } from "@/types/topic";
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
 import { UserTypes } from "@/types/accounts";
-import DownloadAction from "./dowload-action";
+import FileDownload from "@/components/common/file-download";
 
 export const columns = (currentUserType: UserTypes): ColumnDef<TopicType>[] => [
   {
@@ -35,6 +35,6 @@ export const columns = (currentUserType: UserTypes): ColumnDef<TopicType>[] => [
   },
   {
     id: "download",
-    cell: ({ row }) => <DownloadAction pathFile={row.original.path} />,
+    cell: ({ row }) => <FileDownload pathFile={row.original.path} />,
   },
 ];

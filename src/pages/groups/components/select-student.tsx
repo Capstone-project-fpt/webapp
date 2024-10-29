@@ -44,7 +44,7 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: selectedMembers.some((m) => m.id === item.common_info.id),
+        disabled: selectedMembers.some((m) => m.studentId === item.extra_info.student?.student_id),
       }));
 
       return {
