@@ -18,15 +18,15 @@ const SemesterRoutes: RouteObject[] = [
         element: <Semesters />,
       },
       {
-        path: ":semesterid", 
-        element: <SemesterDetail />, 
+        path: ":semesterId",
+        element: <SemesterDetail />,
         children: [
           {
             path: "groups",
             element: <Groups />,
           },
           {
-            path: "evaluation-committee", 
+            path: "evaluation-committee",
             element: <EvaluationCommittee />,
           },
         ],

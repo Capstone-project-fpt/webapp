@@ -1,8 +1,8 @@
 export interface SemesterType {
   id: number;
   name: string;
-  start_time: string;
-  end_time: string;
+  start_time: Date;
+  end_time: Date;
 }
 
 export interface SemestersType {
