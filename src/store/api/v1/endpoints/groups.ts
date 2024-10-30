@@ -5,7 +5,7 @@ import { api } from "..";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getGroups: builder.query<void, PaginationType>({
+    getGroups: builder.query<ResponseType<ListPaginationType<GroupType>>, { limit?: number; page?: number }>({
       query: ({ limit = 10, page = 1 }) => ({
         url: '/capstone-groups/',
         params: { limit, page },

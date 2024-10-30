@@ -3,13 +3,14 @@ import { IoMdBook } from "react-icons/io";
 import { MdOutlineGroups } from "react-icons/md";
 import { Home, Settings2, Users } from "tabler-icons-react";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import { LuCalendarCheck } from "react-icons/lu";
 
 export interface MenuItem {
   title: string;
   link?: string;
   icon?: JSX.Element;
   children?: MenuItem[];
-  isOpen?: boolean; // New property to track open/closed state
+  isOpen?: boolean; 
 }
 
 const menus: MenuItem[] = [
@@ -20,10 +21,17 @@ const menus: MenuItem[] = [
     isOpen: false,
   },
   {
+    icon: <LuCalendarCheck size={18} strokeWidth={2} />,
+    title: "Semesters",
+    link: "/semesters",
+    isOpen: false,
+  },
+  {
     icon: <HiOutlineUserGroup size={18} strokeWidth={2} />,
     title: "Group",
     link: "/groups",
   },
+  
   {
     icon: <Users size={18} strokeWidth={2} />,
     title: "Accounts",
