@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { FiFilePlus } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 import ReviewStatus from "../components/topic-review-status";
-import UploadTopicDialog from "../components/upload-topic-dialog";
+import UploadTopicDialog from "../components/create-upload-topic-dialog";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -86,7 +86,8 @@ const Topics: React.FC = () => {
                       items={[
                         {
                           item: "View detail",
-                          onClick: () => navigate(`./topics/${topic.id}`),
+                          onClick: () =>
+                            navigate(`/groups/${groupId}/topics/${topic.id}`),
                         },
                       ]}
                     />

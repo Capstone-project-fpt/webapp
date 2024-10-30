@@ -1,29 +1,23 @@
 import { DateCell } from "@/components/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RootState } from "@/store";
 import {
   useGetTopicFeedbacksQuery,
   useGetTopicQuery,
 } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import Comment from "./components/comment";
 import ReviewStatus from "./components/topic-review-status";
-
-interface Attachment {
-  id: number;
-  name: string;
-  size: string;
-  downloadLink: string;
-}
+import UploadTopicDialog from "./components/create-upload-topic-dialog";
 
 const TopicDetail: React.FC = () => {
   const { groupId, topicId } = useParams<{
@@ -64,26 +58,12 @@ const TopicDetail: React.FC = () => {
   }, [currentGroup?.name_group, dispatch, groupId, topic?.topic, topicId]);
 
   const [reviews, setReviews] = useState([]);
-
-  const attachments: Attachment[] = [
-    {
-      id: 1,
-      name: "Design brief.pdf",
-      size: "1.5 MB",
-      downloadLink: "#",
-    },
-    {
-      id: 2,
-      name: "Craftboard logo.ai",
-      size: "2.5 MB",
-      downloadLink: "#",
-    },
-  ];
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <>
       {topic && (
         <div>
-          <div className=" text-xl ">{topic.topic}</div>
+          <div className="text-xl">{topic.topic}</div>
           <div className="flex flex-col mb-6">
             <div className="flex items-center gap-4">
               <span>Status:</span>
@@ -93,32 +73,42 @@ const TopicDetail: React.FC = () => {
               <span>Submit date:</span>
               <DateCell date={new Date(topic.created_at)} />
             </div>
+            <div className="flex items-center gap-4">
+              <span>Update date:</span>
+              <DateCell date={new Date(topic.updated_at)} />
+            </div>
           </div>
 
           <div className="my-6">
             <div className="flex items-center gap-2 mb-2">
-              <h2 className="">Attachments</h2>
-              <FaRegEdit />
+              <h2 className="">Document</h2>
+              <FaRegEdit
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              />
+              <UploadTopicDialog
+                open={isModalOpen}
+                onOpenChange={setIsModalOpen}
+                groupId={groupId!}
+                topicId={topicId!}
+              />
             </div>
             <div className="flex gap-4">
-              {attachments.map((file) => (
-                <Card key={file.id}>
-                  <CardHeader>
-                    <FaRegTrashAlt className="ml-auto" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col">
-                      <div>
-                        <FileIcon className="mr-2" />
-                        <div>
-                          <p>{file.name}</p>
-                        </div>
-                      </div>
-                      <Button size="sm">Download</Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              <div className="flex items-center border px-5 py-3 rounded-lg">
+                <FileIcon className="mr-2" />
+                <span>{getFileName(topic.document_path)}</span>
+                <Button variant={"outline"} className="ml-3" size="sm">
+                  <a
+                    href={getUrlFile(topic.document_path)}
+                    download={getFileName(topic.document_path)}
+                    className="text-accent underline flex items-center"
+                    target="_blank"
+                  >
+                    Download
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
 

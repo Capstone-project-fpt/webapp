@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PRE_PATH_S3 } from "@/constant";
 import { useToast } from "@/hooks/use-toast";
-import { useCreateTopicMutation } from "@/store/api/v1/endpoints/groups";
+import {
+  useCreateTopicMutation,
+  useUpdateTopicMutation,
+} from "@/store/api/v1/endpoints/groups";
 import { useGeneratePresignUrlMutation } from "@/store/api/v1/endpoints/upload";
 import { generateKeyS3 } from "@/utils/generate-key-s3";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -22,14 +25,17 @@ interface UploadTopicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   groupId: string;
+  topicId?: string;
 }
 
-const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
+const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   open,
   onOpenChange,
   groupId,
+  topicId,
 }) => {
   const [createTopic, createTopicData] = useCreateTopicMutation();
+  const [updateTopic, updateTopicData] = useUpdateTopicMutation();
   const [generatePresignUrl] = useGeneratePresignUrlMutation();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
@@ -39,7 +45,7 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
       toast({
         duration: 1000,
         variant: "default",
-        title: "Submit Topic",
+        title: topicId ? "Update Topic" : "Submit Topic",
         description: "Submit Topic Successfully.",
       });
       onOpenChange(false);
@@ -56,11 +62,11 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
       toast({
         duration: 1000,
         variant: "destructive",
-        title: "Create Topic",
+        title: topicId ? "Update Topic" : "Submit Topic",
         description: messageError,
       });
     }
-  }, [createTopicData, onOpenChange, toast]);
+  }, [createTopicData, topicId, onOpenChange, toast]);
 
   const initialValues = {
     name: "",
@@ -93,37 +99,42 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
       },
     });
 
-    toast({
-      title: "Create Topic",
-      description: "Topic created successfully",
-    });
-    onOpenChange(false);
-
     return key;
   };
 
   const submitTopic = async (name: string) => {
     if (files.length === 0) {
       toast({
-        title: "Create Topic",
+        title: topicId ? "Update Topic" : "Create Topic",
         description: "Please select a file",
         variant: "destructive",
       });
     }
 
     const path = await onUploadFile();
-    await createTopic({
-      group_id: parseInt(groupId),
-      topic: name,
-      document_path: path,
-    });
+    if (topicId) {
+      await updateTopic({
+        topic_id: parseInt(topicId),
+        group_id: parseInt(groupId),
+        topic: name,
+        document_path: path,
+      });
+    } else {
+      await createTopic({
+        group_id: parseInt(groupId),
+        topic: name,
+        document_path: path,
+      });
+    }
+
+    onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] lg:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Submit Topic</DialogTitle>
+          <DialogTitle>{topicId ? "Update Topic" : "Submit Topic"}</DialogTitle>
           <DialogDescription>Upload a file to submit Topic.</DialogDescription>
         </DialogHeader>
         <Formik initialValues={initialValues} onSubmit={handleForm}>
@@ -150,6 +161,7 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
                   maxFileCount={1}
                   maxSize={8 * 1024 * 1024}
                   onValueChange={setFiles}
+                  value={files}
                   accept={{
                     "document/*": [
                       ".doc",
@@ -184,4 +196,4 @@ const UploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   );
 };
 
-export default UploadTopicDialog;
+export default CreateUploadTopicDialog;
