@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { SemesterType } from "@/types/semester";
 import { api } from "..";
 export interface GetSemestersResponse {
@@ -15,13 +16,26 @@ export interface GetSemestersResponse {
 const semesterApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getSemesters: builder.query<GetSemestersResponse, { limit?: number; page?: number }>({
+=======
+import { SemestersType, SemesterType } from "@/types/semester";
+import { api } from "..";
+import { ResponseType } from "@/types";
+
+const semesterApi = api.injectEndpoints({
+  endpoints: (builder) => ({
+    getSemesters: builder.query<ResponseType<SemestersType>, { limit?: number; page?: number }>({
+>>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
       query: ({ limit = 10, page = 1 }) => ({
         url: '/semesters/',
         params: { limit, page },
       }),
       providesTags: ["Semester"],
     }),
+<<<<<<< HEAD
     getSemester: builder.query<GetSemestersResponse, { id: number }>({
+=======
+    getSemester: builder.query<ResponseType<SemesterType>, { id: number }>({
+>>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
       query: ({ id }) => ({
         url: `/semesters/${id}`,
       }),

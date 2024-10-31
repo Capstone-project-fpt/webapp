@@ -1,16 +1,20 @@
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import EvaluationCommitee from "./evaluation-committee";
+import Groups from "./groups";
 import SemesterCard from "./semester-card";
-import Groups from './groups';
-import EvaluationCommitee from './evaluation-committee';
-import { Card, CardContent } from "@/components/ui/card"; 
 
 const TABS = [
   { name: "groups", label: "Groups", component: Groups },
-  { name: "evaluation-committee", label: "Evaluation Committee", component: EvaluationCommitee },
+  {
+    name: "evaluation-committee",
+    label: "Evaluation Committee",
+    component: EvaluationCommitee,
+  },
 ];
 
 const TABS_NAMES = TABS.reduce((acc, tab) => {
@@ -19,7 +23,7 @@ const TABS_NAMES = TABS.reduce((acc, tab) => {
 }, {} as Record<string, string>);
 
 const SemesterDetail: React.FC = () => {
-  const { semesterid, tab } = useParams<{ semesterid: string; tab?: string }>();
+  const { semesterId, tab } = useParams<{ semesterId: string; tab?: string }>();
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(tab || "groups");
   const navigate = useNavigate();
@@ -28,21 +32,21 @@ const SemesterDetail: React.FC = () => {
     const breadcrumb = [
       { title: "Home", link: "/" },
       { title: "Semesters", link: "/semesters" },
-      { title: "Semester Name", link: `/semesters/${semesterid}` }, 
+      { title: "Semester Name", link: `/semesters/${semesterId}` }, //TODO: Replace with actual semester name
       {
         title: `${TABS_NAMES[currentTab]}`,
-        link: `/semesters/${semesterid}/${currentTab}`,
+        link: `/semesters/${semesterId}/${currentTab}`,
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, semesterid]);
-  
+  }, [currentTab, dispatch, semesterId]);
+
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
-    navigate(`/semesters/${semesterid}/${tab}`);
+    navigate(`/semesters/${semesterId}/${tab}`);
   };
 
-  const semesterIdNumber = semesterid ? parseInt(semesterid) : undefined;
+  const semesterIdNumber = semesterId ? parseInt(semesterId) : undefined;
 
   return (
     <div className="flex">
@@ -57,7 +61,7 @@ const SemesterDetail: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-      
+
       <div className="flex-grow p-4">
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <TabsList>

@@ -24,7 +24,7 @@ const MainLayout: React.FC = () => {
 
   return (
     <AuthGuard>
-      {user ? (
+      {/* {user ? ( */}
         <div className="flex">
           <div className=" hidden lg:block">
             <SideBar />
@@ -41,13 +41,13 @@ const MainLayout: React.FC = () => {
             </div>
           </main>
         </div>
-      ) : (
+      {/* ) : (
         <div className="w-screen h-screen flex justify-center algin-items-center">
           <div className="w-[150px] flex justify-center algin-items-center">
             <LoadingAppLottie />
           </div>
         </div>
-      )}
+      )} */}
     </AuthGuard>
   );
 };

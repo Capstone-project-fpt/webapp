@@ -1,6 +1,6 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/hooks/use-toast"
-import { useDeleteTopicMutation } from "@/store/api/v1/endpoints/topics";
+import { useToast } from "@/hooks/use-toast";
+import { useTeacherDeleteTopicMutation } from "@/store/api/v1/endpoints/topics";
 import { TopicType } from "@/types/topic";
 import React from "react";
 
@@ -10,7 +10,7 @@ const DeleteDialog: React.FC<{
   onOpenChange: (open: boolean) => void;
 }> = ({ topic, open, onOpenChange }) => {
   const { toast } = useToast();
-  const [deleteTopicMutation, data] = useDeleteTopicMutation();
+  const [deleteTopicMutation, data] = useTeacherDeleteTopicMutation();
 
   const handleDelete = async () => {
     await deleteTopicMutation({ id: topic.id });

@@ -2,8 +2,10 @@ import { DataTableColumnHeader, TextCell } from "@/components/data-table";
 import { TopicType } from "@/types/topic";
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
+import { UserTypes } from "@/types/accounts";
+import FileDownload from "@/components/common/file-download";
 
-export const columns: ColumnDef<TopicType>[] = [
+export const columns = (currentUserType: UserTypes): ColumnDef<TopicType>[] => [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -29,6 +31,10 @@ export const columns: ColumnDef<TopicType>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <Actions row={row} />,
+    cell: ({ row }) => <Actions row={row} currentUserType={currentUserType} />,
+  },
+  {
+    id: "download",
+    cell: ({ row }) => <FileDownload pathFile={row.original.path} />,
   },
 ];

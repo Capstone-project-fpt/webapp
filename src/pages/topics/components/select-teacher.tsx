@@ -1,13 +1,13 @@
-import { UserTypes } from "@/types/accounts";
-import React from "react";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { Member, OptionType } from "../type";
 import { ActionMeta, SingleValue } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { OptionType, Teacher } from "../type";
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
+import { UserTypes } from "@/types/accounts";
+import { isNil } from "@/utils/lodash";
 
 const defaultAdditional = { page: 1 };
 
-interface SelectStudentProps {
+interface SelectTeacherProps {
   value: OptionType | null;
   onChangeValue:
     | ((
@@ -15,13 +15,13 @@ interface SelectStudentProps {
         actionMeta: ActionMeta<OptionType>
       ) => void)
     | undefined;
-  selectedMembers: Member[];
+  teacher?: Teacher;
 }
 
-const SelectStudent: React.FC<SelectStudentProps> = ({
+const SelectTeacher: React.FC<SelectTeacherProps> = ({
   value,
   onChangeValue,
-  selectedMembers,
+  teacher,
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
@@ -38,13 +38,13 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
         email: q,
         limit,
         page,
-        user_types: UserTypes.STUDENT,
+        user_types: UserTypes.TEACHER,
       }).unwrap();
 
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: selectedMembers.some((m) => m.studentId === item.extra_info.student?.student_id),
+        disabled: !isNil(teacher),
       }));
 
       return {
@@ -52,14 +52,14 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
         hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch {
+    } catch (error) {
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };
 
   return (
     <AsyncPaginate
-      cacheUniqs={[selectedMembers]}
+      cacheUniqs={[teacher]}
       debounceTimeout={300}
       additional={defaultAdditional}
       value={value}
@@ -71,4 +71,4 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
   );
 };
 
-export default SelectStudent;
+export default SelectTeacher;

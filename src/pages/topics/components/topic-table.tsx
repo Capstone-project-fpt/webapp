@@ -1,13 +1,19 @@
 import { LoadingTableLottie } from "@/components";
 import { DataTable } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
-import { useGetTopicsQuery } from "@/store/api/v1/endpoints/topics";
+import { useGetTopicReferencesQuery } from "@/store/api/v1/endpoints/topics";
 import { TopicType } from "@/types/topic";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { columns } from "./columns";
+import React from "react";
+import { UserTypes } from "@/types/accounts";
 
-export function TopicTable() {
+interface TopicTableProps {
+  currentUserType: UserTypes;
+}
+
+export const TopicTable: React.FC<TopicTableProps> = ({ currentUserType }) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -20,7 +26,7 @@ export function TopicTable() {
     data: queryData,
     isLoading,
     error,
-  } = useGetTopicsQuery({
+  } = useGetTopicReferencesQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   });
@@ -52,7 +58,7 @@ export function TopicTable() {
     return (
       <DataTable
         data={tableData}
-        columns={columns}
+        columns={columns(currentUserType)}
         state={{ pagination }}
         options={
           {
@@ -64,4 +70,4 @@ export function TopicTable() {
       />
     );
   }
-}
+};

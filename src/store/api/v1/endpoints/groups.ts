@@ -1,11 +1,11 @@
-import { PaginationType, ResponseType } from "@/types";
-import { CreateGroupBody, GroupType } from "@/types/group";
+import { ListPaginationType, PaginationType, ResponseType } from "@/types";
+import { CreateGroupBody, GroupType, InvitationMentor, MembersType, TopicGroup } from "@/types/group";
 import { api } from "..";
 
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getGroups: builder.query<void, PaginationType>({
+    getGroups: builder.query<ResponseType<ListPaginationType<GroupType>>, { limit?: number; page?: number }>({
       query: ({ limit = 10, page = 1 }) => ({
         url: '/capstone-groups/',
         params: { limit, page },
@@ -52,22 +52,30 @@ const groupsApi = api.injectEndpoints({
     }),
 
     //#region Topic
-    getTopics: builder.query<void, { group_id: number }>({
-      query: ({ group_id }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+    getTopics: builder.query<ResponseType<ListPaginationType<TopicGroup>>, PaginationType & { group_id: number }>({
+      query: ({ group_id, limit = 10, page = 1, order_by = 'DESC' }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/`,
+        params: { limit, page, order_by },
+        providesTags: ["Topic"],
       }),
     }),
     createTopic: builder.mutation<void, { group_id: number, document_path: string, topic: string }>({
       query: ({ group_id, document_path, topic }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics`,
+        url: `/capstone-groups/${group_id}/capstone-group-topics/`,
         method: 'POST',
         body: { document_path, topic },
       }),
-      invalidatesTags: ["Group"],
+      invalidatesTags: ["Topic"],
     }),
-    getTopic: builder.query<void, { group_id: number, topic_id: number }>({
+    getTopic: builder.query<ResponseType<TopicGroup>, { group_id: number, topic_id: number }>({
       query: ({ group_id, topic_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+      }),
+    }),
+    getTopicFeedbacks: builder.query<ResponseType<TopicGroup>, PaginationType & { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks`,
+        params: { limit, page },
       }),
     }),
     updateTopic: builder.mutation<void, { group_id: number, topic_id: number, document_path: string, topic: string }>({
@@ -84,6 +92,18 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     //#endregion
+    getMembers: builder.query<ResponseType<MembersType>, { group_id: number }>({
+      query: ({ group_id }) => ({
+        url: `/capstone-groups/${group_id}/members`,
+      }),
+    }),
+
+    getInvitationMentors: builder.query<ListPaginationType<InvitationMentor>, PaginationType & { group_id: number }>({
+      query: ({ limit = 10, page = 1, group_id }) => ({
+        url: `/capstone-groups/${group_id}/mentors/invitations`,
+        params: { limit, page },
+      }),
+    }),
   }),
 });
 
@@ -99,6 +119,10 @@ export const {
   useGetTopicsQuery,
   useCreateTopicMutation,
   useGetTopicQuery,
+  useGetTopicFeedbacksQuery,
   useUpdateTopicMutation,
   useDeleteTopicMutation,
+
+  useGetMembersQuery,
+  useGetInvitationMentorsQuery
 } = groupsApi;

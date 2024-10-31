@@ -2,7 +2,6 @@ import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
-import { Button } from "@/components/ui/button"; // Đảm bảo rằng bạn có Button component
 
 type GroupCommitee = {
   id: number;
@@ -17,16 +16,9 @@ const groupCommitee: GroupCommitee[] = [
 ];
 
 const EvaluationCommittee: React.FC = () => {
-  const handleAddGroup = () => {
-    console.log("Adding a new evaluation group");
-  };
 
   return (
     <div>
-    
-      <div className="flex justify-end mb-4">
-        <Button onClick={handleAddGroup} >Add New Group</Button>
-      </div>
 
       <SettingCard title={`Evaluation Group (${groupCommitee.length})`}>
         <Table>

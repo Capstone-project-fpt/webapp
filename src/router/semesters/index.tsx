@@ -18,15 +18,24 @@ const SemesterRoutes: RouteObject[] = [
         element: <Semesters />,
       },
       {
+<<<<<<< HEAD
         path: ":semesterid", 
         element: <SemesterDetail />, 
+=======
+        path: ":semesterId",
+        element: <SemesterDetail />,
+>>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
         children: [
           {
             path: "groups",
             element: <Groups />,
           },
           {
+<<<<<<< HEAD
             path: "evaluation-committee", 
+=======
+            path: "evaluation-committee",
+>>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
             element: <EvaluationCommittee />,
           },
         ],
@@ -35,4 +44,8 @@ const SemesterRoutes: RouteObject[] = [
   },
 ];
 
+<<<<<<< HEAD
 export default SemesterRoutes;
+=======
+export default SemesterRoutes;
+>>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
