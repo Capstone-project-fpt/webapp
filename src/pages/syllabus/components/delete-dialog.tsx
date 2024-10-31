@@ -17,8 +17,8 @@ const DeleteDialog: React.FC<{
     if (data.isSuccess) {
       toast({
         duration: 1000,
-        title: "Delete semester",
-        description: "Delete semester successfully.",
+        title: "Delete syllabus",
+        description: "Delete syllabus successfully.",
       });
       onOpenChange(false);
     }
@@ -27,7 +27,7 @@ const DeleteDialog: React.FC<{
       toast({
         duration: 1000,
         variant: "destructive",
-        title: "Delete semester",
+        title: "Delete syllabus",
         description:
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
