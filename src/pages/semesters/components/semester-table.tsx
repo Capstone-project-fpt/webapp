@@ -4,11 +4,7 @@ import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useGetSemestersQuery } from "@/store/api/v1/endpoints/semesters";
 import { SemesterType } from "@/types/semester";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
-<<<<<<< HEAD
-import { useEffect, useMemo, useState } from "react";
-=======
 import { useMemo, useState } from "react";
->>>>>>> 952d2e8bedc3f2fdab7d0c072c261c41575605d4
 import { columns } from "./columns";
 
 export function SemesterTable() {
