@@ -1,9 +1,7 @@
 import { FaRegLightbulb } from "react-icons/fa";
-import { IoMdBook } from "react-icons/io";
-import { MdOutlineGroups } from "react-icons/md";
 import { Home, Settings2, Users } from "tabler-icons-react";
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { LuCalendarCheck } from "react-icons/lu";
+import { LuArrowUpLeftSquare, LuCalendarCheck } from "react-icons/lu";
 
 export interface MenuItem {
   title: string;
@@ -24,6 +22,12 @@ const menus: MenuItem[] = [
     icon: <LuCalendarCheck size={18} strokeWidth={2} />,
     title: "Semesters",
     link: "/semesters",
+    isOpen: false,
+  },
+  {
+    icon: <LuArrowUpLeftSquare size={18} strokeWidth={2} />,
+    title: "Syllabus",
+    link: "/syllabus",
     isOpen: false,
   },
   {

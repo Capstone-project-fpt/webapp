@@ -10,6 +10,8 @@ import MajorRoutes from "./majors";
 import GroupsRoutes from "./groups";
 import TopicRoutes from "./topics";
 import SemesterRoutes from "./semesters";
+import SyllabusRoutes from "./sysllabus";
+
 
 const router = createBrowserRouter([
   ...AuthRoutes,
@@ -22,7 +24,8 @@ const router = createBrowserRouter([
   ...SettingRoutes,
   ...MajorRoutes,
   ...TopicRoutes,
-  ...SemesterRoutes
+  ...SemesterRoutes,
+  ...SyllabusRoutes
 ]);
 
 export default router;

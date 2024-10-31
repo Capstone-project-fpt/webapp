@@ -8,3 +8,5 @@ export { default as Products } from "./products";
 export { default as Semesters } from "./semesters";
 export { default as Settings } from "./settings";
 export { default as Topics } from "./topics";
+export { default as Syllabus} from "./syllabus"
+
