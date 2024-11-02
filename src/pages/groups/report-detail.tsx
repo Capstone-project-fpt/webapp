@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
-import Comment from "./components/comment";
+import Comment from "./components/comment-composer";
 
 interface Attachment {
   id: number;

@@ -1,23 +1,24 @@
+import Comment from "@/components/common/comment";
 import { DateCell } from "@/components/data-table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RootState } from "@/store";
 import {
   useGetTopicFeedbacksQuery,
   useGetTopicQuery,
 } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { CommentType } from "@/types/common";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
-import Comment from "./components/comment";
-import ReviewStatus from "./components/topic-review-status";
+import CommentComposer from "./components/comment-composer";
 import UploadTopicDialog from "./components/create-upload-topic-dialog";
+import ReviewStatus from "./components/topic-review-status";
 
 const TopicDetail: React.FC = () => {
   const { groupId, topicId } = useParams<{
@@ -57,8 +58,23 @@ const TopicDetail: React.FC = () => {
     );
   }, [currentGroup?.name_group, dispatch, groupId, topic?.topic, topicId]);
 
-  const [reviews, setReviews] = useState([]);
+  const [feedbacks, setFeedbacks] = useState<CommentType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (feedbacksData) {
+      const feedbacks = feedbacksData.data.items.map((item) => {
+        return {
+          id: item.id,
+          content: item.feedback,
+          user: item.approved_by,
+          created_at: item.created_at,
+        };
+      });
+      setFeedbacks(feedbacks);
+    }
+  }, [feedbacksData]);
+
   return (
     <>
       {topic && (
@@ -83,6 +99,7 @@ const TopicDetail: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <h2 className="">Document</h2>
               <FaRegEdit
+                className="cursor-pointer"
                 onClick={() => {
                   setIsModalOpen(true);
                 }}
@@ -95,9 +112,9 @@ const TopicDetail: React.FC = () => {
               />
             </div>
             <div className="flex gap-4">
-              <div className="flex items-center border px-5 py-3 rounded-lg">
+              <div className="flex items-center border px-5 py-3 rounded-lg max-w-lg">
                 <FileIcon className="mr-2" />
-                <span>{getFileName(topic.document_path)}</span>
+                <span className="truncate">{getFileName(topic.document_path)}</span>
                 <Button variant={"outline"} className="ml-3" size="sm">
                   <a
                     href={getUrlFile(topic.document_path)}
@@ -114,7 +131,7 @@ const TopicDetail: React.FC = () => {
 
           <Separator />
 
-          <div className="mt-4">
+          {/* <div className="mt-4">
             {reviews.map((review) => (
               <Card key={review.id} className="mb-4 p-4">
                 <div className="flex gap-1 items-center mb-2">
@@ -135,8 +152,35 @@ const TopicDetail: React.FC = () => {
             ))}
           </div>
           <div>
-            <Comment />
-          </div>
+            <CommentComposer />
+          </div> */}
+
+          <Tabs defaultValue="feedbacks" className="my-4">
+            <TabsList>
+              <TabsTrigger value="feedbacks" className="lg:w-[150px] w-full">
+                Feedbacks
+              </TabsTrigger>
+              <TabsTrigger value="activities" className="lg:w-[150px] w-full">
+                Activities
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="feedbacks">
+              <div className="mt-4">
+                {feedbacks.map((feedback) => (
+                  <Comment key={feedback.id} comment={feedback} />
+                ))}
+              </div>
+              <div>
+                <CommentComposer />
+              </div>
+            </TabsContent>
+            <TabsContent value="activities">
+              <div className="mt-4">
+                <p>No activities yet.</p>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       )}
     </>

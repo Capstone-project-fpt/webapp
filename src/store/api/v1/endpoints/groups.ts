@@ -7,6 +7,7 @@ import {
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
   TopicGroup,
+  TopicGroupFeedback,
 } from "@/types/group";
 import { api } from "..";
 
@@ -116,12 +117,9 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
       }),
     }),
-    getTopicFeedbacks: builder.query<
-      ResponseType<TopicGroup>,
-      PaginationType & { group_id: number; topic_id: number }
-    >({
+    getTopicFeedbacks: builder.query<ResponseType<ListPaginationType<TopicGroupFeedback>>, PaginationType & { group_id: number, topic_id: number }>({
       query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks`,
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
         params: { limit, page },
       }),
     }),
