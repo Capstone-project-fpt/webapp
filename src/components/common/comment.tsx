@@ -1,8 +1,8 @@
 import { CommentType } from "@/types/common";
 import React from "react";
-import { DateCell } from "../data-table";
 import { MiniTiptapView } from "../minimal-tiptap";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import DateDisplay from "./date";
 
 interface CommentProps {
   comment: CommentType;
@@ -22,10 +22,10 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex flex-col gap-2 flex-1">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col">
           <span className="font-semibold">{user.name}</span>
           <p className="text-sm">
-            <DateCell date={new Date(comment.created_at)} />
+            <DateDisplay date={new Date(comment.created_at)} />
           </p>
         </div>
         <div className="mt-2">

@@ -27,7 +27,7 @@ const MainLayout: React.FC = () => {
     if (user && currentSemesterData?.data) {
       dispatch(setCurrentSemester(currentSemesterData?.data));
     }
-  }, [user, subMajorsData?.data, dispatch]);
+  }, [user, subMajorsData, dispatch, currentSemesterData]);
 
   return (
     <AuthGuard>

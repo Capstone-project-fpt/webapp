@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useGetTopicsQuery } from "@/store/api/v1/endpoints/groups";
 import { TopicGroup } from "@/types/group";
 import { AlertCircle } from "lucide-react";
@@ -23,7 +24,7 @@ import UploadTopicDialog from "../components/create-upload-topic-dialog";
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const navigate = useNavigate();
-  const { data: topicsData } = useGetTopicsQuery({
+  const { data: topicsData, isLoading } = useGetTopicsQuery({
     group_id: parseInt(groupId!),
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +58,40 @@ const Topics: React.FC = () => {
           </Button>
         }
       >
-        {topics.length > 0 ? (
+        {isLoading ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[100px]">Name</TableHead>
+                <TableHead>Document</TableHead>
+                <TableHead>Submit At</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-[100px]">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-full" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : topics.length > 0 ? (
           <Table>
             <TableHeader>
               <TableRow>
