@@ -9,7 +9,10 @@ import { Outlet } from "react-router-dom";
 const MainLayout: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: subMajorsData, isLoading } = useGetSubMajorsQuery({}, { skip: !user });
+  const { data: subMajorsData } = useGetSubMajorsQuery(
+    {},
+    { skip: !user }
+  );
   const isSideBarOpen = useSelector(
     (state: RootState) => state.app.isSideBarOpen
   );
@@ -21,10 +24,9 @@ const MainLayout: React.FC = () => {
     }
   }, [user, subMajorsData?.data, dispatch]);
 
-
   return (
     <AuthGuard>
-      {/* {user ? ( */}
+      {user ? (
         <div className="flex">
           <div className=" hidden lg:block">
             <SideBar />
@@ -41,13 +43,13 @@ const MainLayout: React.FC = () => {
             </div>
           </main>
         </div>
-      {/* ) : (
+      ) : (
         <div className="w-screen h-screen flex justify-center algin-items-center">
           <div className="w-[150px] flex justify-center algin-items-center">
             <LoadingAppLottie />
           </div>
         </div>
-      )} */}
+      )}
     </AuthGuard>
   );
 };

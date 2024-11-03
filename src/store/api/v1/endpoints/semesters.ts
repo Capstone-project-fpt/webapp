@@ -1,13 +1,13 @@
 import { SemestersType, SemesterType } from "@/types/semester";
 import { api } from "..";
-import { ResponseType } from "@/types";
+import { PaginationType, ResponseType } from "@/types";
 
 const semesterApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getSemesters: builder.query<ResponseType<SemestersType>, { limit?: number; page?: number }>({
-      query: ({ limit = 10, page = 1 }) => ({
-        url: '/semesters/',
-        params: { limit, page },
+    getSemesters: builder.query<ResponseType<SemestersType>, PaginationType>({
+      query: ({ limit = 10, page = 1, order_by = "DESC" }) => ({
+        url: "/semesters/",
+        params: { limit, page, order_by },
       }),
       providesTags: ["Semester"],
     }),
@@ -16,18 +16,24 @@ const semesterApi = api.injectEndpoints({
         url: `/semesters/${id}`,
       }),
     }),
-    createSemesters: builder.mutation<void, {name: string, start_time:string, end_time:string}>({
+    createSemesters: builder.mutation<
+      void,
+      { name: string; start_time: string; end_time: string }
+    >({
       query: (data) => ({
-        url: '/semesters/',
-        method: 'POST',
+        url: "/semesters/",
+        method: "POST",
         body: data,
       }),
       invalidatesTags: ["Semester"],
     }),
-    updateSemesters: builder.mutation<void, {id: number, name: string, start_time:string, end_time:string}>({
+    updateSemesters: builder.mutation<
+      void,
+      { id: number; name: string; start_time: string; end_time: string }
+    >({
       query: (data) => ({
         url: `/semesters/`,
-        method: 'PUT',
+        method: "PUT",
         body: data,
       }),
       invalidatesTags: ["Semester"],
@@ -35,7 +41,7 @@ const semesterApi = api.injectEndpoints({
     deleteSemesters: builder.mutation<void, { id: number }>({
       query: ({ id }) => ({
         url: `/semesters/${id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
       invalidatesTags: ["Semester"],
     }),
@@ -43,9 +49,9 @@ const semesterApi = api.injectEndpoints({
 });
 
 export const {
-useGetSemestersQuery, 
-useGetSemesterQuery,
-useCreateSemestersMutation,
-useUpdateSemestersMutation,
-useDeleteSemestersMutation
+  useGetSemestersQuery,
+  useGetSemesterQuery,
+  useCreateSemestersMutation,
+  useUpdateSemestersMutation,
+  useDeleteSemestersMutation,
 } = semesterApi;
