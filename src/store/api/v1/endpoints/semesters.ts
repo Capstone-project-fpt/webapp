@@ -1,6 +1,6 @@
-import { ResponseType } from "@/types";
 import { SemestersType, SemesterType } from "@/types/semester";
 import { api } from "..";
+import { ResponseType } from "@/types";
 
 const semesterApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -16,7 +16,7 @@ const semesterApi = api.injectEndpoints({
         url: `/semesters/${id}`,
       }),
     }),
-    createSemesters: builder.mutation<void, { name: string, start_time: string, end_time: string }>({
+    createSemesters: builder.mutation<void, {name: string, start_time:string, end_time:string}>({
       query: (data) => ({
         url: '/semesters/',
         method: 'POST',
@@ -24,7 +24,7 @@ const semesterApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Semester"],
     }),
-    updateSemesters: builder.mutation<void, { id: number, name: string, start_time: string, end_time: string }>({
+    updateSemesters: builder.mutation<void, {id: number, name: string, start_time:string, end_time:string}>({
       query: (data) => ({
         url: `/semesters/`,
         method: 'PUT',
@@ -43,9 +43,9 @@ const semesterApi = api.injectEndpoints({
 });
 
 export const {
-  useGetSemestersQuery,
-  useGetSemesterQuery,
-  useCreateSemestersMutation,
-  useUpdateSemestersMutation,
-  useDeleteSemestersMutation
+useGetSemestersQuery, 
+useGetSemesterQuery,
+useCreateSemestersMutation,
+useUpdateSemestersMutation,
+useDeleteSemestersMutation
 } = semesterApi;

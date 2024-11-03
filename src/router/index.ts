@@ -1,17 +1,15 @@
-import AuthRoutes from "@/router/auth";
-import CategoryRoutes from "@/router/categories";
-import DashboardRoutes from "@/router/dashboard";
-import HomeRoutes from "@/router/home";
-import SettingRoutes from "@/router/settings";
 import { createBrowserRouter } from "react-router-dom";
-import AccountsRoutes from "./accounts";
-import GroupsRoutes from "./groups";
-import MajorRoutes from "./majors";
+import AuthRoutes from "@/router/auth";
+import HomeRoutes from "@/router/home";
+import DashboardRoutes from "@/router/dashboard";
+import SettingRoutes from "@/router/settings";
+import CategoryRoutes from "@/router/categories";
 import ProductRoutes from "./products";
-import SemesterRoutes from "./semesters";
-import SyllabusRoutes from "./syllabus";
+import AccountsRoutes from "./accounts";
+import MajorRoutes from "./majors";
+import GroupsRoutes from "./groups";
 import TopicRoutes from "./topics";
-
+import SemesterRoutes from "./semesters";
 
 const router = createBrowserRouter([
   ...AuthRoutes,
@@ -24,8 +22,7 @@ const router = createBrowserRouter([
   ...SettingRoutes,
   ...MajorRoutes,
   ...TopicRoutes,
-  ...SemesterRoutes,
-  ...SyllabusRoutes
+  ...SemesterRoutes
 ]);
 
 export default router;
