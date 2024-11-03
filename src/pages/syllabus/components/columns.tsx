@@ -1,11 +1,7 @@
-import {
-  DataTableColumnHeader,
-  DateCell,
-  TextCell,
-} from "@/components/data-table";
+import { DataTableColumnHeader, TextCell } from "@/components/data-table";
+import { SyllabusType } from "@/types/syllabus";
 import { ColumnDef } from "@tanstack/react-table";
 import Actions from "./actions";
-import { SyllabusType } from "@/types/syllabus";
 
 export const columns: ColumnDef<SyllabusType>[] = [
   {
@@ -13,9 +9,7 @@ export const columns: ColumnDef<SyllabusType>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Code" />
     ),
-    cell: ({ row }) => (
-      <TextCell size={200}>{row.original.code}</TextCell>
-    ),
+    cell: ({ row }) => <TextCell size={200}>{row.original.code}</TextCell>,
   },
   {
     accessorKey: "name",
@@ -24,13 +18,13 @@ export const columns: ColumnDef<SyllabusType>[] = [
     ),
     cell: ({ row }) => (
       <a
-      href={row.original.path}
-      target="_blank" 
-      rel="noopener noreferrer" 
-      style={{ textDecoration: "none", color: "inherit" }}
-    >
-      <TextCell size={200}>{row.original.name}</TextCell>
-    </a>
+        href={row.original.path}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+        <TextCell size={200}>{row.original.name}</TextCell>
+      </a>
     ),
   },
   {

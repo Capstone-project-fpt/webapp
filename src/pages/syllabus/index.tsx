@@ -3,9 +3,8 @@ import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { useDispatch } from "react-redux";
-import { SyllabusTable } from "./components/syllabus-table";
 import CreateUpdateDialog from "./components/create-update-dialog";
-
+import { SyllabusTable } from "./components/syllabus-table";
 
 const Syllabus: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +36,7 @@ const Syllabus: React.FC = () => {
           />
         )}
       </div>
-        <SyllabusTable/>
+      <SyllabusTable />
     </>
   );
 };

@@ -1,16 +1,16 @@
-import { createBrowserRouter } from "react-router-dom";
 import AuthRoutes from "@/router/auth";
-import HomeRoutes from "@/router/home";
-import DashboardRoutes from "@/router/dashboard";
-import SettingRoutes from "@/router/settings";
 import CategoryRoutes from "@/router/categories";
-import ProductRoutes from "./products";
+import DashboardRoutes from "@/router/dashboard";
+import HomeRoutes from "@/router/home";
+import SettingRoutes from "@/router/settings";
+import { createBrowserRouter } from "react-router-dom";
 import AccountsRoutes from "./accounts";
-import MajorRoutes from "./majors";
 import GroupsRoutes from "./groups";
-import TopicRoutes from "./topics";
+import MajorRoutes from "./majors";
+import ProductRoutes from "./products";
 import SemesterRoutes from "./semesters";
-import SyllabusRoutes from "./sysllabus";
+import SyllabusRoutes from "./syllabus";
+import TopicRoutes from "./topics";
 
 
 const router = createBrowserRouter([

@@ -1,8 +1,8 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useDeleteSyllabusMutation } from "@/store/api/v1/endpoints/syllabus";
 import { SyllabusType } from "@/types/syllabus";
-import React from "react";
-import { useDeleteSyllabusMutation } from "@/store/api/v1/endpoints/syllabus"; 
+import React, { useEffect } from "react";
 
 const DeleteDialog: React.FC<{
   syllabus: SyllabusType;
@@ -10,10 +10,14 @@ const DeleteDialog: React.FC<{
   onOpenChange: (open: boolean) => void;
 }> = ({ syllabus, open, onOpenChange }) => {
   const { toast } = useToast();
-  const [deleteSyllabusMutation, data] = useDeleteSyllabusMutation(); 
+  const [deleteSyllabus, data] = useDeleteSyllabusMutation();
 
-  const handleDelete = async () => {
-    await deleteSyllabusMutation({ id: syllabus.id });
+  const handleDelete: () => Promise<"prevent-close"> = async () => {
+    deleteSyllabus({ id: syllabus.id });
+    return "prevent-close";
+  };
+
+  useEffect(() => {
     if (data.isSuccess) {
       toast({
         duration: 1000,
@@ -32,7 +36,7 @@ const DeleteDialog: React.FC<{
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-  };
+  }, [data, onOpenChange, toast]);
 
   return (
     <ActionDialog
@@ -41,10 +45,14 @@ const DeleteDialog: React.FC<{
       title="Delete Syllabus"
       danger
       cancelButton
-      okButton={{ label: "Delete Syllabus", onClick: handleDelete }} 
+      okButton={{
+        label: "Delete Syllabus",
+        onClick: handleDelete,
+        isLoading: data.isLoading,
+      }}
       confirmText="I understand that this action cannot be undone."
     >
-      {`Are you sure you want to delete the syllabus "${syllabus.name}" with ID ${syllabus.id}?`}
+      {`Are you sure you want to delete the syllabus "${syllabus.name}"?`}
     </ActionDialog>
   );
 };
