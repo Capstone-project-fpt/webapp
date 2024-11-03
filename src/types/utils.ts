@@ -17,10 +17,19 @@ export interface ResponseType<T> {
   data: T;
 }
 
+export type ResponseErrorType = {
+  status: number;
+  data: {
+    code: number;
+    error: string;
+    message: boolean;
+  };
+};
+
 export interface PaginationType {
   limit?: number;
   page?: number;
-  order_by?: 'DESC' | 'ASC';
+  order_by?: "DESC" | "ASC";
 }
 
 export interface ListPaginationType<T> {
@@ -28,5 +37,5 @@ export interface ListPaginationType<T> {
   meta: {
     current_page: number;
     total: number;
-  }
+  };
 }

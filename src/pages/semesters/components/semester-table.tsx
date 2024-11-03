@@ -20,6 +20,7 @@ export function SemesterTable() {
   } = useGetSemestersQuery({
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
+    order_by: "DESC",
   });
 
   const tableData = useMemo(() => {
