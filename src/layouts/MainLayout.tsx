@@ -1,7 +1,8 @@
 import { AuthGuard, LoadingAppLottie, SideBar, TopHeader } from "@/components";
 import { RootState } from "@/store";
 import { useGetSubMajorsQuery } from "@/store/api/v1/endpoints/major";
-import { setSubMajors } from "@/store/slice/resource";
+import { useGetCurrentSemesterQuery } from "@/store/api/v1/endpoints/semesters";
+import { setCurrentSemester, setSubMajors } from "@/store/slice/resource";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
@@ -9,10 +10,10 @@ import { Outlet } from "react-router-dom";
 const MainLayout: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { data: subMajorsData } = useGetSubMajorsQuery(
-    {},
-    { skip: !user }
-  );
+  const { data: subMajorsData } = useGetSubMajorsQuery({}, { skip: !user });
+  const { data: currentSemesterData } = useGetCurrentSemesterQuery(null, {
+    skip: !user,
+  });
   const isSideBarOpen = useSelector(
     (state: RootState) => state.app.isSideBarOpen
   );
@@ -21,6 +22,10 @@ const MainLayout: React.FC = () => {
   useEffect(() => {
     if (user && subMajorsData?.data.items) {
       dispatch(setSubMajors(subMajorsData?.data.items));
+    }
+
+    if (user && currentSemesterData?.data) {
+      dispatch(setCurrentSemester(currentSemesterData?.data));
     }
   }, [user, subMajorsData?.data, dispatch]);
 
