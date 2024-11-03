@@ -1,3 +1,4 @@
+import { ResponseType } from "@/types";
 import { SemestersType, SemesterType } from "@/types/semester";
 import { api } from "..";
 import { PaginationType, ResponseType } from "@/types";
