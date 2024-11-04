@@ -129,9 +129,9 @@ const TopicDetail: React.FC = () => {
               <ReviewStatus status={topic.status_review} />
             </div>
             <span>Submit date</span>
-            <DateDisplay date={new Date(topic.created_at)} />
+            <DateDisplay date={new Date(topic.created_at)} format="MMM DD, YYYY - hh:mm A" />
             <span>Update date</span>
-            <DateDisplay date={new Date(topic.updated_at)} />
+            <DateDisplay date={new Date(topic.updated_at)} format="MMM DD, YYYY - hh:mm A"/>
           </div>
 
           <div className="my-6">

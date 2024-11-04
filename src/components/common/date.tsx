@@ -1,16 +1,19 @@
-function DateDisplay(props: { date: Date; ignoreAfterYears?: number }) {
+import dayjs from "dayjs";
+
+function DateDisplay(props: {
+  date: Date;
+  ignoreAfterYears?: number;
+  format?: string;
+}) {
+  const { date, ignoreAfterYears, format = "MMM DD, YYYY" } = props;
+
   const ignore =
-    !!props.ignoreAfterYears &&
+    !!ignoreAfterYears &&
     new Date(
-      new Date().setFullYear(new Date().getFullYear() + props.ignoreAfterYears)
-    ) < props.date;
-  const timeString = props.date.toLocaleTimeString([], {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+      new Date().setFullYear(new Date().getFullYear() + ignoreAfterYears)
+    ) < date;
+  const timeString = dayjs(date).format(format);
+
   return <p>{ignore ? "Never" : timeString}</p>;
 }
 

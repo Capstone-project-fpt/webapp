@@ -1,25 +1,31 @@
-import React from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import React from "react";
 
-type GroupCommitee = {
+type GroupCommittee = {
   id: number;
   name: string;
   memberCount: number;
 };
 
-const groupCommitee: GroupCommitee[] = [
+const groupCommittee: GroupCommittee[] = [
   { id: 1, name: "SE1", memberCount: 2 },
   { id: 2, name: "SE2", memberCount: 3 },
   { id: 3, name: "SE3", memberCount: 3 },
 ];
 
 const EvaluationCommittee: React.FC = () => {
-
   return (
     <div>
-      <SettingCard title={`Evaluation Group (${groupCommitee.length})`}>
+      <SettingCard title={`Evaluation Group (${groupCommittee.length})`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -29,23 +35,25 @@ const EvaluationCommittee: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {groupCommitee.map((groupCommitee) => (
-              <TableRow key={groupCommitee.id}>
-                <TableCell>{groupCommitee.name}</TableCell>
-                <TableCell>{groupCommitee.memberCount}</TableCell>
+            {groupCommittee.map((groupCommittee) => (
+              <TableRow key={groupCommittee.id}>
+                <TableCell>{groupCommittee.name}</TableCell>
+                <TableCell>{groupCommittee.memberCount}</TableCell>
                 <TableCell>
                   <ActionCell
                     items={[
                       {
                         item: "View Details",
                         onClick: () => {
-                          console.log(`Viewing details for ${groupCommitee.name}`);
+                          console.log(
+                            `Viewing details for ${groupCommittee.name}`
+                          );
                         },
                       },
                       {
                         item: "Edit",
                         onClick: () => {
-                          console.log(`Editing group ${groupCommitee.name}`);
+                          console.log(`Editing group ${groupCommittee.name}`);
                         },
                       },
                     ]}
