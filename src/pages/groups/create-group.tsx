@@ -26,6 +26,9 @@ const CreateGroup: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
   const [createGroup, createGroupData] = useCreateGroupMutation();
   const { isLoading } = createGroupData;
 
@@ -53,6 +56,17 @@ const CreateGroup: React.FC = () => {
         }
       : null
   );
+
+  if (!currentSemester) {
+    toast({
+      title: "Get Current Semester",
+      description:
+        "Can not get current semester, please inform to Admin to create current semester",
+      variant: "destructive",
+    });
+
+    navigate("/");
+  }
 
   useEffect(() => {
     dispatch(
@@ -140,8 +154,8 @@ const CreateGroup: React.FC = () => {
     const studentIds = members.map((member) => member.studentId);
 
     await createGroup({
-      major_id: 1,
-      semester_id: 1,
+      major_id: 1, // TODO: Handle select major instead fix
+      semester_id: currentSemester!.id,
       student_ids: studentIds,
       name_group: groupName,
     });

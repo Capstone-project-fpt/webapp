@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import dayjs from "dayjs";
 
 export function TextCell(props: {
   children: React.ReactNode;
@@ -64,19 +65,29 @@ export function AvatarCell(props: { src?: string }) {
   );
 }
 
-export function DateCell(props: { date: Date; ignoreAfterYears?: number }) {
+/**
+ * This component used dayjs as a date formatter, for custom date formatting please follow this docs
+ * https://day.js.org/docs/en/display/format
+ * @param props 
+ * @returns 
+ */
+export function DateCell(props: {
+  date: Date;
+  ignoreAfterYears?: number;
+  format?: string;
+}) {
+  const { date, ignoreAfterYears } = props;
+  let { format } = props;
+  if (!format) {
+    format = "YYYY-MMM-DD";
+  }
+
   const ignore =
-    !!props.ignoreAfterYears &&
+    !!ignoreAfterYears &&
     new Date(
-      new Date().setFullYear(new Date().getFullYear() + props.ignoreAfterYears)
-    ) < props.date;
-  const timeString = props.date.toLocaleTimeString([], {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+      new Date().setFullYear(new Date().getFullYear() + ignoreAfterYears)
+    ) < date;
+  const timeString = dayjs(date).format(format);
   return <TextCell size={140}>{ignore ? "Never" : timeString}</TextCell>;
 }
 

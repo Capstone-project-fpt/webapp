@@ -1,4 +1,3 @@
-import { ResponseType } from "@/types";
 import { SemestersType, SemesterType } from "@/types/semester";
 import { api } from "..";
 import { PaginationType, ResponseType } from "@/types";
@@ -15,6 +14,11 @@ const semesterApi = api.injectEndpoints({
     getSemester: builder.query<ResponseType<SemesterType>, { id: number }>({
       query: ({ id }) => ({
         url: `/semesters/${id}`,
+      }),
+    }),
+    getCurrentSemester: builder.query<ResponseType<SemesterType>, null>({
+      query: () => ({
+        url: `/semesters/current`,
       }),
     }),
     createSemesters: builder.mutation<
@@ -52,6 +56,7 @@ const semesterApi = api.injectEndpoints({
 export const {
   useGetSemestersQuery,
   useGetSemesterQuery,
+  useGetCurrentSemesterQuery,
   useCreateSemestersMutation,
   useUpdateSemestersMutation,
   useDeleteSemestersMutation,

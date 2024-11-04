@@ -19,7 +19,6 @@ const EvaluationCommittee: React.FC = () => {
 
   return (
     <div>
-
       <SettingCard title={`Evaluation Group (${groupCommitee.length})`}>
         <Table>
           <TableHeader>

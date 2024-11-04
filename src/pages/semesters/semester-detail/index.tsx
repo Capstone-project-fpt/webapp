@@ -7,6 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import EvaluationCommitee from "./evaluation-committee";
 import Groups from "./groups";
 import SemesterCard from "./semester-card";
+import { useGetSemesterQuery } from "@/store/api/v1/endpoints/semesters";
+import { useToast } from "@/hooks/use-toast";
 
 const TABS = [
   { name: "groups", label: "Groups", component: Groups },
@@ -27,19 +29,38 @@ const SemesterDetail: React.FC = () => {
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(tab || "groups");
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const { data, error } = useGetSemesterQuery(
+    { id: Number(semesterId) },
+    { skip: !semesterId }
+  );
+
+  if (error) {
+    toast({
+      title: "Get semester",
+      description: "Something went wrong, please try again.",
+      variant: "destructive",
+    });
+
+    navigate("/semesters");
+  }
 
   useEffect(() => {
     const breadcrumb = [
       { title: "Home", link: "/" },
       { title: "Semesters", link: "/semesters" },
-      { title: "Semester Name", link: `/semesters/${semesterId}` }, //TODO: Replace with actual semester name
+      {
+        title: `Semester ${data?.data.name}`,
+        link: `/semesters/${semesterId}`,
+      },
       {
         title: `${TABS_NAMES[currentTab]}`,
         link: `/semesters/${semesterId}/${currentTab}`,
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, semesterId]);
+  }, [currentTab, dispatch, semesterId, data]);
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
