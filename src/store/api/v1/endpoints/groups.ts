@@ -7,6 +7,7 @@ import {
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
   TopicGroup,
+  TopicGroupFeedback,
 } from "@/types/group";
 import { api } from "..";
 
@@ -116,38 +117,32 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
       }),
     }),
-    getTopicFeedbacks: builder.query<
-      ResponseType<TopicGroup>,
-      PaginationType & { group_id: number; topic_id: number }
-    >({
-      query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks`,
-        params: { limit, page },
-      }),
-    }),
-    updateTopic: builder.mutation<
-      void,
-      {
-        group_id: number;
-        topic_id: number;
-        document_path: string;
-        topic: string;
-      }
-    >({
+    updateTopic: builder.mutation<void, { group_id: number, topic_id: number, document_path: string, topic: string }>({
       query: ({ group_id, topic_id, document_path, topic }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
         method: "PUT",
         body: { document_path, topic },
       }),
     }),
-    deleteTopic: builder.mutation<void, { group_id: number; topic_id: number }>(
-      {
-        query: ({ group_id, topic_id }) => ({
-          url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
-          method: "DELETE",
-        }),
-      }
-    ),
+    deleteTopic: builder.mutation<void, { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+        method: 'DELETE',
+      }),
+    }),
+    getTopicFeedbacks: builder.query<ResponseType<ListPaginationType<TopicGroupFeedback>>, PaginationType & { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
+        params: { limit, page },
+      }),
+    }),
+    createTopicFeedback: builder.mutation<void, { group_id: number, topic_id: number, feedback: string }>({
+      query: ({ group_id, topic_id, feedback }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
+        method: 'POST',
+        body: { feedback },
+      }),
+    }),
     //#endregion
     getMembers: builder.query<ResponseType<MembersType>, { group_id: number }>({
       query: ({ group_id }) => ({
@@ -181,9 +176,11 @@ export const {
   useGetTopicsQuery,
   useCreateTopicMutation,
   useGetTopicQuery,
-  useGetTopicFeedbacksQuery,
   useUpdateTopicMutation,
   useDeleteTopicMutation,
+
+  useGetTopicFeedbacksQuery,
+  useCreateTopicFeedbackMutation,
 
   useGetMembersQuery,
   useGetInvitationMentorsQuery,

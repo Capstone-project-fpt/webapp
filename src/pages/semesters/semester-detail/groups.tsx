@@ -1,50 +1,37 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { LoadingTableLottie } from "@/components";
 import { SettingCard } from "@/components/custom/setting";
-import { ActionCell } from "@/components/data-table";
+import {
+  ActionCell,
+  DataTable,
+  DataTableColumnHeader,
+  TextCell,
+} from "@/components/data-table";
+import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import {
   useGetGroupsQuery,
   useLazyGetMentorAndListMembersGroupQuery,
 } from "@/store/api/v1/endpoints/groups";
-import { GroupType } from "@/types/group";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
 import { UserTypes } from "@/types/accounts";
-import { useToast } from "@/hooks/use-toast";
+import { GroupType } from "@/types/group";
+import {
+  ColumnDef,
+  PaginationState,
+  Row,
+  TableOptions,
+} from "@tanstack/react-table";
+import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 
-const Groups: React.FC = () => {
-  const { semesterId } = useParams<{ semesterId: string }>();
+const Actions: React.FC<{
+  row: Row<GroupType>;
+}> = ({ row }) => {
   const [triggerGetMentorAndListMembersGroup] =
     useLazyGetMentorAndListMembersGroupQuery();
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = useSelector((state: RootState) => state.auth.user);
-
-  const { data, error, isLoading } = useGetGroupsQuery({
-    limit: 10,
-    page: 1,
-    semester_id: Number(semesterId),
-  });
-
-  const groups: GroupType[] = Array.isArray(data?.data?.items)
-    ? data.data.items
-    : [];
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error fetching groups</div>;
-  }
 
   const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
     if (currentUser?.common_info.user_type === UserTypes.STUDENT) {
@@ -67,49 +54,106 @@ const Groups: React.FC = () => {
       }
     }
 
-    // navigate('/') TODO: redirect to capstone group detail
+    navigate("/groups/" + capstone_group_id);
   };
 
   return (
+    <ActionCell
+      items={[
+        {
+          item: "View Detail",
+          onClick: () => {
+            handleViewDetailCapstoneGroup(row.original.id);
+          },
+        },
+      ]}
+    />
+  );
+};
+
+const columns = (): ColumnDef<GroupType>[] => [
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Name" />
+    ),
+    cell: ({ row }) => (
+      <TextCell size={200}>{row.original.name_group}</TextCell>
+    ),
+  },
+  {
+    accessorKey: "total_members",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Total Members" />
+    ),
+    cell: ({ row }) => (
+      <TextCell size={200}>{row.original.total_members}</TextCell>
+    ),
+  },
+  {
+    id: "actions",
+    header: () => <TextCell>Actions</TextCell>,
+    cell: ({ row }) => <Actions row={row} />,
+  },
+];
+
+const Groups: React.FC = () => {
+  const { semesterId } = useParams<{ semesterId: string }>();
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const {
+    data: queryData,
+    error,
+    isLoading,
+  } = useGetGroupsQuery({
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    semester_id: Number(semesterId),
+  });
+
+  const tableData = useMemo(() => {
+    return queryData ? queryData.data.items : [];
+  }, [queryData]);
+
+  const totalRecord = useMemo(() => {
+    return queryData ? queryData.data.meta.total : 0;
+  }, [queryData]);
+
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>Something went wrong!</div>;
+  }
+
+  return (
     <div>
-      <SettingCard title={`Capstone Group (${groups.length})`}>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead className="flex items-center justify-center">
-                Total Members
-              </TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {groups.map((group) => (
-              <TableRow key={group.id}>
-                <TableCell>{group.name_group}</TableCell>
-                <TableCell className="flex items-center justify-center">
-                  {group.total_members}
-                </TableCell>
-                <TableCell>
-                  <ActionCell
-                    items={[
-                      {
-                        item: "View Details",
-                        onClick: () => handleViewDetailCapstoneGroup(group.id),
-                      },
-                      {
-                        item: "Edit",
-                        onClick: () => {
-                          console.log(`Editing group ${group.name_group}`);
-                        },
-                      },
-                    ]}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <SettingCard
+        title={`Capstone Group (${queryData ? queryData.data.meta.total : 0})`}
+      >
+        <DataTable
+          data={tableData}
+          columns={columns()}
+          state={{ pagination }}
+          options={
+            {
+              onPaginationChange: setPagination,
+              manualPagination: true,
+              pageCount: Math.ceil(totalRecord / pagination.pageSize),
+            } as TableOptions<GroupType>
+          }
+        />
       </SettingCard>
     </div>
   );

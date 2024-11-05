@@ -1,21 +1,21 @@
-import { Card, CardContent } from "@/components/ui/card";
+import DateDisplay from "@/components/common/date";
+import { SettingCard } from "@/components/custom/setting";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { useGetSemesterQuery } from "@/store/api/v1/endpoints/semesters";
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import EvaluationCommitee from "./evaluation-committee";
+import EvaluationCommittee from "./evaluation-committee";
 import Groups from "./groups";
-import SemesterCard from "./semester-card";
-import { useGetSemesterQuery } from "@/store/api/v1/endpoints/semesters";
-import { useToast } from "@/hooks/use-toast";
 
 const TABS = [
   { name: "groups", label: "Groups", component: Groups },
   {
     name: "evaluation-committee",
     label: "Evaluation Committee",
-    component: EvaluationCommitee,
+    component: EvaluationCommittee,
   },
 ];
 
@@ -36,6 +36,8 @@ const SemesterDetail: React.FC = () => {
     { skip: !semesterId }
   );
 
+  const semester = data?.data;
+
   if (error) {
     toast({
       title: "Get semester",
@@ -47,11 +49,17 @@ const SemesterDetail: React.FC = () => {
   }
 
   useEffect(() => {
+    if (tab) {
+      setCurrentTab(tab);
+    }
+  }, [tab]);
+
+  useEffect(() => {
     const breadcrumb = [
       { title: "Home", link: "/" },
       { title: "Semesters", link: "/semesters" },
       {
-        title: `Semester ${data?.data.name}`,
+        title: `Semester ${semester?.name}`,
         link: `/semesters/${semesterId}`,
       },
       {
@@ -60,30 +68,35 @@ const SemesterDetail: React.FC = () => {
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, semesterId, data]);
+  }, [currentTab, dispatch, semesterId, data, semester?.name]);
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
     navigate(`/semesters/${semesterId}/${tab}`);
   };
 
-  const semesterIdNumber = semesterId ? parseInt(semesterId) : undefined;
-
   return (
-    <div className="flex">
-      <div className="flex-none w-1/3 p-4 ">
-        <Card className="pt-4 bg-slate-100">
-          <CardContent>
-            {semesterIdNumber !== undefined ? (
-              <SemesterCard id={semesterIdNumber} />
-            ) : (
-              <div>Semester ID is invalid</div>
-            )}
-          </CardContent>
-        </Card>
+    <div className="flex gap-4">
+      <div className="flex-none w-1/3 ">
+        {semester ? (
+          <SettingCard title={`${semester.name}`}>
+            <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
+              <span>Start date</span>
+              <DateDisplay
+                date={new Date(semester.start_time)}
+                format="MMM DD, YYYY"
+              />
+              <span>End date</span>
+              <DateDisplay
+                date={new Date(semester.end_time)}
+                format="MMM DD, YYYY"
+              />
+            </div>
+          </SettingCard>
+        ) : null}
       </div>
 
-      <div className="flex-grow p-4">
+      <div className="flex-grow">
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <TabsList>
             {TABS.map((tab) => (

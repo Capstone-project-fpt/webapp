@@ -19,9 +19,6 @@ export const TopicTable: React.FC<TopicTableProps> = ({ currentUserType }) => {
     pageSize: 10,
   });
 
-  // const [tableData, setTableData] = useState<TopicType[]>([]);
-  // const [totalRecord, setTotalRecord] = useState(0);
-
   const {
     data: queryData,
     isLoading,

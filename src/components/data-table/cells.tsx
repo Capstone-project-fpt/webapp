@@ -68,19 +68,15 @@ export function AvatarCell(props: { src?: string }) {
 /**
  * This component used dayjs as a date formatter, for custom date formatting please follow this docs
  * https://day.js.org/docs/en/display/format
- * @param props 
- * @returns 
+ * @param props
+ * @returns
  */
 export function DateCell(props: {
   date: Date;
   ignoreAfterYears?: number;
   format?: string;
 }) {
-  const { date, ignoreAfterYears } = props;
-  let { format } = props;
-  if (!format) {
-    format = "YYYY-MMM-DD";
-  }
+  const { date, ignoreAfterYears, format = "MMM DD, YYYY" } = props;
 
   const ignore =
     !!ignoreAfterYears &&

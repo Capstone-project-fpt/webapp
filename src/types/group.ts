@@ -119,3 +119,13 @@ export interface TopicGroup {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface TopicGroupFeedback {
+  id: number;
+  feedback: string;
+  reviewer_id: number;
+  approved_by: GroupMentor;
+  created_at: Date;
+  updated_at: Date;
+  capstone_group_topic_id: number;
+}
