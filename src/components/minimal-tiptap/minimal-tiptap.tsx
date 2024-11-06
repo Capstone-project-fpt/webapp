@@ -15,6 +15,7 @@ import { SectionThree } from "./components/section/three";
 import { SectionTwo } from "./components/section/two";
 import type { UseMinimalTiptapEditorProps } from "./hooks/use-minimal-tiptap";
 import { useMinimalTiptapEditor } from "./hooks/use-minimal-tiptap";
+import { useEffect } from "react";
 export interface MinimalTiptapProps
   extends Omit<UseMinimalTiptapEditorProps, "onUpdate"> {
   value?: Content;
@@ -75,6 +76,13 @@ export const MinimalTiptapEditor = React.forwardRef<
     ...props,
   });
 
+  // Reset the editor content when the value changes
+  React.useEffect(() => {
+    if (editor && value !== editor?.getHTML()) {
+      editor.commands.setContent(value!);
+    }
+  }, [value, editor]);
+
   if (!editor) {
     return null;
   }
@@ -101,7 +109,7 @@ export const MinimalTiptapEditor = React.forwardRef<
 
 export const MiniTiptapView = ({ value }: { value: Content }) => {
   return (
-    <div className={cn("minimal-tiptap-editor", "p-4 bg-slate-100 rounded")}>
+    <div className={cn("minimal-tiptap-editor", "px-4 py-3 bg-slate-100 rounded")}>
       <div className="ProseMirror">{parser(value as HTMLContent)}</div>
     </div>
   );

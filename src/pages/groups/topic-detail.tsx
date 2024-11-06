@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { FaRegEdit } from "react-icons/fa";
-import { FileIcon } from "lucide-react";
 import { Content } from "@tiptap/react";
+import { FileIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
 
 import Comment from "@/components/common/comment";
 import DateDisplay from "@/components/common/date";
@@ -39,10 +39,12 @@ const TopicDetail: React.FC = () => {
     group_id: parseInt(groupId!),
     topic_id: parseInt(topicId!),
   });
-  const { data: feedbacksData } = useGetTopicFeedbacksQuery({
-    group_id: parseInt(groupId!),
-    topic_id: parseInt(topicId!),
-  });
+  const { data: feedbacksData, refetch: refetchFeedbacks } =
+    useGetTopicFeedbacksQuery({
+      group_id: parseInt(groupId!),
+      topic_id: parseInt(topicId!),
+      limit: 100,
+    });
 
   const [createTopicFeedback, createTopicFeedbackData] =
     useCreateTopicFeedbackMutation();
@@ -85,6 +87,7 @@ const TopicDetail: React.FC = () => {
   useEffect(() => {
     if (createTopicFeedbackData.isSuccess) {
       setFeedback("");
+      refetchFeedbacks();
       toast({
         duration: 1000,
         variant: "default",
@@ -108,7 +111,7 @@ const TopicDetail: React.FC = () => {
         description: messageError,
       });
     }
-  }, [createTopicFeedbackData, toast]);
+  }, [createTopicFeedbackData, refetchFeedbacks, toast]);
 
   const handleComment = () => {
     createTopicFeedback({
@@ -129,9 +132,15 @@ const TopicDetail: React.FC = () => {
               <ReviewStatus status={topic.status_review} />
             </div>
             <span>Submit date</span>
-            <DateDisplay date={new Date(topic.created_at)} format="MMM DD, YYYY - hh:mm A" />
+            <DateDisplay
+              date={new Date(topic.created_at)}
+              format="MMM DD, YYYY - hh:mm A"
+            />
             <span>Update date</span>
-            <DateDisplay date={new Date(topic.updated_at)} format="MMM DD, YYYY - hh:mm A"/>
+            <DateDisplay
+              date={new Date(topic.updated_at)}
+              format="MMM DD, YYYY - hh:mm A"
+            />
           </div>
 
           <div className="my-6">

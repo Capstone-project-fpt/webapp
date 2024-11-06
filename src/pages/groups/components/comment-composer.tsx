@@ -22,7 +22,6 @@ const CommentComposer: React.FC<CommentComposerProps> = ({
   isLoading,
 }) => {
   const user = useSelector((state: RootState) => state.auth.user);
-
   if (!user) return null;
 
   return (

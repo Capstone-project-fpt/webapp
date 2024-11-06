@@ -142,23 +142,23 @@ export const useMinimalTiptapEditor = ({
   onBlur,
   ...props
 }: UseMinimalTiptapEditorProps) => {
-  const throttledSetValue = useThrottle((value: Content) => onUpdate?.(value), throttleDelay)
+  const throttledSetValue = useThrottle((value: Content) => onUpdate?.(value), throttleDelay);
 
   const handleUpdate = React.useCallback(
     (editor: Editor) => throttledSetValue(getOutput(editor, output)),
     [output, throttledSetValue]
-  )
+  );
 
   const handleCreate = React.useCallback(
     (editor: Editor) => {
       if (value && editor.isEmpty) {
-        editor.commands.setContent(value)
+        editor.commands.setContent(value);
       }
     },
     [value]
-  )
+  );
 
-  const handleBlur = React.useCallback((editor: Editor) => onBlur?.(getOutput(editor, output)), [output, onBlur])
+  const handleBlur = React.useCallback((editor: Editor) => onBlur?.(getOutput(editor, output)), [output, onBlur]);
 
   const editor = useEditor({
     extensions: createExtensions(placeholder),
@@ -174,9 +174,9 @@ export const useMinimalTiptapEditor = ({
     onCreate: ({ editor }) => handleCreate(editor),
     onBlur: ({ editor }) => handleBlur(editor),
     ...props
-  })
+  });
 
-  return editor
-}
+  return editor;
+};
 
 export default useMinimalTiptapEditor

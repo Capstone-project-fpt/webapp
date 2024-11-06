@@ -11,7 +11,7 @@ interface CommentProps {
 const Comment: React.FC<CommentProps> = ({ comment }) => {
   const { content, user } = comment;
   return (
-    <div className="flex gap-2 mb-3">
+    <div className="flex gap-2 mb-4">
       <Avatar>
         <AvatarImage
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -21,14 +21,14 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
         />
         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
       </Avatar>
-      <div className="flex flex-col gap-2 flex-1">
+      <div className="flex flex-col gap-1 flex-1">
         <div className="flex flex-col">
           <span className="font-semibold">{user.name}</span>
           <p className="text-sm">
-            <DateDisplay date={new Date(comment.created_at)} />
+            <DateDisplay date={new Date(comment.created_at)} showTime={true} />
           </p>
         </div>
-        <div className="mt-2">
+        <div className="">
           <MiniTiptapView value={content} />
         </div>
       </div>
