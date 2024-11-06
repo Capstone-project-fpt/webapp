@@ -11,6 +11,7 @@ import ProductRoutes from "./products";
 import SemesterRoutes from "./semesters";
 import SyllabusRoutes from "./syllabus";
 import TopicRoutes from "./topics";
+import EvaluationRoutes from "./evaluations";
 
 
 const router = createBrowserRouter([
@@ -25,7 +26,8 @@ const router = createBrowserRouter([
   ...MajorRoutes,
   ...TopicRoutes,
   ...SemesterRoutes,
-  ...SyllabusRoutes
+  ...SyllabusRoutes,
+  ...EvaluationRoutes
 ]);
 
 export default router;

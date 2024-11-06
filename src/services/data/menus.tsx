@@ -35,7 +35,6 @@ const menus: MenuItem[] = [
     title: "Group",
     link: "/groups",
   },
-  
   {
     icon: <Users size={18} strokeWidth={2} />,
     title: "Accounts",

@@ -8,7 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button"; 
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { GoPlus } from "react-icons/go";
 
 type GroupCommittee = {
   id: number;
@@ -23,9 +26,18 @@ const groupCommittee: GroupCommittee[] = [
 ];
 
 const EvaluationCommittee: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       <SettingCard title={`Evaluation Group (${groupCommittee.length})`}>
+      <Button
+          variant="outline"
+          className="h-8 w-8 p-0 ml-auto"
+          onClick={() => navigate("/evaluation-committees/create")}
+        >
+          <GoPlus className="h-4 w-4" />
+        </Button>
         <Table>
           <TableHeader>
             <TableRow>
