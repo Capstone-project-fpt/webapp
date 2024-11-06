@@ -1,8 +1,10 @@
+import DateDisplay from "@/components/common/date";
 import FileDownload from "@/components/common/file-download";
 import { SettingCard } from "@/components/custom/setting";
-import { ActionCell, DateCell } from "@/components/data-table";
+import { ActionCell, ActionItem } from "@/components/data-table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -11,18 +13,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { RootState } from "@/store";
 import { useGetTopicsQuery } from "@/store/api/v1/endpoints/groups";
-import { TopicGroup } from "@/types/group";
+import { GroupStatus, TopicGroup, TopicReviewStatus } from "@/types/group";
 import { AlertCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FiFilePlus } from "react-icons/fi";
+import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import ReviewStatus from "../components/topic-review-status";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
+import ReviewStatus from "../components/topic-review-status";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
+  const currentGroup = useSelector(
+    (state: RootState) => state.resource.currentGroup
+  );
+
   const navigate = useNavigate();
   const { data: topicsData, isLoading } = useGetTopicsQuery({
     group_id: parseInt(groupId!),
@@ -37,25 +44,44 @@ const Topics: React.FC = () => {
     }
   }, [topicsData]);
 
+  const setGroupTopic = (topicId: number) => {
+    console.log("Set topic", topicId);
+    // TODO: Implement set topic to group
+  };
+
+  const groupTopicStatus = currentGroup?.status;
+
   return (
-    <>
+    <div className="flex flex-col gap-5">
       <UploadTopicDialog
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         groupId={groupId!}
       />
 
+      <SettingCard title="Group's Topic">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>No group's topic</AlertTitle>
+          <AlertDescription>
+            Your group has not select topics yet. Please submit a topic to
+            review and set group's topic.
+          </AlertDescription>
+        </Alert>
+      </SettingCard>
       <SettingCard
-        title="Topics"
+        title="Reviewing Topics"
         actions={
-          <Button
-            onClick={() => {
-              setIsModalOpen(true);
-            }}
-          >
-            <FiFilePlus />
-            Submit topic
-          </Button>
+          groupTopicStatus === GroupStatus.ReviewingTopic && (
+            <Button
+              onClick={() => {
+                setIsModalOpen(true);
+              }}
+            >
+              <FiFilePlus />
+              Submit topic
+            </Button>
+          )
         }
       >
         {isLoading ? (
@@ -110,20 +136,33 @@ const Topics: React.FC = () => {
                     <FileDownload pathFile={topic.document_path} />
                   </TableCell>
                   <TableCell>
-                    <DateCell date={new Date(topic.created_at)} />
+                    <DateDisplay
+                      date={new Date(topic.created_at)}
+                      showTime={true}
+                    />
                   </TableCell>
                   <TableCell>
                     <ReviewStatus status={topic.status_review} />
                   </TableCell>
                   <TableCell>
                     <ActionCell
-                      items={[
-                        {
-                          item: "View detail",
-                          onClick: () =>
-                            navigate(`/groups/${groupId}/topics/${topic.id}`),
-                        },
-                      ]}
+                      items={
+                        [
+                          groupTopicStatus === GroupStatus.ReviewingTopic &&
+                            topic.status_review ===
+                              TopicReviewStatus.Approved && {
+                              item: "Set group's topic",
+                              onClick: () => {
+                                setGroupTopic(topic.id);
+                              },
+                            },
+                          {
+                            item: "View detail",
+                            onClick: () =>
+                              navigate(`/groups/${groupId}/topics/${topic.id}`),
+                          },
+                        ].filter(Boolean) as ActionItem[]
+                      }
                     />
                   </TableCell>
                 </TableRow>
@@ -141,7 +180,7 @@ const Topics: React.FC = () => {
           </Alert>
         )}
       </SettingCard>
-    </>
+    </div>
   );
 };
 

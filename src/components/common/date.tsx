@@ -4,8 +4,14 @@ function DateDisplay(props: {
   date: Date;
   ignoreAfterYears?: number;
   format?: string;
+  showTime?: boolean;
 }) {
-  const { date, ignoreAfterYears, format = "MMM DD, YYYY" } = props;
+  const { date, ignoreAfterYears, showTime } = props;
+
+  let { format } = props;
+  if (!format) {
+    format = showTime ? "MMM DD, YYYY - hh:mm A" : "MMM DD, YYYY";
+  }
 
   const ignore =
     !!ignoreAfterYears &&

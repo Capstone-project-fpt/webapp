@@ -87,7 +87,7 @@ export function DateCell(props: {
   return <TextCell size={140}>{ignore ? "Never" : timeString}</TextCell>;
 }
 
-type ActionItem =
+export type ActionItem =
   | "-"
   | {
       item: React.ReactNode;
