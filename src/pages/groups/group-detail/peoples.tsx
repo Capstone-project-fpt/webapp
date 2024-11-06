@@ -243,7 +243,7 @@ const Peoples = () => {
       setMentor(mentor);
     }
     if (invitationMentorsData) {
-      const { items } = invitationMentorsData;
+      const { items } = invitationMentorsData.data;
       setInvitationMentors(items);
     }
   }, [membersData, invitationMentorsData]);
@@ -276,7 +276,11 @@ const Peoples = () => {
       <SettingCard
         title={`Mentors ${mentor ? "(1)" : ""}`}
         actions={
-          <Button onClick={() => setIsInviteModalOpen(true)}>Add Mentor</Button>
+          !mentor && (
+            <Button onClick={() => setIsInviteModalOpen(true)}>
+              Invite Mentor
+            </Button>
+          )
         }
       >
         {mentor || (invitationMentors || []).length ? (

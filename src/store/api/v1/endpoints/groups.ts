@@ -64,29 +64,6 @@ const groupsApi = api.injectEndpoints({
       invalidatesTags: ["Group"],
     }),
 
-    inviteMentor: builder.mutation<
-      void,
-      { group_id: number; teacher_id: number; semester_id: number }
-    >({
-      query: ({ group_id, teacher_id, semester_id }) => ({
-        url: `/capstone-groups/${group_id}/mentors`,
-        method: "POST",
-        body: { teacher_id, semester_id },
-      }),
-      invalidatesTags: ["Group"],
-    }),
-    acceptInvitation: builder.mutation<
-      void,
-      { group_id: number; token: string }
-    >({
-      query: ({ group_id, token }) => ({
-        url: `/capstone-groups/${group_id}/mentors/invitation`,
-        method: "POST",
-        body: { token },
-      }),
-      invalidatesTags: ["Group"],
-    }),
-
     //#region Topic
     getTopics: builder.query<
       ResponseType<ListPaginationType<TopicGroup>>,
@@ -144,21 +121,48 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     //#endregion
+    //#region Members
     getMembers: builder.query<ResponseType<MembersType>, { group_id: number }>({
       query: ({ group_id }) => ({
         url: `/capstone-groups/${group_id}/members`,
       }),
+      providesTags: ["Group"],
     }),
 
     getInvitationMentors: builder.query<
-      ListPaginationType<InvitationMentor>,
+      ResponseType<ListPaginationType<InvitationMentor>>,
       PaginationType & { group_id: number }
     >({
       query: ({ limit = 10, page = 1, group_id }) => ({
         url: `/capstone-groups/${group_id}/mentors/invitations`,
         params: { limit, page },
       }),
+      providesTags: ["Group"],
     }),
+
+    inviteMentor: builder.mutation<
+      void,
+      { group_id: number; teacher_id: number; semester_id: number }
+    >({
+      query: ({ group_id, teacher_id, semester_id }) => ({
+        url: `/capstone-groups/${group_id}/mentors`,
+        method: "POST",
+        body: { teacher_id, semester_id },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    acceptInvitation: builder.mutation<
+      void,
+      { group_id: number; token: string }
+    >({
+      query: ({ group_id, token }) => ({
+        url: `/capstone-groups/${group_id}/mentors/invitation`,
+        method: "POST",
+        body: { token },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    //#endregion
   }),
 });
 

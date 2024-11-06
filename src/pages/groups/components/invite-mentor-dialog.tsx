@@ -31,11 +31,11 @@ const InviteMentorDialog: React.FC<Props> = ({
   const [selectLecture, setSelectLecture] = useState<OptionType | null>(null);
 
   const sendInvite = async () => {
-    if (selectLecture) {
+    if (selectLecture && selectLecture.value.extra_info.teacher) {
       await inviteMentor({
         group_id: groupId,
         semester_id: 1,
-        teacher_id: selectLecture.value.common_info.id,
+        teacher_id: selectLecture.value.extra_info.teacher.teacher_id,
       });
     }
   };
