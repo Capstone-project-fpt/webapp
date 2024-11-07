@@ -8,6 +8,7 @@ import {
   QueryGroupsParams,
   TopicGroup,
   TopicGroupFeedback,
+  TopicReviewStatus,
 } from "@/types/group";
 import { api } from "..";
 
@@ -107,6 +108,13 @@ const groupsApi = api.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    reviewTopic: builder.mutation<ResponseType<string>, { group_id: number, topic_id: number, status_review: TopicReviewStatus }>({
+      query: ({ group_id, topic_id, status_review }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/teacher-reviews/`,
+        method: 'PUT',
+        body: { status_review },
+      }),
+    }),
     getTopicFeedbacks: builder.query<ResponseType<ListPaginationType<TopicGroupFeedback>>, PaginationType & { group_id: number, topic_id: number }>({
       query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
@@ -183,6 +191,7 @@ export const {
   useUpdateTopicMutation,
   useDeleteTopicMutation,
 
+  useReviewTopicMutation,
   useGetTopicFeedbacksQuery,
   useCreateTopicFeedbackMutation,
 
