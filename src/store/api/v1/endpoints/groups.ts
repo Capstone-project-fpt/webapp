@@ -128,6 +128,12 @@ const groupsApi = api.injectEndpoints({
         body: { feedback },
       }),
     }),
+    deleteTopicFeedback: builder.mutation<void, { group_id: number, topic_id: number, feedback_id: number }>({
+      query: ({ group_id, topic_id, feedback_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/${feedback_id}`,
+        method: 'DELETE',
+      }),
+    }),
     //#endregion
     //#region Members
     getMembers: builder.query<ResponseType<MembersType>, { group_id: number }>({
@@ -194,6 +200,7 @@ export const {
   useReviewTopicMutation,
   useGetTopicFeedbacksQuery,
   useCreateTopicFeedbackMutation,
+  useDeleteTopicFeedbackMutation,
 
   useGetMembersQuery,
   useGetInvitationMentorsQuery,

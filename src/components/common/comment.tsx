@@ -6,9 +6,10 @@ import DateDisplay from "./date";
 
 interface CommentProps {
   comment: CommentType;
+  actions?: React.ReactNode;
 }
 
-const Comment: React.FC<CommentProps> = ({ comment }) => {
+const Comment: React.FC<CommentProps> = ({ comment, actions }) => {
   const { content, user } = comment;
   return (
     <div className="flex gap-2 mb-4">
@@ -22,11 +23,17 @@ const Comment: React.FC<CommentProps> = ({ comment }) => {
         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <div className="flex flex-col gap-1 flex-1">
-        <div className="flex flex-col">
-          <span className="font-semibold">{user.name}</span>
-          <p className="text-sm">
-            <DateDisplay date={new Date(comment.created_at)} showTime={true} />
-          </p>
+        <div className="flex justify-between">
+          <div className="flex flex-col">
+            <span className="font-semibold">{user.name}</span>
+            <p className="text-sm">
+              <DateDisplay
+                date={new Date(comment.created_at)}
+                showTime={true}
+              />
+            </p>
+          </div>
+          {actions}
         </div>
         <div className="">
           <MiniTiptapView value={content} />
