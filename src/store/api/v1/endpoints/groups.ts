@@ -3,6 +3,7 @@ import {
   CreateGroupBody,
   GroupType,
   InvitationMentor,
+  InvitationMentorStatus,
   MembersType,
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
@@ -161,7 +162,7 @@ const groupsApi = api.injectEndpoints({
     }),
 
     inviteMentor: builder.mutation<
-      void,
+      ResponseType<string>,
       { group_id: number; teacher_id: number; semester_id: number }
     >({
       query: ({ group_id, teacher_id, semester_id }) => ({
@@ -172,13 +173,13 @@ const groupsApi = api.injectEndpoints({
       invalidatesTags: ["Group"],
     }),
     acceptInvitation: builder.mutation<
-      void,
-      { group_id: number; token: string }
+      ResponseType<string>,
+      { group_id: number; token: string, status: InvitationMentorStatus }
     >({
-      query: ({ group_id, token }) => ({
+      query: ({ group_id, token, status }) => ({
         url: `/capstone-groups/${group_id}/mentors/invitation`,
         method: "POST",
-        body: { token },
+        body: { token, status },
       }),
       invalidatesTags: ["Group"],
     }),
