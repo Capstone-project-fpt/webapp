@@ -1,22 +1,20 @@
-import React, { useState } from "react";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { ActionMeta, SingleValue } from "react-select";
-import { useGetGroupsQuery } from "@/store/api/v1/endpoints/groups";
+import { RootState } from "@/store";
+import { useLazyGetGroupsQuery } from "@/store/api/v1/endpoints/groups";
+import { OptionType } from "@/types";
 import { GroupType } from "@/types/group";
-
-interface OptionType {
-  label: string;
-  value: GroupType;
-}
+import React from "react";
+import { useSelector } from "react-redux";
+import { ActionMeta, SingleValue } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 interface SelectGroupStudentProps {
-  value: OptionType | null;
-  onChangeValue: (
-    newValue: SingleValue<OptionType>,
-    actionMeta: ActionMeta<OptionType>
-  ) => void;
-  selectedGroup: GroupType[];
-  semesterId?: number;
+  value: OptionType<GroupType> | null;
+  onChangeValue:
+    | ((
+        newValue: SingleValue<OptionType<GroupType>>,
+        actionMeta: ActionMeta<OptionType<GroupType>>
+      ) => void)
+    | undefined;
 }
 
 const defaultAdditional = { page: 1 };
@@ -24,62 +22,49 @@ const defaultAdditional = { page: 1 };
 const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   value,
   onChangeValue,
-  selectedGroup,
-  semesterId,
 }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const { data, error } = useGetGroupsQuery({
-    limit: 10,
-    page: defaultAdditional.page,
-    semester_id: semesterId,
-  });
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+  const [getGroups] = useLazyGetGroupsQuery();
 
   const loadPageOptions = async (
-    q: string,
     prevOptions: unknown,
     { page }: { page: number }
   ) => {
-    setIsLoading(true);
-
+    const limit = 10;
     try {
-      const response = await useGetGroupsQuery({
-        group_name: q,
-        limit: 10,
+      const {
+        data: { items, meta },
+      } = await getGroups({
+        limit,
         page,
-        semester_id: semesterId,
+        semester_id: currentSemester?.id
       }).unwrap();
 
-      const options = response.items.map((item: GroupType) => ({
+      const options = items.map((item) => ({
         value: item,
         label: item.name_group,
-        disabled: selectedGroup.some((group) => group.id === item.id),
       }));
 
       return {
         options,
-        hasMore: response.meta.current_page * 10 < response.meta.total,
+        hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch (error) {
-      console.error("Error fetching groups:", error);
+    } catch {
       return { options: [], hasMore: false, additional: { page: 1 } };
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <AsyncPaginate
-      cacheUniqs={[value]}
       debounceTimeout={300}
       additional={defaultAdditional}
       value={value}
       loadOptions={loadPageOptions}
       onChange={onChangeValue}
-      placeholder="Search by group name"
       isOptionDisabled={(option) => option.disabled}
-      isLoading={isLoading}
     />
   );
 };

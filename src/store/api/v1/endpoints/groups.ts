@@ -189,6 +189,8 @@ const groupsApi = api.injectEndpoints({
 
 export const {
   useGetGroupsQuery,
+  useLazyGetGroupsQuery,
+
   useCreateGroupMutation,
   useGetGroupQuery,
   useGetMentorAndListMembersGroupQuery,
