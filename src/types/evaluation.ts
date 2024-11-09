@@ -14,7 +14,6 @@ export interface EvaluationType {
 }
 
 export interface CreateEvaluationGroup{
-  major_id: number;
   semester_id: number;
   teacher_ids: number[];
   name: string;

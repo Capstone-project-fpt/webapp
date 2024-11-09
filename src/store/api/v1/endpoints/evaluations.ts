@@ -19,6 +19,7 @@ const evaluationsApi = api.injectEndpoints({
                 }
                 return {
                     url: "/evaluation-committees/",
+                    params,
                 };
             },
             providesTags: ["EvaluationCommittee"],
@@ -26,14 +27,14 @@ const evaluationsApi = api.injectEndpoints({
 
         createEvaluation: builder.mutation<ResponseType<EvaluationType>, CreateEvaluationGroup>({
             query: (data) => ({
-                url: "/evaluation-commitees/",
+                url: "/evaluation-committees/",
                 method: "POST",
                 body: data,
             }),
             invalidatesTags: ["EvaluationCommittee"],
         }),
         getEvaluation: builder.query<ResponseType<EvaluationType>, { id: number }>({
-            query: (id) => ({
+            query: ({ id }) => ({
                 url: `/evaluation-committees/${id}`,
             }),
         }),
@@ -46,7 +47,7 @@ const evaluationsApi = api.injectEndpoints({
             invalidatesTags: ["EvaluationCommittee"],
         }),
         deleteEvaluation: builder.mutation<ResponseType<EvaluationType>, { id: number }>({
-            query: (id) => ({
+            query: ({ id }) => ({
                 url: `/evaluation-committees/${id}`,
                 method: "DELETE",
             }),

@@ -25,18 +25,8 @@ const CreateEvaluationGroup: React.FC = () => {
   const [createEvaluationGroup, createEvaluationGroupData] = useCreateEvaluationMutation();
   const { isLoading } = createEvaluationGroupData;
 
-  const initialMembers: Member[] = user && user.extra_info.teacher
-    ? [
-        {
-          ...user.common_info,
-          teacherId: user.extra_info.teacher.teacher_id,
-        },
-      ]
-    : [];
-  
-  const [members, setMembers] = useState<Member[]>(initialMembers);
-  const initGroupName = user ? `${user.common_info.name}'s Evaluation Group` : "";
-  const [groupName, setGroupName] = useState(initGroupName);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [groupName, setGroupName] = useState("");
   const [formValid, setFormValid] = useState(false);
   const [selectLecturer, setSelectLecturer] = useState<OptionType | null>(null);
 
@@ -62,18 +52,18 @@ const CreateEvaluationGroup: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setFormValid(groupName.trim() === "" || members.length < 2); 
+    setFormValid(groupName.trim() === "" || members.length < 2);
   }, [groupName, members]);
 
   useEffect(() => {
     if (selectLecturer) {
       const { value } = selectLecturer;
-      if (members.length < 3) { 
+      if (members.length < 3) {
         setMembers((prevMembers) => [
           ...prevMembers,
           {
             ...value.common_info,
-            teacherId: value.extra_info.teacher?.teacher_id as number, 
+            teacherId: value.extra_info.teacher?.teacher_id as number,
           },
         ]);
         setSelectLecturer(null);
@@ -95,9 +85,7 @@ const CreateEvaluationGroup: React.FC = () => {
         title: "Create Evaluation Group",
         description: "Created the Evaluation Group successfully.",
       });
-      const { data } = createEvaluationGroupData.data;
-      const groupId = data.id;
-      navigate(`/evaluation-groups/${groupId}`);
+      navigate(`/evaluation-committees/`);
     }
 
     if (createEvaluationGroupData.error) {
@@ -121,12 +109,11 @@ const CreateEvaluationGroup: React.FC = () => {
   };
 
   const handleCreateForm = async () => {
-    const teacherIds = members.map((member) => member.teacherId); 
+    const teacherIds = members.map((member) => member.teacherId);
 
     await createEvaluationGroup({
-      major_id: 1, 
       semester_id: currentSemester!.id,
-      teacher_ids: teacherIds, 
+      teacher_ids: teacherIds,
       name: groupName,
     });
   };
@@ -149,7 +136,7 @@ const CreateEvaluationGroup: React.FC = () => {
         </div>
       </div>
       <div className="flex items-center space-x-2">
-        <p>Member</p> 
+        <p>Member</p>
         <Button
           variant="destructive"
           size="icon"
@@ -178,7 +165,7 @@ const CreateEvaluationGroup: React.FC = () => {
       <div>
         <Label>Members</Label>
         <p className="text-xs text-slate-500">
-          (At least 2 members are required to create an evaluation group.) 
+          (At least 2 members are required to create an evaluation group.)
         </p>
         <div className="mt-2 space-y-2">
           {members.map((member) => (
@@ -191,9 +178,10 @@ const CreateEvaluationGroup: React.FC = () => {
         <div className="space-y-2">
           <Label htmlFor="newMemberName">Add Lecturer</Label>
           <SelectLecture
-           value={selectLecturer}
-           onChangeValue={setSelectLecturer}
-           selectedMembers={members}/>
+            value={selectLecturer}
+            onChangeValue={setSelectLecturer}
+            selectedMembers={members} 
+            existingGroupMembers={[]}          />
         </div>
       )}
 

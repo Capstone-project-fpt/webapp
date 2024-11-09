@@ -1,10 +1,9 @@
-import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
 import { UserTypes } from "@/types/accounts";
 import React from "react";
-import { ActionMeta, SingleValue } from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { Member, OptionType } from "../type";
-
+import { ActionMeta, SingleValue } from "react-select";
+import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
 
 const defaultAdditional = { page: 1 };
 
@@ -16,12 +15,15 @@ interface SelectLectureProps {
     actionMeta: ActionMeta<OptionType>
   ) => void)
   | undefined;
-  selectedMembers: Member[];
+  selectedMembers: Member[]; 
+  existingGroupMembers: number[]; 
 }
 
 const SelectLecture: React.FC<SelectLectureProps> = ({
   value,
   onChangeValue,
+  selectedMembers,
+  existingGroupMembers,
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
@@ -41,10 +43,19 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         user_types: UserTypes.TEACHER,
       }).unwrap();
 
-      const options = items.map((item) => ({
-        value: item,
-        label: item.common_info.email,
-      }));
+      const options = items.map((item) => {
+        const teacherId = item.extra_info.teacher?.teacher_id;
+        const isDisabled =
+          teacherId !== undefined &&
+          (existingGroupMembers.includes(teacherId) ||
+            selectedMembers.some((m) => m.teacherId === teacherId));
+
+        return {
+          value: item,
+          label: item.common_info.email,
+          disabled: isDisabled,
+        };
+      });
 
       return {
         options,
@@ -58,7 +69,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
 
   return (
     <AsyncPaginate
-      debounceTimeout={300}
+      cacheUniqs={[selectedMembers]}
       additional={defaultAdditional}
       value={value}
       loadOptions={loadPageOptions}
