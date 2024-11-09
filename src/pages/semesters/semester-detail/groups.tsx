@@ -1,4 +1,5 @@
 import { LoadingTableLottie } from "@/components";
+import { GroupStatusBadge } from "@/components/common/status-badge";
 import { SettingCard } from "@/components/custom/setting";
 import {
   ActionCell,
@@ -86,9 +87,14 @@ const columns = (): ColumnDef<GroupType>[] => [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Total Members" />
     ),
-    cell: ({ row }) => (
-      <TextCell size={200}>{row.original.total_members}</TextCell>
+    cell: ({ row }) => <TextCell>{row.original.total_members}</TextCell>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Status" />
     ),
+    cell: ({ row }) => <GroupStatusBadge status={row.original.status} />,
   },
   {
     id: "actions",

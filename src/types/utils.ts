@@ -39,3 +39,11 @@ export interface ListPaginationType<T> {
     total: number;
   };
 }
+
+
+export interface OptionType<T> {
+  value: T;
+  label: string;
+  disabled: boolean;
+}
+

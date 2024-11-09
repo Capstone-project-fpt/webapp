@@ -77,7 +77,7 @@ const SemesterDetail: React.FC = () => {
 
   return (
     <div className="flex gap-4">
-      <div className="flex-none w-1/3 ">
+      <div className="flex-none w-1/4">
         {semester ? (
           <SettingCard title={`${semester.name}`}>
             <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">

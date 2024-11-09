@@ -35,6 +35,7 @@ interface DataTableProps<TData, TValue> {
   defaultVisibility?: VisibilityState;
   state?: Partial<TableState>;
   options: TableOptions<TData>;
+  showToolbar?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -44,6 +45,7 @@ export function DataTable<TData, TValue>({
   defaultVisibility,
   state,
   options,
+  showToolbar = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -83,7 +85,9 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} toolbarRender={toolbarRender} />
+      {showToolbar && (
+        <DataTableToolbar table={table} toolbarRender={toolbarRender} />
+      )}
       <div className="rounded-md border">
         <Table>
           <TableHeader>

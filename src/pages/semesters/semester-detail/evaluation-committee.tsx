@@ -71,9 +71,9 @@ const columns = (): ColumnDef<EvaluationType>[] => [
       <DataTableColumnHeader column={column} columnTitle="Name" />
     ),
     cell: ({ row }) => (
-      <div  className="py-2"> 
+      <div  className="py-2">
       <TextCell size={200} >{row.original.name}</TextCell>
-    </div> 
+    </div>
     ),
   },
   {
