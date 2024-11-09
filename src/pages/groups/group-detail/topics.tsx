@@ -13,11 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
   useGetTopicsQuery,
   useSetGroupTopicMutation,
 } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
 import { GroupStatus, TopicGroup, TopicReviewStatus } from "@/types/group";
 import { AlertCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -26,8 +28,6 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
 import ReviewStatus from "../components/topic-review-status";
-import { useToast } from "@/hooks/use-toast";
-import { ResponseErrorType } from "@/types";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -35,6 +35,7 @@ const Topics: React.FC = () => {
     (state: RootState) => state.resource.currentGroup
   );
   const { toast } = useToast();
+
   const navigate = useNavigate();
   const { data: topicsData, isLoading } = useGetTopicsQuery({
     group_id: parseInt(groupId!),

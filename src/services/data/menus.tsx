@@ -2,6 +2,7 @@ import { FaRegLightbulb } from "react-icons/fa";
 import { Home, Settings2, Users } from "tabler-icons-react";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { LuArrowUpLeftSquare, LuCalendarCheck } from "react-icons/lu";
+import { LiaObjectUngroupSolid } from "react-icons/lia";
 
 export interface MenuItem {
   title: string;
@@ -35,7 +36,11 @@ const menus: MenuItem[] = [
     title: "Group",
     link: "/groups",
   },
-  
+  {
+    icon: <LiaObjectUngroupSolid  size={18}  />,
+    title: "Evaluation Committee",
+    link: "/evaluation-committees",
+  },
   {
     icon: <Users size={18} strokeWidth={2} />,
     title: "Accounts",
