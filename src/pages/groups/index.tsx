@@ -1,24 +1,187 @@
+import { LoadingTableLottie } from "@/components";
+import {
+  ActionCell,
+  DataTable,
+  DataTableColumnHeader,
+  TextCell,
+} from "@/components/data-table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
+import {
+  useGetGroupsQuery,
+  useLazyGetMentorAndListMembersGroupQuery,
+} from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
-import React, { useEffect } from "react";
-import { HiOutlineUserGroup } from "react-icons/hi";
+import { UserTypes } from "@/types/accounts";
+import { GroupStatus, GroupType } from "@/types/group";
+import {
+  ColumnDef,
+  PaginationState,
+  Row,
+  TableOptions,
+} from "@tanstack/react-table";
+import React, { useEffect, useMemo, useState } from "react";
+import { GoPlus } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+
+const Actions: React.FC<{
+  row: Row<GroupType>;
+}> = ({ row }) => {
+  const [triggerGetMentorAndListMembersGroup] =
+    useLazyGetMentorAndListMembersGroupQuery();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+
+  const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
+    if (currentUser?.common_info.user_type === UserTypes.STUDENT) {
+      const {
+        data: { members },
+      } = await triggerGetMentorAndListMembersGroup({
+        capstone_group_id,
+      }).unwrap();
+
+      if (
+        !members
+          .map((m) => m.id)
+          .includes(currentUser.extra_info.student!.student_id)
+      ) {
+        toast({
+          title: "View Detail Capstone Group",
+          description: "You are not a member of this capstone group",
+          variant: "destructive",
+        });
+      } else {
+        navigate("/groups/" + capstone_group_id);
+      }
+    }
+  };
+
+  return (
+    <ActionCell
+      items={[
+        {
+          item: "View Detail",
+          onClick: () => {
+            handleViewDetailCapstoneGroup(row.original.id);
+          },
+        },
+      ]}
+    />
+  );
+};
+
+const GroupStatusBadge: React.FC<{ status: GroupStatus }> = ({ status }) => {
+  const statusName = {
+    [GroupStatus.InProgress]: "In Progress",
+    [GroupStatus.ReviewingTopic]: "Reviewing Topic",
+  };
+  return (
+    <Badge
+      variant={status === GroupStatus.InProgress ? "secondary" : "outline"}
+    >
+      {statusName[status]}
+    </Badge>
+  );
+};
+
+const columns = (): ColumnDef<GroupType>[] => [
+  {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Name" />
+    ),
+    cell: ({ row }) => (
+      <TextCell size={200}>{row.original.name_group}</TextCell>
+    ),
+  },
+  {
+    accessorKey: "total_members",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Total Members" />
+    ),
+    cell: ({ row }) => <TextCell>{row.original.total_members}</TextCell>,
+  },
+  {
+    accessorKey: "status",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Status" />
+    ),
+    cell: ({ row }) => <GroupStatusBadge status={row.original.status} />,
+  },
+  {
+    id: "actions",
+    header: () => <TextCell>Actions</TextCell>,
+    cell: ({ row }) => <Actions row={row} />,
+  },
+];
 
 const EmptyGroup: React.FC = () => {
-  return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div className="flex items-center justify-center mb-4">
-        <HiOutlineUserGroup size={100} strokeWidth={1} />
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
+  const {
+    data: queryData,
+    error,
+    isLoading,
+  } = useGetGroupsQuery({
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    semester_id: Number(currentSemester?.id),
+  });
+
+  const tableData = useMemo(() => {
+    return queryData ? queryData.data.items : [];
+  }, [queryData]);
+
+  const totalRecord = useMemo(() => {
+    return queryData ? queryData.data.meta.total : 0;
+  }, [queryData]);
+
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
       </div>
-      <h1 className="font-bold mb-2">No group yet</h1>
-      <span className="mb-6 text-center">
-        Join or create a Group and it will show up here.
-      </span>
-      <Link to="/groups/create">
-        <Button>Create Group</Button>
-      </Link>
+    );
+  }
+
+  if (error) {
+    return <div>Something went wrong!</div>;
+  }
+
+  return (
+    <div>
+      <div className="flex justify-end mb-2">
+        <Link to="/groups/create">
+          <Button variant="outline">
+            <GoPlus className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+      <DataTable
+        data={tableData}
+        columns={columns()}
+        state={{ pagination }}
+        options={
+          {
+            onPaginationChange: setPagination,
+            manualPagination: true,
+            pageCount: Math.ceil(totalRecord / pagination.pageSize),
+          } as TableOptions<GroupType>
+        }
+        showToolbar={false}
+      />
     </div>
   );
 };
@@ -34,7 +197,7 @@ const Groups: React.FC = () => {
     );
   }, [dispatch]);
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  // const user = useSelector((state: RootState) => state.auth.user);
 
   // TODO: Get group id from user
   // const { capstone_group_id: groupId } = user?.extra_info.student || {};
