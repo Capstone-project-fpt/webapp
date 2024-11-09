@@ -21,7 +21,7 @@ const EvaluationRoutes: RouteObject[] = [
         element: <CreateEvaluationGroup/>
       },
       {
-        path: ":evaluationId",
+        path: ":evaluationId/:tab?",
         element: <EvaluationDetail/>
       },
     ],
