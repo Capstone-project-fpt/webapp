@@ -1,11 +1,12 @@
 import { LoadingTableLottie } from "@/components";
+import { GroupStatusBadge } from "@/components/common/status-badge";
 import {
   ActionCell,
   DataTable,
   DataTableColumnHeader,
+  DateCell,
   TextCell,
 } from "@/components/data-table";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
@@ -15,7 +16,7 @@ import {
 } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { UserTypes } from "@/types/accounts";
-import { GroupStatus, GroupType } from "@/types/group";
+import { GroupType } from "@/types/group";
 import {
   ColumnDef,
   PaginationState,
@@ -74,20 +75,6 @@ const Actions: React.FC<{
   );
 };
 
-const GroupStatusBadge: React.FC<{ status: GroupStatus }> = ({ status }) => {
-  const statusName = {
-    [GroupStatus.InProgress]: "In Progress",
-    [GroupStatus.ReviewingTopic]: "Reviewing Topic",
-  };
-  return (
-    <Badge
-      variant={status === GroupStatus.InProgress ? "secondary" : "outline"}
-    >
-      {statusName[status]}
-    </Badge>
-  );
-};
-
 const columns = (): ColumnDef<GroupType>[] => [
   {
     accessorKey: "name",
@@ -111,6 +98,13 @@ const columns = (): ColumnDef<GroupType>[] => [
       <DataTableColumnHeader column={column} columnTitle="Status" />
     ),
     cell: ({ row }) => <GroupStatusBadge status={row.original.status} />,
+  },
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Created At" />
+    ),
+    cell: ({ row }) => <DateCell date={row.original.created_at} />,
   },
   {
     id: "actions",

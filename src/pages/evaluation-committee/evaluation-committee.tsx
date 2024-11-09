@@ -1,16 +1,22 @@
 import { LoadingTableLottie } from "@/components";
 import { SettingCard } from "@/components/custom/setting";
 import {
+  ActionCell,
   DataTable,
   DataTableColumnHeader,
+  DateCell,
   TextCell,
 } from "@/components/data-table";
 import { useGetEvaluationsQuery } from "@/store/api/v1/endpoints/evaluations";
-import { useGetCurrentSemesterQuery } from "@/store/api/v1/endpoints/semesters"; 
+import { useGetCurrentSemesterQuery } from "@/store/api/v1/endpoints/semesters";
 import { EvaluationType } from "@/types/evaluation";
-import { ColumnDef, PaginationState, TableOptions } from "@tanstack/react-table";
+import { skipToken } from "@reduxjs/toolkit/query/react";
+import {
+  ColumnDef,
+  PaginationState,
+  TableOptions,
+} from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
-import { skipToken } from '@reduxjs/toolkit/query/react';
 
 const columns = (): ColumnDef<EvaluationType>[] => [
   {
@@ -18,11 +24,14 @@ const columns = (): ColumnDef<EvaluationType>[] => [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Name" />
     ),
-    cell: ({ row }) =>
-      <div  className="py-2"> 
-        <TextCell size={200} >{row.original.name}</TextCell>
-      </div> 
-    
+    cell: ({ row }) => <TextCell size={200}>{row.original.name}</TextCell>,
+  },
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Created At" />
+    ),
+    cell: ({ row }) => <DateCell date={row.original.created_at} />,
   },
   // {
   //   accessorKey: "",
@@ -31,6 +40,21 @@ const columns = (): ColumnDef<EvaluationType>[] => [
   //   ),
   //   cell: ({ row }) => <TextCell size={200}>{row.original.total_members}</TextCell>,
   // },
+  {
+    id: "actions",
+    header: () => <TextCell>Actions</TextCell>,
+    cell: ({ row }) => (
+      <ActionCell
+        items={[
+          {
+            item: "View Detail",
+            onClick: () => {
+            },
+          },
+        ]}
+      />
+    ),
+  },
 ];
 
 const EvaluationGroups: React.FC = () => {
@@ -53,9 +77,9 @@ const EvaluationGroups: React.FC = () => {
       ? {
           page: pagination.pageIndex + 1,
           limit: pagination.pageSize,
-          semester_id: currentSemesterData.data.id, 
+          semester_id: currentSemesterData.data.id,
         }
-      : skipToken 
+      : skipToken
   );
 
   const tableData = useMemo(() => {
@@ -83,9 +107,7 @@ const EvaluationGroups: React.FC = () => {
   return (
     <div>
       {currentSemesterData ? (
-        <SettingCard
-          title={`Evaluation Committee Groups (${totalRecord})`}
-        >
+        <SettingCard title={`Evaluation Committee Groups (${totalRecord})`}>
           <DataTable
             data={tableData}
             columns={columns()}
@@ -97,6 +119,7 @@ const EvaluationGroups: React.FC = () => {
                 pageCount: Math.ceil(totalRecord / pagination.pageSize),
               } as TableOptions<EvaluationType>
             }
+            showToolbar={false}
           />
         </SettingCard>
       ) : (
