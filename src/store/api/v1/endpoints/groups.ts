@@ -108,6 +108,12 @@ const groupsApi = api.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    setGroupTopic: builder.mutation<ResponseType<string>, { group_id: number, topic_id: number }>({
+      query: ({ group_id, topic_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+        method: 'POST',
+      }),
+    }),
     reviewTopic: builder.mutation<ResponseType<string>, { group_id: number, topic_id: number, status_review: TopicReviewStatus }>({
       query: ({ group_id, topic_id, status_review }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/teacher-reviews/`,
@@ -196,6 +202,7 @@ export const {
   useGetTopicQuery,
   useUpdateTopicMutation,
   useDeleteTopicMutation,
+  useSetGroupTopicMutation,
 
   useReviewTopicMutation,
   useGetTopicFeedbacksQuery,

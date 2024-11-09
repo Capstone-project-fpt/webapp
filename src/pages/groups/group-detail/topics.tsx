@@ -14,7 +14,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RootState } from "@/store";
-import { useGetTopicsQuery } from "@/store/api/v1/endpoints/groups";
+import {
+  useGetTopicsQuery,
+  useSetGroupTopicMutation,
+} from "@/store/api/v1/endpoints/groups";
 import { GroupStatus, TopicGroup, TopicReviewStatus } from "@/types/group";
 import { AlertCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -23,17 +26,20 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
 import ReviewStatus from "../components/topic-review-status";
+import { useToast } from "@/hooks/use-toast";
+import { ResponseErrorType } from "@/types";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const currentGroup = useSelector(
     (state: RootState) => state.resource.currentGroup
   );
-
+  const { toast } = useToast();
   const navigate = useNavigate();
   const { data: topicsData, isLoading } = useGetTopicsQuery({
     group_id: parseInt(groupId!),
   });
+  const [setGroupTopicMutation] = useSetGroupTopicMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [topics, setTopics] = useState<TopicGroup[]>([]);
 
@@ -44,9 +50,27 @@ const Topics: React.FC = () => {
     }
   }, [topicsData]);
 
-  const setGroupTopic = (topicId: number) => {
-    console.log("Set topic", topicId);
-    // TODO: Implement set topic to group
+  const setGroupTopic = async (topicId: number) => {
+    try {
+      const data = await setGroupTopicMutation({
+        group_id: parseInt(groupId!),
+        topic_id: topicId,
+      }).unwrap();
+
+      toast({
+        title: "Set group's topic",
+        description: data.message || "Set group's topic successfully",
+      });
+
+    } catch (error) {
+      toast({
+        title: "Set group's topic",
+        description:
+          (error as ResponseErrorType).data.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
+        variant: "destructive",
+      });
+    }
   };
 
   const groupTopicStatus = currentGroup?.status;

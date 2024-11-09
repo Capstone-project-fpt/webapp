@@ -27,8 +27,12 @@ import { ActionDialog } from "@/components/custom/action-dialog";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ResponseErrorType } from "@/types";
-import { TopicGroup, TopicReviewStatus } from "@/types/group";
+import { ListPaginationType, ResponseErrorType, ResponseType } from "@/types";
+import {
+  TopicGroup,
+  TopicGroupFeedback,
+  TopicReviewStatus,
+} from "@/types/group";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import CommentComposer from "./components/comment-composer";
 import UploadTopicDialog from "./components/create-upload-topic-dialog";
@@ -181,7 +185,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
 };
 
 interface FeedbackSectionProps {
-  feedbacksData: any;
+  feedbacksData: ResponseType<ListPaginationType<TopicGroupFeedback>>;
   groupId: string;
   topicId: string;
   refetchFeedbacks: () => void;
@@ -492,7 +496,7 @@ const TopicDetail: React.FC = () => {
             </TabsList>
             <TabsContent value="feedbacks">
               <FeedbackSection
-                feedbacksData={feedbacksData}
+                feedbacksData={feedbacksData!}
                 groupId={groupId!}
                 topicId={topicId!}
                 refetchFeedbacks={refetchFeedbacks}
