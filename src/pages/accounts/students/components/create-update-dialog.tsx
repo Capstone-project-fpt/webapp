@@ -52,6 +52,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     } else {
       const newStudent: StudentType = {
         student_id: values.student_id || 0,
+        id: values.student_id || 0,
         code: values.code,
         email: values.email,
         name: values.name,
@@ -91,7 +92,14 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
         description: messageError,
       });
     }
-  }, [createStudentData, onOpenChange]);
+  }, [
+    createStudentData.isSuccess,
+    updateStudentData.isSuccess,
+    createStudentData.isError,
+    updateStudentData.isError,
+    onOpenChange,
+    student,
+  ]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

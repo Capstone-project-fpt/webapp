@@ -50,6 +50,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     } else {
       const newlecture: LectureType = {
         teacher_id: values.teacher_id || 0,
+        id: values.teacher_id || 0,
         email: values.email,
         name: values.name,
         phone_number: values.phone_number,
