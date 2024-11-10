@@ -177,7 +177,7 @@ const groupsApi = api.injectEndpoints({
       { group_id: number; token: string, status: InvitationMentorStatus }
     >({
       query: ({ group_id, token, status }) => ({
-        url: `/capstone-groups/${group_id}/mentors/invitation`,
+        url: `/capstone-groups/${group_id}/mentors/invitations`,
         method: "POST",
         body: { token, status },
       }),

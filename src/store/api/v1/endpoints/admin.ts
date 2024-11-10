@@ -4,9 +4,9 @@ import { api } from "..";
 const adminEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query<GetUsersResponse, UsersPaginationType>({
-      query: ({ limit = 10, page = 1, user_types, email }) => ({
+      query: ({ limit = 10, page = 1, order_by = 'DESC', user_types, email }) => ({
         url: 'admin/users/',
-        params: { limit, page, user_types, email },
+        params: { limit, page, order_by, user_types, email },
       }),
       providesTags: ["Account"],
     }),
@@ -65,7 +65,7 @@ const adminEndPoint = api.injectEndpoints({
       invalidatesTags: ["Account"],
     }),
     importLectures: builder.mutation({
-      query: (body: FormData ) => ({
+      query: (body: FormData) => ({
         url: "admin/teachers/import-data",
         method: "POST",
         body,
@@ -89,9 +89,9 @@ const adminEndPoint = api.injectEndpoints({
       },
       invalidatesTags: ["Account"],
     }),
-    })
-    // #endregion
-  });
+  })
+  // #endregion
+});
 
 export const {
   useGetUsersQuery,

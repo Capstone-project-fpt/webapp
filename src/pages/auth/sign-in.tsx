@@ -28,8 +28,8 @@ const SignIn: React.FC = () => {
 
   // TODO: Remove this values
   const initialValues: SignInType = {
-    email: "adminfpt@gmai.com",
-    password: "Test@123",
+    email: "admin@gmail.com",
+    password: "123456",
   };
 
   const handleSubmit = async (
