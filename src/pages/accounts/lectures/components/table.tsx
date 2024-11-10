@@ -31,7 +31,7 @@ export function LecturesTable() {
       const { items, meta } = queryData.data;
 
       const data = (items || []).map(({ common_info, extra_info }) => {
-        const lecture = extra_info?.lecture;
+        const lecture = extra_info?.teacher;
         return {
           ...common_info,
           ...lecture,
