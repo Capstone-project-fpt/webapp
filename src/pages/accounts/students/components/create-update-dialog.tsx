@@ -15,14 +15,15 @@ import {
   useCreateStudentMutation,
   useUpdateStudentMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { StudentType } from "@/types/accounts";
+import { UpdateStudentPayload } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
+
 interface FormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  student?: StudentType;
+  student?: UpdateStudentPayload;
 }
 
 const CreateUpdateDialog: React.FC<FormProps> = ({
@@ -33,17 +34,18 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createStudent, createStudentData] = useCreateStudentMutation();
   const [updateStudent, updateStudentData] = useUpdateStudentMutation();
 
-  const initialValues: StudentType = {
+  const initialValues: UpdateStudentPayload = {
+    id: student?.id || 0,
     code: student?.code || "",
     email: student?.email || "",
     name: student?.name || "",
     phone_number: student?.phone_number || "",
-    sub_major_id: 1,
+    sub_major_id: student?.sub_major_id || 1,
   };
 
-  const handleCreateForm = async (values: StudentType) => {
+  const handleCreateForm = async (values: UpdateStudentPayload) => {
     if (student) {
-      await updateStudent({ ...values, id: student.id });
+      await updateStudent(values);
     } else {
       await createStudent(values);
     }
@@ -93,9 +95,9 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={studentSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, isSubmitting }) => (
-            <Form className=" flex flex-col gap-3 ">
-              <div className="flex flex-col gap-2 ">
+          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
+            <Form className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="code">Code</Label>
                 <Input
                   name="code"
@@ -107,12 +109,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="code"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Email</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   name="email"
                   id="email"
@@ -123,12 +125,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="email"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Name</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name">Name</Label>
                 <Input
                   name="name"
                   id="name"
@@ -139,12 +141,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="name"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Phone Number</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="phone_number">Phone Number</Label>
                 <Input
                   name="phone_number"
                   id="phone_number"
@@ -155,7 +157,31 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="phone_number"
-                  component={"div"}
+                  component="div"
+                  className="text-sm text-danger"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="sub_major_id">Major</Label>
+                <select
+                  name="sub_major_id"
+                  id="sub_major_id"
+                  value={values.sub_major_id}
+                  onBlur={handleBlur}
+                  onChange={(e) =>
+                    setFieldValue("sub_major_id", parseInt(e.target.value))
+                  }
+                  className="p-2 border rounded-md"
+                >
+                  <option value="" disabled>
+                    Select Major
+                  </option>
+                  <option value="1">Technology and Information</option>
+                  <option value="2">Business Administration</option>
+                </select>
+                <ErrorMessage
+                  name="sub_major_id"
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>

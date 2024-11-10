@@ -43,9 +43,26 @@ interface UsersType {
   };
 }
 
-export interface GetUsersResponse extends ResponseType<UsersType> {}
+export interface GetUsersResponse extends ResponseType<UsersType> { }
 
 export interface UsersPaginationType extends PaginationType {
   user_types?: UserTypes;
   email?: string;
+}
+
+export interface UpdateStudentPayload {
+  id: number;
+  code: string;
+  email: string;
+  name: string;
+  phone_number: string;
+  sub_major_id: number;
+}
+
+export interface UpdateLecturePayload {
+  id: number;
+  email: string;
+  name: string;
+  phone_number: string;
+  sub_major_id: number;
 }

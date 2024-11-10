@@ -15,14 +15,14 @@ import {
   useCreateLectureMutation,
   useUpdateLectureMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { LectureType } from "@/types/accounts";
+import { UpdateLecturePayload } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
 interface FormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lecture?: LectureType;
+  lecture?: UpdateLecturePayload;
 }
 
 const CreateUpdateDialog: React.FC<FormProps> = ({
@@ -33,16 +33,17 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createLecture, createLectureData] = useCreateLectureMutation();
   const [updateLecture, updateLectureData] = useUpdateLectureMutation();
 
-  const initialValues: LectureType = {
+  const initialValues: UpdateLecturePayload = {
+    id: lecture?.id || 0,
     email: lecture?.email || "",
     name: lecture?.name || "",
     phone_number: lecture?.phone_number || "",
     sub_major_id: 1,
   };
 
-  const handleCreateForm = async (values: LectureType) => {
+  const handleCreateForm = async (values: UpdateLecturePayload) => {
     if (lecture) {
-      await updateLecture({ ...values, email: lecture.email });
+      await updateLecture(values);
     } else {
       await createLecture(values);
     }
@@ -145,6 +146,28 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 <ErrorMessage
                   name="phone_number"
                   component={"div"}
+                  className="text-sm text-danger"
+                />
+              </div>
+              <div className="flex flex-col gap-2 ">
+                <Label htmlFor="sub_major_id">Major</Label>
+                <select
+                  name="sub_major_id"
+                  id="sub_major_id"
+                  value={values.sub_major_id}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  className="p-2 border rounded-md"
+                >
+                  <option value="" disabled>
+                    Select Major
+                  </option>
+                  <option value="1">Technology and Information</option>
+                  <option value="2">Business Administration</option>
+                </select>
+                <ErrorMessage
+                  name="sub_major_id"
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
