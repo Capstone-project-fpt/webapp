@@ -15,7 +15,7 @@ import {
   useCreateLectureMutation,
   useUpdateLectureMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { UpdateLecturePayload } from "@/types/accounts";
+import { UpdateLecturePayload, LectureType } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
@@ -33,21 +33,32 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createLecture, createLectureData] = useCreateLectureMutation();
   const [updateLecture, updateLectureData] = useUpdateLectureMutation();
 
-  const initialValues: UpdateLecturePayload = {
+  type InitialValuesType = UpdateLecturePayload & Partial<LectureType>;
+
+  const initialValues: InitialValuesType = {
+    teacher_id: lecture?.teacher_id || 0,
     id: lecture?.id || 0,
     email: lecture?.email || "",
     name: lecture?.name || "",
     phone_number: lecture?.phone_number || "",
-    sub_major_id: 1,
+    sub_major_id: lecture?.sub_major_id || 1,
   };
-
-  const handleCreateForm = async (values: UpdateLecturePayload) => {
+  
+  const handleCreateForm = async (values: InitialValuesType) => {
     if (lecture) {
-      await updateLecture(values);
+      await updateLecture(values as UpdateLecturePayload);
     } else {
-      await createLecture(values);
+      const newlecture: LectureType = {
+        teacher_id: values.teacher_id || 0,
+        email: values.email,
+        name: values.name,
+        phone_number: values.phone_number,
+        sub_major_id: values.sub_major_id,
+      };
+      await createLecture(newlecture);
     }
   };
+  
 
   useEffect(() => {
     if (createLectureData.isSuccess || updateLectureData.isSuccess) {
@@ -73,7 +84,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
       toast({
         duration: 1000,
         variant: "destructive",
-        title: lecture ? "Update Student" : "Create Student",
+        title: lecture ? "Update lecture" : "Create lecture",
         description: messageError,
       });
     }

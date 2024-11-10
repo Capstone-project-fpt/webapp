@@ -15,7 +15,7 @@ import {
   useCreateStudentMutation,
   useUpdateStudentMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { UpdateStudentPayload } from "@/types/accounts";
+import { UpdateStudentPayload, StudentType } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
@@ -34,7 +34,10 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createStudent, createStudentData] = useCreateStudentMutation();
   const [updateStudent, updateStudentData] = useUpdateStudentMutation();
 
-  const initialValues: UpdateStudentPayload = {
+  type InitialValuesType = UpdateStudentPayload & Partial<StudentType>;
+
+  const initialValues: InitialValuesType = {
+    student_id: student?.student_id || 0,
     id: student?.id || 0,
     code: student?.code || "",
     email: student?.email || "",
@@ -42,14 +45,23 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     phone_number: student?.phone_number || "",
     sub_major_id: student?.sub_major_id || 1,
   };
-
-  const handleCreateForm = async (values: UpdateStudentPayload) => {
+  
+  const handleCreateForm = async (values: InitialValuesType) => {
     if (student) {
-      await updateStudent(values);
+      await updateStudent(values as UpdateStudentPayload);
     } else {
-      await createStudent(values);
+      const newStudent: StudentType = {
+        student_id: values.student_id || 0,
+        code: values.code,
+        email: values.email,
+        name: values.name,
+        phone_number: values.phone_number,
+        sub_major_id: values.sub_major_id,
+      };
+      await createStudent(newStudent);
     }
   };
+  
 
   useEffect(() => {
     if (createStudentData.isSuccess || updateStudentData.isSuccess) {
