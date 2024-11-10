@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -43,7 +50,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     phone_number: lecture?.phone_number || "",
     sub_major_id: lecture?.sub_major_id || 1,
   };
-  
+
   const handleCreateForm = async (values: InitialValuesType) => {
     if (lecture) {
       await updateLecture(values as UpdateLecturePayload);
@@ -59,7 +66,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
       await createLecture(newlecture);
     }
   };
-  
+
 
   useEffect(() => {
     if (createLectureData.isSuccess || updateLectureData.isSuccess) {
@@ -111,7 +118,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={lectureSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, isSubmitting }) => (
+          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
             <Form className=" flex flex-col gap-3 ">
               <div className="flex flex-col gap-2 ">
                 <Label htmlFor="code">Email</Label>
@@ -163,20 +170,18 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
               </div>
               <div className="flex flex-col gap-2 ">
                 <Label htmlFor="sub_major_id">Major</Label>
-                <select
-                  name="sub_major_id"
-                  id="sub_major_id"
-                  value={values.sub_major_id}
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  className="p-2 border rounded-md"
+                <Select
+                  value={String(values.sub_major_id)}
+                  onValueChange={(value) => setFieldValue("sub_major_id", parseInt(value))}
                 >
-                  <option value="" disabled>
-                    Select Major
-                  </option>
-                  <option value="1">Technology and Information</option>
-                  <option value="2">Business Administration</option>
-                </select>
+                  <SelectTrigger className="p-2 border rounded-md">
+                    <SelectValue placeholder="Select Major" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Technology and Information</SelectItem>
+                    <SelectItem value="2">Business Administration</SelectItem>
+                  </SelectContent>
+                </Select>
                 <ErrorMessage
                   name="sub_major_id"
                   component="div"
