@@ -188,7 +188,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <Label htmlFor="sub_major_id">Major</Label>
                 <Select
                   value={String(values.sub_major_id)}
@@ -207,7 +207,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                   component="div"
                   className="text-sm text-danger"
                 />
-              </div>
+              </div> */}
               <DialogFooter className="gap-2">
                 <Button
                   variant="secondary"
