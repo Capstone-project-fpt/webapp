@@ -12,6 +12,7 @@ export interface StudentType {
 
 export interface LectureType {
   teacher_id: number;
+  id?: number; 
   email: string;
   name: string;
   phone_number: string;
