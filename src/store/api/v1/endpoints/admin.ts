@@ -1,4 +1,4 @@
-import { GetUsersResponse, LectureType, StudentType, UsersPaginationType } from "@/types/accounts";
+import { GetUsersResponse, LectureType, StudentType, UsersPaginationType, UpdateStudentPayload, UpdateLecturePayload } from "@/types/accounts";
 import { api } from "..";
 
 const adminEndPoint = api.injectEndpoints({
@@ -36,11 +36,21 @@ const adminEndPoint = api.injectEndpoints({
       invalidatesTags: ["Account"],
     }),
     updateStudent: builder.mutation({
-      query: (body) => ({
-        url: "admin/students/update",
-        method: "PUT",
-        body,
-      }),
+      query: (body: UpdateStudentPayload) => {
+        const payload = {
+          email: body.email,
+          name: body.name,
+          phone_number: body.phone_number,
+          sub_major_id: body.sub_major_id,
+          code: body.code,
+        };
+
+        return {
+          url: `admin/users/${body.id}`,
+          method: "PUT",
+          body: payload,
+        };
+      },
       invalidatesTags: ["Account"],
     }),
     //#endregion
@@ -62,12 +72,21 @@ const adminEndPoint = api.injectEndpoints({
       }),
       invalidatesTags: ["Account"],
     }),
-    updateLecture:builder.mutation({
-      query: (body: LectureType) => ({
-        url: "admin/teachers/update",
-        method: "PUT",
-        body,
-      }),
+    updateLecture: builder.mutation({
+      query: (body: UpdateLecturePayload) => {
+        const payload = {
+          email: body.email,
+          name: body.name,
+          phone_number: body.phone_number,
+          sub_major_id: body.sub_major_id,
+        };
+
+        return {
+          url: `admin/users/${body.id}`,
+          method: "PUT",
+          body: payload,
+        };
+      },
       invalidatesTags: ["Account"],
     }),
     })

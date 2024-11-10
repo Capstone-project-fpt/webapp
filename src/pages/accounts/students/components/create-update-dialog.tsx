@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -15,14 +22,15 @@ import {
   useCreateStudentMutation,
   useUpdateStudentMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { StudentType } from "@/types/accounts";
+import { UpdateStudentPayload, StudentType } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
+
 interface FormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  student?: StudentType;
+  student?: UpdateStudentPayload;
 }
 
 const CreateUpdateDialog: React.FC<FormProps> = ({
@@ -33,21 +41,35 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createStudent, createStudentData] = useCreateStudentMutation();
   const [updateStudent, updateStudentData] = useUpdateStudentMutation();
 
-  const initialValues: StudentType = {
+  type InitialValuesType = UpdateStudentPayload & Partial<StudentType>;
+
+  const initialValues: InitialValuesType = {
+    student_id: student?.student_id || 0,
+    id: student?.id || 0,
     code: student?.code || "",
     email: student?.email || "",
     name: student?.name || "",
     phone_number: student?.phone_number || "",
-    sub_major_id: 1,
+    sub_major_id: student?.sub_major_id || 1,
   };
-
-  const handleCreateForm = async (values: StudentType) => {
+  
+  const handleCreateForm = async (values: InitialValuesType) => {
     if (student) {
-      await updateStudent({ ...values, id: student.id });
+      await updateStudent(values as UpdateStudentPayload);
     } else {
-      await createStudent(values);
+      const newStudent: StudentType = {
+        student_id: values.student_id || 0,
+        id: values.student_id || 0,
+        code: values.code,
+        email: values.email,
+        name: values.name,
+        phone_number: values.phone_number,
+        sub_major_id: values.sub_major_id,
+      };
+      await createStudent(newStudent);
     }
   };
+  
 
   useEffect(() => {
     if (createStudentData.isSuccess || updateStudentData.isSuccess) {
@@ -77,7 +99,14 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
         description: messageError,
       });
     }
-  }, [createStudentData, onOpenChange]);
+  }, [
+    createStudentData.isSuccess,
+    updateStudentData.isSuccess,
+    createStudentData.isError,
+    updateStudentData.isError,
+    onOpenChange,
+    student,
+  ]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -93,9 +122,9 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={studentSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, isSubmitting }) => (
-            <Form className=" flex flex-col gap-3 ">
-              <div className="flex flex-col gap-2 ">
+          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
+            <Form className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="code">Code</Label>
                 <Input
                   name="code"
@@ -107,12 +136,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="code"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Email</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   name="email"
                   id="email"
@@ -123,12 +152,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="email"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Name</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name">Name</Label>
                 <Input
                   name="name"
                   id="name"
@@ -139,12 +168,12 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="name"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
-              <div className="flex flex-col gap-2 ">
-                <Label htmlFor="code">Phone Number</Label>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="phone_number">Phone Number</Label>
                 <Input
                   name="phone_number"
                   id="phone_number"
@@ -155,10 +184,30 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                 />
                 <ErrorMessage
                   name="phone_number"
-                  component={"div"}
+                  component="div"
                   className="text-sm text-danger"
                 />
               </div>
+              {/* <div className="flex flex-col gap-2">
+                <Label htmlFor="sub_major_id">Major</Label>
+                <Select
+                  value={String(values.sub_major_id)}
+                  onValueChange={(value) => setFieldValue("sub_major_id", parseInt(value))}
+                >
+                  <SelectTrigger className="p-2 border rounded-md">
+                    <SelectValue placeholder="Select Major" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Technology and Information</SelectItem>
+                    <SelectItem value="2">Business Administration</SelectItem>
+                  </SelectContent>
+                </Select>
+                <ErrorMessage
+                  name="sub_major_id"
+                  component="div"
+                  className="text-sm text-danger"
+                />
+              </div> */}
               <DialogFooter className="gap-2">
                 <Button
                   variant="secondary"

@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -15,14 +22,14 @@ import {
   useCreateLectureMutation,
   useUpdateLectureMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { LectureType } from "@/types/accounts";
+import { UpdateLecturePayload, LectureType } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
 interface FormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lecture?: LectureType;
+  lecture?: UpdateLecturePayload;
 }
 
 const CreateUpdateDialog: React.FC<FormProps> = ({
@@ -33,20 +40,33 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   const [createLecture, createLectureData] = useCreateLectureMutation();
   const [updateLecture, updateLectureData] = useUpdateLectureMutation();
 
-  const initialValues: LectureType = {
+  type InitialValuesType = UpdateLecturePayload & Partial<LectureType>;
+
+  const initialValues: InitialValuesType = {
+    teacher_id: lecture?.teacher_id || 0,
+    id: lecture?.id || 0,
     email: lecture?.email || "",
     name: lecture?.name || "",
     phone_number: lecture?.phone_number || "",
-    sub_major_id: 1,
+    sub_major_id: lecture?.sub_major_id || 1,
   };
 
-  const handleCreateForm = async (values: LectureType) => {
+  const handleCreateForm = async (values: InitialValuesType) => {
     if (lecture) {
-      await updateLecture({ ...values, email: lecture.email });
+      await updateLecture(values as UpdateLecturePayload);
     } else {
-      await createLecture(values);
+      const newlecture: LectureType = {
+        teacher_id: values.teacher_id || 0,
+        id: values.teacher_id || 0,
+        email: values.email,
+        name: values.name,
+        phone_number: values.phone_number,
+        sub_major_id: values.sub_major_id,
+      };
+      await createLecture(newlecture);
     }
   };
+
 
   useEffect(() => {
     if (createLectureData.isSuccess || updateLectureData.isSuccess) {
@@ -72,7 +92,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
       toast({
         duration: 1000,
         variant: "destructive",
-        title: lecture ? "Update Student" : "Create Student",
+        title: lecture ? "Update lecture" : "Create lecture",
         description: messageError,
       });
     }
@@ -98,7 +118,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={lectureSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, isSubmitting }) => (
+          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
             <Form className=" flex flex-col gap-3 ">
               <div className="flex flex-col gap-2 ">
                 <Label htmlFor="code">Email</Label>
@@ -148,6 +168,26 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
                   className="text-sm text-danger"
                 />
               </div>
+              {/* <div className="flex flex-col gap-2 "> */}
+                {/* <Label htmlFor="sub_major_id">Major</Label>
+                <Select
+                  value={String(values.sub_major_id)}
+                  onValueChange={(value) => setFieldValue("sub_major_id", parseInt(value))}
+                >
+                  <SelectTrigger className="p-2 border rounded-md">
+                    <SelectValue placeholder="Select Major" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Technology and Information</SelectItem>
+                    <SelectItem value="2">Business Administration</SelectItem>
+                  </SelectContent>
+                </Select>
+                <ErrorMessage
+                  name="sub_major_id"
+                  component="div"
+                  className="text-sm text-danger"
+                /> */}
+              {/* </div> */}
               <DialogFooter className="gap-2">
                 <Button
                   variant="secondary"

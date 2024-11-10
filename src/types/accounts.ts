@@ -2,6 +2,7 @@ import { PaginationType, ResponseType } from "./utils";
 
 export interface StudentType {
   student_id: number;
+  id: number; 
   code: string;
   email: string;
   name: string;
@@ -11,6 +12,10 @@ export interface StudentType {
 
 export interface LectureType {
   teacher_id: number;
+  id: number; 
+  email: string;
+  name: string;
+  phone_number: string;
   sub_major_id: number;
 }
 
@@ -43,9 +48,28 @@ interface UsersType {
   };
 }
 
-export interface GetUsersResponse extends ResponseType<UsersType> {}
+export interface GetUsersResponse extends ResponseType<UsersType> { }
 
 export interface UsersPaginationType extends PaginationType {
   user_types?: UserTypes;
   email?: string;
+}
+
+export interface UpdateStudentPayload {
+  id: number;
+  student_id?: number;
+  code: string;
+  email: string;
+  name: string;
+  phone_number: string;
+  sub_major_id: number;
+}
+
+export interface UpdateLecturePayload {
+  id: number;
+  teacher_id?: number;
+  email: string;
+  name: string;
+  phone_number: string;
+  sub_major_id: number;
 }
