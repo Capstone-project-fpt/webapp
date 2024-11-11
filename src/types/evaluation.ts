@@ -11,10 +11,21 @@ export interface EvaluationType {
   name: string;
   semester_id: number;
   teacher_ids: number[];
+  teachers: MemberEvaluationGroup[];
 }
 
 export interface CreateEvaluationGroup{
   semester_id: number;
   teacher_ids: number[];
   name: string;
+}
+
+export interface MemberEvaluationGroup {
+  id: number;
+  email: string;
+  name: string;
+  phone_number: string;
+  sub_major_id: number;
+  user_id: number;
+  user_type: string;
 }
