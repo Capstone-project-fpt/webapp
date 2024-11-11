@@ -77,12 +77,12 @@ const columns = (): ColumnDef<EvaluationType>[] => [
     ),
   },
   {
-    accessorKey: "total_members",
+    accessorKey: "teacher_ids",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Total Members" />
     ),
     cell: ({ row }) => (
-      <TextCell size={200}>{row.original.total_members}</TextCell>
+      <TextCell size={200}>{row.original.teacher_ids.length}</TextCell>
     ),
   },
   // {

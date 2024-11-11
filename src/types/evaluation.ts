@@ -10,7 +10,7 @@ export interface EvaluationType {
   updated_at: Date;
   name: string;
   semester_id: number;
-  total_members: number;
+  teacher_ids: number[];
 }
 
 export interface CreateEvaluationGroup{
