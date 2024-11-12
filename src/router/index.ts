@@ -12,7 +12,7 @@ import SemesterRoutes from "./semesters";
 import SyllabusRoutes from "./syllabus";
 import TopicRoutes from "./topics";
 import EvaluationRoutes from "./evaluations";
-import ScheduleRoutes from "./schedule";
+
 
 
 const router = createBrowserRouter([
@@ -29,7 +29,6 @@ const router = createBrowserRouter([
   ...SemesterRoutes,
   ...SyllabusRoutes,
   ...EvaluationRoutes,
-  ...ScheduleRoutes,
 ]);
 
 export default router;
