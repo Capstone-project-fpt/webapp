@@ -8,28 +8,23 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetListStudentsHaveCapstoneGroupQuery } from "@/store/api/v1/endpoints/groups";
 
-
 const defaultAdditional = { page: 1 };
 
 interface SelectStudentProps {
   value: OptionType | null;
   onChangeValue:
-  | ((
-    newValue: SingleValue<OptionType>,
-    actionMeta: ActionMeta<OptionType>
-  ) => void)
-  | undefined;
+    | ((
+        newValue: SingleValue<OptionType>,
+        actionMeta: ActionMeta<OptionType>
+      ) => void)
+    | undefined;
   selectedMembers: Member[];
 }
-
-
-
 
 const SelectStudent: React.FC<SelectStudentProps> = ({
   value,
   onChangeValue,
   selectedMembers,
- 
 }) => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
@@ -38,9 +33,12 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
     data: listStudentsHaveCapstoneGroup,
     error,
     isLoading,
-  } = useGetListStudentsHaveCapstoneGroupQuery({ semester_id: currentSemester?.id! }, { skip: !currentSemester });
+  } = useGetListStudentsHaveCapstoneGroupQuery(
+    { semester_id: currentSemester?.id! },
+    { skip: !currentSemester }
+  );
 
-  console.log(listStudentsHaveCapstoneGroup)
+  console.log(listStudentsHaveCapstoneGroup);
   const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
@@ -59,15 +57,19 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
         user_types: UserTypes.STUDENT,
       }).unwrap();
 
-      const disableStudentIds: number[] = [... new Set([
-        ...selectedMembers.map(s => s.studentId),
-        ...(listStudentsHaveCapstoneGroup ? listStudentsHaveCapstoneGroup.data.map(l => l.id) : [])
-      ])]
+      const disableStudentIds: number[] = [
+        ...new Set([
+          ...selectedMembers.map((s) => s.studentId),
+          ...(listStudentsHaveCapstoneGroup
+            ? listStudentsHaveCapstoneGroup.data.map((l) => l.id)
+            : []),
+        ]),
+      ];
 
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: disableStudentIds.includes(item.extra_info.student!.id),
+        disabled: disableStudentIds.includes(item.extra_info.student!.student_id),
       }));
 
       return {
