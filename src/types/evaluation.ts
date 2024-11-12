@@ -29,3 +29,9 @@ export interface MemberEvaluationGroup {
   user_id: number;
   user_type: string;
 }
+
+export interface UpdateEvaluationGroup{
+  id: number;
+  name: string;
+  teacher_ids: number[];
+}
