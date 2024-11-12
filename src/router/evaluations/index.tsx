@@ -2,9 +2,11 @@ import { ErrorBoundary } from "@/components";
 import { MainLayout } from "@/layouts";
 import EvaluationCommittee from "@/pages/evaluation-committee";
 import CreateEvaluationGroup from "@/pages/evaluation-committee/create-group";
+import CreateReviewSchedule from "@/pages/evaluation-committee/create-schedule";
 import EvaluationDetail from "@/pages/evaluation-committee/group-detail";
 
 import { RouteObject } from "react-router-dom";
+import { Calendar } from "tabler-icons-react";
 
 const EvaluationRoutes: RouteObject[] = [
   {
@@ -24,6 +26,16 @@ const EvaluationRoutes: RouteObject[] = [
         path: ":evaluationId/:tab?",
         element: <EvaluationDetail/>
       },
+      {
+        path: ":evaluationId/calendar",
+        element: <Calendar/>
+      },
+      {
+        path:":evaluationId/calendar/create",
+        element: <CreateReviewSchedule/>
+      }
+
+        
     ],
   },
 ];

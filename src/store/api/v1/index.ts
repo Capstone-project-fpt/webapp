@@ -20,6 +20,6 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Category", "Product", "User", "Topic", "Account", "Group", "Semester", "Syllabus","EvaluationCommittee"],
+  tagTypes: ["Category", "Product", "User", "Topic", "Account", "Group", "Semester", "Syllabus","EvaluationCommittee","Schedule"],
   endpoints: () => ({}),
 });

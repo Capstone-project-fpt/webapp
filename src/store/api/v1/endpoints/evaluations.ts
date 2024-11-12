@@ -1,6 +1,7 @@
 import { ListPaginationType, ResponseType } from "@/types";
 import { CreateEvaluationGroup, EvaluationType, QueryEvaluationsParams } from "@/types/evaluation";
 import { api } from "..";
+import { CreateScheduleType, ScheduleType } from "@/types/schedule";
 
 const evaluationsApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -53,14 +54,25 @@ const evaluationsApi = api.injectEndpoints({
             }),
             invalidatesTags: ["EvaluationCommittee"],
         }),
-    })
-});
+               
+        createSchedule: builder.mutation<ResponseType<ScheduleType>, CreateScheduleType>({
+                    query: (data) => ({
+                        url: "/schedule-reviews/",
+                        method: "POST",
+                        body: data,
+                    }),
+                    invalidatesTags: ["Schedule"],
+                }),
+            })
+        })
+        
 export const {
     useGetEvaluationsQuery,
     useGetEvaluationQuery,
     useCreateEvaluationMutation,
     useDeleteEvaluationMutation,
     useUpdateEvaluationMutation,
+    useCreateScheduleMutation
 } = evaluationsApi
 
 
