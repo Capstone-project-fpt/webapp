@@ -58,18 +58,18 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
       }).unwrap();
 
       const disableStudentIds: number[] = [
-        ...new Set([
-          ...selectedMembers.map((s) => s.studentId),
-          ...(listStudentsHaveCapstoneGroup
-            ? listStudentsHaveCapstoneGroup.data.map((l) => l.id)
-            : []),
-        ]),
+        ...selectedMembers.map((s) => s.studentId),
+        ...(listStudentsHaveCapstoneGroup
+          ? listStudentsHaveCapstoneGroup.data.map((l) => l.id)
+          : []),
       ];
 
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: disableStudentIds.includes(item.extra_info.student!.student_id),
+        disabled: disableStudentIds.includes(
+          item.extra_info.student!.student_id
+        ),
       }));
 
       return {
