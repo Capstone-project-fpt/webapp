@@ -12,6 +12,7 @@ import {
   TopicReviewStatus,
 } from "@/types/group";
 import { api } from "..";
+import { StudentType } from "@/types/accounts";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -183,6 +184,13 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
+    getListStudentsHaveCapstoneGroup: builder.query<ResponseType<StudentType[]>, { semester_id: number }>({
+      query: ({ semester_id }) => ({
+        url: `/capstone-groups/semesters/${semester_id}/students`,
+      }),
+      providesTags: ["Group"],
+    }),
+   
     //#endregion
   }),
 });
@@ -214,4 +222,7 @@ export const {
 
   useGetMembersQuery,
   useGetInvitationMentorsQuery,
+
+  useGetListStudentsHaveCapstoneGroupQuery,
+  useLazyGetListStudentsHaveCapstoneGroupQuery,
 } = groupsApi;
