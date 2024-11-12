@@ -1,9 +1,9 @@
 
   export interface ScheduleType {
     id : number,
-    title: string, 
-    type: string, 
-    description: string, 
+    title: string,
+    type: string,
+    description: string,
     capstone_group_id : number,
     evaluation_committee_id: number,
     link_meeting : string,
@@ -19,6 +19,6 @@ export interface CreateScheduleType {
     semester_id: number,
     start_time: string,
     title: string,
-    type: [],
+    type: string,
 }
 

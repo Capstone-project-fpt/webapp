@@ -12,6 +12,7 @@ import {
   TopicReviewStatus,
 } from "@/types/group";
 import { api } from "..";
+import { ScheduleType } from "@/types/schedule";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -184,6 +185,18 @@ const groupsApi = api.injectEndpoints({
       invalidatesTags: ["Group"],
     }),
     //#endregion
+
+    //#region Review
+    getScheduleReviews: builder.query<
+      ResponseType<ScheduleType[]>,
+      { capstone_group_id: number, start_time: string | Date, end_time: string | Date }
+    >({
+      query: ({ capstone_group_id, start_time, end_time }) => ({
+        url: `/schedule-reviews/`,
+        params: { capstone_group_id, start_time, end_time },
+      }),
+    }),
+    //#endregion
   }),
 });
 
@@ -214,4 +227,6 @@ export const {
 
   useGetMembersQuery,
   useGetInvitationMentorsQuery,
+
+  useGetScheduleReviewsQuery
 } = groupsApi;

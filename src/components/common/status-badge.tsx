@@ -16,3 +16,7 @@ export const GroupStatusBadge: React.FC<{ status: GroupStatus }> = ({
     </Badge>
   );
 };
+
+export const ReviewStatusBadge: React.FC<{ status: string }> = ({ status }) => {
+  return <Badge>{status}</Badge>;
+};
