@@ -14,10 +14,10 @@
 export interface CreateScheduleType {
     capstone_group_id : number,
     description: string ,
-    end_time : string,
+    end_time : Date,
     evaluation_committee_id: number,
     semester_id: number,
-    start_time: string,
+    start_time: Date,
     title: string,
     type: string,
 }

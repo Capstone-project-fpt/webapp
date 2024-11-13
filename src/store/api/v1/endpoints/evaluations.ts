@@ -54,18 +54,18 @@ const evaluationsApi = api.injectEndpoints({
             }),
             invalidatesTags: ["EvaluationCommittee"],
         }),
-               
-        createSchedule: builder.mutation<ResponseType<ScheduleType>, CreateScheduleType>({
-                    query: (data) => ({
-                        url: "/schedule-reviews/",
-                        method: "POST",
-                        body: data,
-                    }),
-                    invalidatesTags: ["Schedule"],
-                }),
-            })
-        })
-        
+
+        createSchedule: builder.mutation<ResponseType<string>, CreateScheduleType>({
+            query: (data) => ({
+                url: "/schedule-reviews/",
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["Schedule"],
+        }),
+    })
+})
+
 export const {
     useGetEvaluationsQuery,
     useGetEvaluationQuery,
