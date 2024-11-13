@@ -18,8 +18,8 @@ const DeleteTeacherDialog: React.FC<{
     if (group.teacher_ids.length <= 2) {
       toast({
         duration: 2000,
-        title: "Không thể xóa",
-        description: "Hội đồng phải có ít nhất 2 thành viên",
+        title: "Can not remove",
+        description: "The evaluation committee must have at least 2 members",
       });
       return;
     }
@@ -36,7 +36,7 @@ const DeleteTeacherDialog: React.FC<{
     if (isSuccess) {
       toast({
         duration: 1000,
-        title: "Teacher removed",
+        title: "Lecturer removed",
         description: "Teacher removed from evaluation committee group successfully.",
       });
       onDelete();
@@ -48,7 +48,7 @@ const DeleteTeacherDialog: React.FC<{
         duration: 1000,
         variant: "destructive",
         title: "Error removing teacher",
-        description: "An error occurred while removing the teacher. Please try again.",
+        description: "An error occurred while removing the lecturer. Please try again.",
       });
     }
   }, [isSuccess, isError, onOpenChange, onDelete, toast]);
@@ -57,7 +57,7 @@ const DeleteTeacherDialog: React.FC<{
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Remove Teacher from Evaluation Committee Group"
+      title="Remove Lecturer from Evaluation Committee Group"
       danger
       cancelButton
       okButton={{
@@ -65,9 +65,9 @@ const DeleteTeacherDialog: React.FC<{
         onClick: handleDelete,
         isLoading,
       }}
-      confirmText="This action cannot be undone. The selected teacher will be removed from the evaluation committee group."
+      confirmText="This action cannot be undone. The selected lecturer will be removed from the evaluation committee group."
     >
-      {`Are you sure you want to remove this teacher from the "${group.name}" group?`}
+      {`Are you sure you want to remove this lecturer from the "${group.name}" group?`}
     </ActionDialog>
   );
 };

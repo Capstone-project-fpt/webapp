@@ -149,12 +149,12 @@ const EvaluationCommittee = () => {
         />
       )}
       <SettingCard
-        title={`Teachers ${members.length ? `(${members.length})` : ""}`}
+        title={`Lecturers ${members.length ? `(${members.length})` : ""}`}
         actions={
           <Button
             onClick={() => setIsAddTeacherModalOpen(true)}
           >
-            Add Teacher
+            Add Lecturer
           </Button>
         }
       >
@@ -163,9 +163,9 @@ const EvaluationCommittee = () => {
         ) : (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No teacher assigned</AlertTitle>
+            <AlertTitle>No lecturers assigned</AlertTitle>
             <AlertDescription>
-              Your group does not have any teachers assigned. Please add a teacher.
+              Your group does not have any lecturers assigned. Please add a lecturer.
             </AlertDescription>
           </Alert>
         )}
