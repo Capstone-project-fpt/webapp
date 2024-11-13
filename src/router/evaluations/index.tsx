@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "@/components";
 import { MainLayout } from "@/layouts";
 import EvaluationCommittee from "@/pages/evaluation-committee";
-import CreateEvaluationGroup from "@/pages/evaluation-committee/create-group";
+import CreateEvaluationGroup from "@/pages/evaluation-committee/components/create-group";
 import EvaluationDetail from "@/pages/evaluation-committee/group-detail";
 
 import { RouteObject } from "react-router-dom";

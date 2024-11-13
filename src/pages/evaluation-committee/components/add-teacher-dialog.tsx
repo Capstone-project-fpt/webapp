@@ -3,7 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
 import { UpdateEvaluationGroup } from "@/types/evaluation";
 import React, { useEffect, useState } from "react";
-import { OptionType } from "../type";
+import {Member, OptionType } from "../type";
 import SelectLecture from "./select-lecture";
 
 const AddTeacherDialog: React.FC<{
@@ -13,6 +13,7 @@ const AddTeacherDialog: React.FC<{
   onAdd: () => void;
 }> = ({ group, open, onOpenChange, onAdd }) => {
   const { toast } = useToast();
+  const [members, setMembers] = useState<Member[]>([]);
   const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] = useUpdateEvaluationMutation();
   const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(null);
 
@@ -41,7 +42,7 @@ const AddTeacherDialog: React.FC<{
         title: "Lecturer Added",
         description: "Lecturer successfully added to the evaluation committee group.",
       });
-      setSelectedLecture(null); // Reset the selection after adding
+      setSelectedLecture(null);
       onAdd();
       onOpenChange(false);
     }
@@ -73,7 +74,7 @@ const AddTeacherDialog: React.FC<{
         <SelectLecture
           value={selectedLecture}
           onChangeValue={setSelectedLecture}
-          selectedMembers={selectedLecture ? [selectedLecture.value.common_info.id] : []}
+          selectedMembers={members}
           existingGroupMembers={group.teacher_ids}
         />
       </div>
