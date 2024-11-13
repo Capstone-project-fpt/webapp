@@ -4,19 +4,16 @@ import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertCircle } from "lucide-react";
 import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
 import { MemberEvaluationGroup, UpdateEvaluationGroup } from "@/types/evaluation";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DeleteTeacherDialog from "@/pages/evaluation-committee/components/delete-teacher-dialog";
+import AddTeacherDialog from "@/pages/evaluation-committee/components/add-teacher-dialog";
 
 const MemberTable: React.FC<{
   members: MemberEvaluationGroup[];
@@ -24,10 +21,10 @@ const MemberTable: React.FC<{
   onDeleteMember: (teacherId: number) => void;
 }> = ({ members, groupInfo, onDeleteMember }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedTeacherId, setSelectedTeacherId] = useState<number | null>(null);
+  const [isAddModalOpen, setisAddModalOpen] = useState<number | null>(null);
 
   const openDeleteDialog = (teacherId: number) => {
-    setSelectedTeacherId(teacherId);
+    setisAddModalOpen(teacherId);
     setIsDeleteModalOpen(true);
   };
 
@@ -65,7 +62,7 @@ const MemberTable: React.FC<{
             <TableCell>
               <DeleteTeacherDialog
                 group={groupInfo}
-                open={isDeleteModalOpen && selectedTeacherId === member.id}
+                open={isDeleteModalOpen && isAddModalOpen === member.id}
                 onOpenChange={setIsDeleteModalOpen}
                 teacherId={member.id}
                 onDelete={() => onDeleteMember(member.id)}
@@ -95,6 +92,7 @@ const EvaluationCommittee = () => {
   );
   const [members, setMembers] = useState<MemberEvaluationGroup[]>([]);
   const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(null);
+  const [isAddTeacherModalOpen, setIsAddTeacherModalOpen] = useState(false);
 
   useEffect(() => {
     if (committeeData && committeeData.data) {
@@ -107,13 +105,17 @@ const EvaluationCommittee = () => {
     }
   }, [committeeData]);
 
+  const handleAddTeacher = () => {
+    setIsAddTeacherModalOpen(false);
+  };
+
   const handleDeleteMember = (teacherId: number) => {
-    setMembers((prevMembers) => prevMembers.filter(member => member.id !== teacherId));
+    setMembers((prevMembers) => prevMembers.filter((member) => member.id !== teacherId));
 
     if (groupInfo) {
       setGroupInfo({
         ...groupInfo,
-        teacher_ids: groupInfo.teacher_ids.filter(id => id !== teacherId),
+        teacher_ids: groupInfo.teacher_ids.filter((id) => id !== teacherId),
       });
     }
   };
@@ -139,17 +141,37 @@ const EvaluationCommittee = () => {
   return (
     <div className="mt-4 flex flex-col gap-4">
       {groupInfo && (
-        <SettingCard title={`Teachers (${members.length})`}>
-          <MemberTable
-            members={members}
-            groupInfo={groupInfo}
-            onDeleteMember={handleDeleteMember}
-          />
-        </SettingCard>
+        <AddTeacherDialog
+          group={groupInfo}
+          open={isAddTeacherModalOpen}
+          onOpenChange={setIsAddTeacherModalOpen}
+          onAdd={handleAddTeacher}
+        />
       )}
+      <SettingCard
+        title={`Teachers ${members.length ? `(${members.length})` : ""}`}
+        actions={
+          <Button
+            onClick={() => setIsAddTeacherModalOpen(true)}
+          >
+            Add Teacher
+          </Button>
+        }
+      >
+        {members.length ? (
+          <MemberTable members={members} groupInfo={groupInfo!} onDeleteMember={handleDeleteMember} />
+        ) : (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No teacher assigned</AlertTitle>
+            <AlertDescription>
+              Your group does not have any teachers assigned. Please add a teacher.
+            </AlertDescription>
+          </Alert>
+        )}
+      </SettingCard>
     </div>
   );
 };
-
 
 export default EvaluationCommittee;
