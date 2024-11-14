@@ -188,7 +188,7 @@ const groupsApi = api.injectEndpoints({
     //#endregion
 
     //#region Review
-    getScheduleReviews: builder.query<
+    getGroupScheduleReviews: builder.query<
       ResponseType<ScheduleType[]>,
       { capstone_group_id: number, start_time: string | Date, end_time: string | Date }
     >({
@@ -235,7 +235,7 @@ export const {
   useGetMembersQuery,
   useGetInvitationMentorsQuery,
 
-  useGetScheduleReviewsQuery,
+  useGetGroupScheduleReviewsQuery,
 
   useGetListStudentsHaveCapstoneGroupQuery,
 } = groupsApi;

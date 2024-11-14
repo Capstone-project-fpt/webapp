@@ -7,8 +7,8 @@
     capstone_group_id : number,
     evaluation_committee_id: number,
     link_meeting : string,
-    start_time: string,
-    end_time : string,
+    start_time: Date,
+    end_time : Date,
 }
 
 export interface CreateScheduleType {

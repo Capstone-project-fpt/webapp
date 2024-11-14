@@ -1,4 +1,3 @@
-import GroupCalendar from "@/pages/groups/components/group-calendar";
 import { useParams } from "react-router-dom";
 import CreateScheduleDialog from "../components/create-schedule-dialog";
 
@@ -9,7 +8,7 @@ const Calendar = () => {
       <div className="flex justify-end mb-2">
         <CreateScheduleDialog />
       </div>
-      <GroupCalendar />
+      {/* TODO: Calendar here */}
     </div>
   );
 };
