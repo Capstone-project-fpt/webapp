@@ -16,14 +16,13 @@ interface SelectLectureProps {
   ) => void)
   | undefined;
   selectedMembers: Member[]; 
-  existingGroupMembers: number[]; 
 }
 
 const SelectLecture: React.FC<SelectLectureProps> = ({
   value,
   onChangeValue,
   selectedMembers,
-  existingGroupMembers,
+ 
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
@@ -43,19 +42,11 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         user_types: UserTypes.TEACHER,
       }).unwrap();
 
-      const options = items.map((item) => {
-        const teacherId = item.extra_info.teacher?.teacher_id;
-        const isDisabled =
-          teacherId !== undefined &&
-          (existingGroupMembers.includes(teacherId) ||
-            selectedMembers.some((m) => m.teacherId === teacherId));
-
-        return {
-          value: item,
-          label: item.common_info.email,
-          disabled: isDisabled,
-        };
-      });
+      const options = items.map((item) => ({
+        value: item,
+        label: item.common_info.email,
+        disabled: selectedMembers.some((m) => m.teacherId === item.extra_info.teacher?.teacher_id),
+      }));
 
       return {
         options,
@@ -66,7 +57,6 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };
-
   return (
     <AsyncPaginate
       cacheUniqs={[selectedMembers]}

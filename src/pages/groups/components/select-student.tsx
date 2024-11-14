@@ -4,6 +4,9 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import { Member, OptionType } from "../type";
 import { ActionMeta, SingleValue } from "react-select";
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useGetListStudentsHaveCapstoneGroupQuery } from "@/store/api/v1/endpoints/groups";
 
 const defaultAdditional = { page: 1 };
 
@@ -23,6 +26,19 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
   onChangeValue,
   selectedMembers,
 }) => {
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+  const {
+    data: listStudentsHaveCapstoneGroup,
+    error,
+    isLoading,
+  } = useGetListStudentsHaveCapstoneGroupQuery(
+    { semester_id: currentSemester?.id! },
+    { skip: !currentSemester }
+  );
+
+  console.log(listStudentsHaveCapstoneGroup);
   const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
@@ -41,10 +57,19 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
         user_types: UserTypes.STUDENT,
       }).unwrap();
 
+      const disableStudentIds: number[] = [
+        ...selectedMembers.map((s) => s.studentId),
+        ...(listStudentsHaveCapstoneGroup
+          ? listStudentsHaveCapstoneGroup.data.map((l) => l.id)
+          : []),
+      ];
+
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: selectedMembers.some((m) => m.studentId === item.extra_info.student?.student_id),
+        disabled: disableStudentIds.includes(
+          item.extra_info.student!.student_id
+        ),
       }));
 
       return {
