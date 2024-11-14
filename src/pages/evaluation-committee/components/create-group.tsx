@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import { useCreateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
 import { setBreadCrumb } from "@/store/slice/app";
+import { ResponseErrorType } from "@/types";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -58,22 +59,14 @@ const CreateEvaluationGroup: React.FC = () => {
   useEffect(() => {
     if (selectLecturer) {
       const { value } = selectLecturer;
-      if (members.length < 3) {
-        setMembers((prevMembers) => [
-          ...prevMembers,
-          {
-            ...value.common_info,
-            teacherId: value.extra_info.teacher?.teacher_id as number,
-          },
-        ]);
-        setSelectLecturer(null);
-      } else {
-        toast({
-          title: "Limit reached",
-          description: "You can only add up to 3 lecturers to the group.",
-          variant: "destructive",
-        });
-      }
+      setMembers((prevMembers) => [
+        ...prevMembers,
+        {
+          ...value.common_info,
+          teacherId: value.extra_info.teacher?.teacher_id as number,
+        },
+      ]);
+      setSelectLecturer(null);
     }
   }, [selectLecturer]);
 
@@ -91,8 +84,7 @@ const CreateEvaluationGroup: React.FC = () => {
     if (createEvaluationGroupData.error) {
       toast({
         title: "Create Evaluation Group",
-        description:
-          "Something went wrong, please try again. If the problem persists, contact support.",
+        description: (createEvaluationGroupData.error as ResponseErrorType).data.error,
         variant: "destructive",
       });
     }
@@ -173,18 +165,14 @@ const CreateEvaluationGroup: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {members.length < 3 && (
-        <div className="space-y-2">
-          <Label htmlFor="newMemberName">Add Lecturer</Label>
-          <SelectLecture
-            value={selectLecturer}
-            onChangeValue={setSelectLecturer}
-            selectedMembers={members} 
-            existingGroupMembers={[]}          />
-        </div>
-      )}
-
+      <div className="space-y-2">
+        <Label htmlFor="newMemberName">Add Lecturer</Label>
+        <SelectLecture
+          value={selectLecturer}
+          onChangeValue={setSelectLecturer}
+          selectedMembers={members}
+        />
+      </div>
       <div className="flex justify-end">
         <Button onClick={handleCreateForm} disabled={formValid}>
           {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}

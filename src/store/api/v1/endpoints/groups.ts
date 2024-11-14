@@ -13,6 +13,7 @@ import {
 } from "@/types/group";
 import { api } from "..";
 import { ScheduleType } from "@/types/schedule";
+import { StudentType } from "@/types/accounts";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -197,6 +198,12 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     //#endregion
+    getListStudentsHaveCapstoneGroup: builder.query<ResponseType<StudentType[]>, { semester_id: number }>({
+      query: ({ semester_id }) => ({
+        url: `/capstone-groups/semesters/${semester_id}/students`,
+      }),
+      providesTags: ["Group"],
+    }),
   }),
 });
 
@@ -228,5 +235,7 @@ export const {
   useGetMembersQuery,
   useGetInvitationMentorsQuery,
 
-  useGetScheduleReviewsQuery
+  useGetScheduleReviewsQuery,
+
+  useGetListStudentsHaveCapstoneGroupQuery,
 } = groupsApi;
