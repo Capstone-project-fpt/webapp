@@ -7,7 +7,11 @@ import { PaginationState, TableOptions } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { columns } from "./columns";
 
-export function LecturesTable() {
+interface LecturesTableProps {
+  searchKey: string;
+}
+
+export function LecturesTable({ searchKey }: LecturesTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -21,8 +25,8 @@ export function LecturesTable() {
     isLoading,
     error,
   } = useGetUsersQuery({
-    page: pagination.pageIndex + 1,
-    limit: pagination.pageSize,
+    page: searchKey ? 1 : pagination.pageIndex + 1,
+    limit: searchKey ? 1000 : pagination.pageSize,
     user_types: UserTypes.TEACHER,
   });
 
@@ -38,40 +42,44 @@ export function LecturesTable() {
         };
       });
 
-      setTableData(data as LectureType[]);
-      setTotalRecord(meta.total);
+      const normalizedSearchKey = searchKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const filteredData = data.filter((item) => {
+        const normalizedName = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const normalizedEmail = item.email.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return normalizedName.includes(normalizedSearchKey) || normalizedEmail.includes(normalizedSearchKey);
+      });
+
+      setTableData(filteredData as LectureType[]);
+      setTotalRecord(filteredData.length);
     }
-  }, [queryData]);
+  }, [queryData, searchKey]);
 
   if (isLoading) {
     return (
-      <div className=" flex justify-center pt-10">
-        <div className=" w-[250px] ">
+      <div className="flex justify-center pt-10">
+        <div className="w-[250px]">
           <LoadingTableLottie />
         </div>
       </div>
     );
-  } else {
-    if (error) {
-      return (
-        <div className="h-full">
-          <ErrorBoundaryComponent />;
-        </div>
-      );
-    }
+  } else if (error) {
     return (
-      <DataTable
-        data={tableData}
-        columns={columns}
-        state={{ pagination }}
-        options={
-          {
-            onPaginationChange: setPagination,
-            manualPagination: true,
-            pageCount: Math.ceil(totalRecord / pagination.pageSize),
-          } as TableOptions<LectureType>
-        }
-      />
+      <div className="h-full">
+        <ErrorBoundaryComponent />;
+      </div>
     );
   }
+
+  return (
+    <DataTable
+      data={tableData}
+      columns={columns}
+      state={{ pagination }}
+      options={{
+        onPaginationChange: setPagination,
+        manualPagination: true,
+        pageCount: Math.ceil(totalRecord / pagination.pageSize),
+      } as TableOptions<LectureType>}
+    />
+  );
 }

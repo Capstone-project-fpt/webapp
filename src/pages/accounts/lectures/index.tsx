@@ -17,11 +17,14 @@ import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { LecturesTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
+import SearchBar from "./components/search-bar";
 
 const Lectures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
+  
   useEffect(() => {
     dispatch(
       setBreadCrumb([
@@ -31,34 +34,43 @@ const Lectures = () => {
       ])
     );
   }, [dispatch]);
+
   function openModalCreateLecture(value: string): void {
     setModalType(value);
     setIsModalOpen(true);
   }
+
   return (
     <>
-      <div className="flex justify-end mb-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-1">
-              <GoPlus className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Create Lecturers</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuRadioGroup onValueChange={openModalCreateLecture}>
-              <DropdownMenuRadioItem value="form">
-                <FaWpforms className="mr-1" />
-                Form
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="sheet">
-                <LuFileSpreadsheet className="mr-1" />
-                Sheets
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex justify-between items-center mb-2">
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
+        <div className="flex items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-1">
+                <GoPlus className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Create Lecturers</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup onValueChange={openModalCreateLecture}>
+                <DropdownMenuRadioItem value="form">
+                  <FaWpforms className="mr-1" />
+                  Form
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="sheet">
+                  <LuFileSpreadsheet className="mr-1" />
+                  Sheets
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
         {modalType === "form" ? (
           <CreateUpdateDialog
             open={isModalOpen}
@@ -68,10 +80,9 @@ const Lectures = () => {
           <UploadSheetDialog open={isModalOpen} onOpenChange={setIsModalOpen} />
         )}
       </div>
-      <LecturesTable />
+      <LecturesTable searchKey={searchTerm} />
     </>
   );
 };
-
 
 export default Lectures;
