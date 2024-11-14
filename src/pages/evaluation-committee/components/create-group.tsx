@@ -11,8 +11,8 @@ import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Member, OptionType } from "./type";
-import SelectLecture from "./components/select-lecture";
+import { Member, OptionType } from "../type";
+import SelectLecture from "./select-lecture";
 
 const CreateEvaluationGroup: React.FC = () => {
   const { toast } = useToast();

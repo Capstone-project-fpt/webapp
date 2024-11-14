@@ -17,6 +17,7 @@ import {
   TableOptions,
 } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
+import Actions from "./components/actions";
 
 const columns = (): ColumnDef<EvaluationType>[] => [
   {
@@ -42,18 +43,7 @@ const columns = (): ColumnDef<EvaluationType>[] => [
   // },
   {
     id: "actions",
-    header: () => <TextCell>Actions</TextCell>,
-    cell: ({ row }) => (
-      <ActionCell
-        items={[
-          {
-            item: "View Detail",
-            onClick: () => {
-            },
-          },
-        ]}
-      />
-    ),
+    cell: ({ row }) => <Actions row={row} />,
   },
 ];
 
@@ -75,10 +65,10 @@ const EvaluationGroups: React.FC = () => {
   } = useGetEvaluationsQuery(
     currentSemesterData?.data?.id
       ? {
-          page: pagination.pageIndex + 1,
-          limit: pagination.pageSize,
-          semester_id: currentSemesterData.data.id,
-        }
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+        semester_id: currentSemesterData.data.id,
+      }
       : skipToken
   );
 

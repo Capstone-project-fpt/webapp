@@ -1,5 +1,5 @@
 import { ListPaginationType, ResponseType } from "@/types";
-import { CreateEvaluationGroup, EvaluationType, QueryEvaluationsParams } from "@/types/evaluation";
+import { CreateEvaluationGroup, EvaluationType, QueryEvaluationsParams, UpdateEvaluationGroup } from "@/types/evaluation";
 import { api } from "..";
 import { CreateScheduleType, ScheduleType } from "@/types/schedule";
 
@@ -39,7 +39,7 @@ const evaluationsApi = api.injectEndpoints({
                 url: `/evaluation-committees/${id}`,
             }),
         }),
-        updateEvaluation: builder.mutation<void, CreateEvaluationGroup>({
+        updateEvaluation: builder.mutation<void, UpdateEvaluationGroup>({
             query: (data) => ({
                 url: "/evaluation-committees/",
                 method: "PUT",
