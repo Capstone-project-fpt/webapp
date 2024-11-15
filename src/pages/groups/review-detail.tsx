@@ -1,100 +1,133 @@
+import EmptyResources from "@/components/common/empty-resource";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import { setBreadCrumb } from "@/store/slice/app";
+import { GroupReview } from "@/types/group";
+import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
+import { Content } from "@tiptap/core";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
+import CommentComposer from "./components/comment-composer";
 
-interface Attachment {
-  id: number;
-  name: string;
-  size: string;
-  downloadLink: string;
+interface DocumentSectionProps {
+  review: GroupReview;
+  groupId: string;
+  reviewId: string;
 }
 
+const DocumentSection: React.FC<DocumentSectionProps> = ({
+  review,
+  groupId,
+  reviewId,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const document_path = "test.docx";
+  return (
+    <div className="my-6">
+      <div className="flex items-center gap-2 mb-2">
+        <h2 className="">Document</h2>
+        <FaRegEdit
+          className="cursor-pointer"
+          onClick={() => setIsModalOpen(true)}
+        />
+        {/* <UploadReviewDialog
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          groupId={groupId}
+          reviewId={reviewId}
+        /> */}
+      </div>
+      <div className="flex gap-4">
+        <div className="flex items-center border px-5 py-3 rounded-lg max-w-lg">
+          <FileIcon className="mr-2" />
+          <span className="truncate">{getFileName(document_path)}</span>
+          <Button variant={"outline"} className="ml-3" size="sm">
+            <a
+              href={getUrlFile(document_path)}
+              download={getFileName(document_path)}
+              className="text-accent underline flex items-center"
+              target="_blank"
+            >
+              Download
+            </a>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface FeedbackSectionProps {
+  groupId: string;
+  reviewId: string;
+}
+
+const FeedbackSection: React.FC<FeedbackSectionProps> = ({
+  groupId,
+  reviewId,
+}) => {
+  const { toast } = useToast();
+  const [feedback, setFeedback] = useState<Content>("");
+
+  const handleComment = () => {};
+
+  return (
+    <div className="mt-4">
+      <EmptyResources title="No feedback yet" />
+
+      <div>
+        <CommentComposer
+          value={feedback}
+          setValue={setFeedback}
+          handleComment={handleComment}
+        />
+      </div>
+    </div>
+  );
+};
+
 const ReportDetail: React.FC = () => {
-  const { groupId, reportId } = useParams<{
+  const { groupId, reviewId } = useParams<{
     groupId: string;
-    reportId?: string;
+    reviewId?: string;
   }>();
   const dispatch = useDispatch();
+  const { currentGroup } = useSelector((state: RootState) => state.resource);
+  console.log(currentGroup);
+
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: "Group Name", link: `/groups/${groupId}` }, //TODO: Replace Group Name with actual group name
+        {
+          title: `${currentGroup?.name_group || "Group " + groupId}`,
+          link: `/groups/${groupId}`,
+        },
         { title: "Reviews", link: `/groups/${groupId}/reviews` },
         {
-          title: "Review Name",
-          link: `/groups/${groupId}/reports/${reportId}`, //TODO: Replace Report Name with actual report name
+          title: `${"Review " + reviewId}`,
+          link: `/groups/${groupId}/reviews/${reviewId}`, //TODO: Replace Report Name with actual report name
         },
       ])
     );
-  }, [dispatch, groupId, reportId]);
+  }, [dispatch, groupId, reviewId, currentGroup]);
+  let review: GroupReview;
 
-  const attachments: Attachment[] = [
-    {
-      id: 1,
-      name: "Design brief.pdf",
-      size: "1.5 MB",
-      downloadLink: "#",
-    },
-    {
-      id: 2,
-      name: "Craftboard logo.ai",
-      size: "2.5 MB",
-      downloadLink: "#",
-    },
-  ];
-
-  const initialMembers = [
-    { name: "Alice", score: 85, feedback: "Good job!" },
-    { name: "Bob", score: 78, feedback: "Well done!" },
-    { name: "Charlie", score: 92, feedback: "Excellent work!" },
-  ];
-
-  const [members, setMembers] = useState(initialMembers);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newScore, setNewScore] = useState<number | null>(null);
   const [newFeedback, setNewFeedback] = useState<string>("");
 
-  const handleEdit = (index: number) => {
-    setEditingIndex(index);
-    setNewScore(members[index].score);
-    setNewFeedback(members[index].feedback);
-  };
-
-  const cancelUpdateScore = () => {
-    setEditingIndex(null);
-    setNewScore(null);
-    setNewFeedback("");
-  };
-
-  const handleUpdate = () => {
-    if (editingIndex !== null && newScore !== null) {
-      const updatedMembers = [...members];
-      updatedMembers[editingIndex] = {
-        ...updatedMembers[editingIndex],
-        score: newScore,
-        feedback: newFeedback,
-      };
-      setMembers(updatedMembers);
-      setEditingIndex(null);
-      setNewScore(null);
-      setNewFeedback("");
-    }
-  };
   return (
     <div>
-      <div className=" text-xl ">Report 1 - Project Introduction</div>
-      {/* Status and Due Date */}
+      <div className=" text-xl ">Review 1</div>
       <div className="flex flex-col mb-6">
         <div className="flex items-center gap-4">
           <span>Status:</span>
@@ -105,7 +138,6 @@ const ReportDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Description */}
       <div>
         <h2 className="mb-2">Description</h2>
         <Alert>
@@ -116,33 +148,11 @@ const ReportDetail: React.FC = () => {
         </Alert>
       </div>
 
-      {/* Attachments */}
-      <div className="my-6">
-        <div className="flex items-center gap-2 mb-2">
-          <h2 className="">Attachments</h2>
-          <FaRegEdit />
-        </div>
-        <div className="flex gap-4">
-          {attachments.map((file) => (
-            <Card key={file.id}>
-              <CardHeader>
-                <FaRegTrashAlt className="ml-auto" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col">
-                  <div>
-                    <FileIcon className="mr-2" />
-                    <div>
-                      <p>{file.name}</p>
-                    </div>
-                  </div>
-                  <Button size="sm">Download</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <DocumentSection
+        groupId={groupId!}
+        review={review!}
+        reviewId={reviewId!}
+      />
 
       <Separator />
       <Tabs defaultValue="feedback" className="my-4">
@@ -154,7 +164,7 @@ const ReportDetail: React.FC = () => {
 
         <TabsContent value="feedback">
           <div className="mt-4">
-            <p>No feedback yet.</p>
+            <FeedbackSection groupId={groupId!} reviewId={reviewId!} />
           </div>
         </TabsContent>
       </Tabs>

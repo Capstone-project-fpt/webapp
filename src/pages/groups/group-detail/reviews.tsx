@@ -1,13 +1,8 @@
-import { SettingCard } from "@/components/custom/setting";
+import { useGetGroupReviewsQuery } from "@/store/api/v1/endpoints/groups";
 import ReviewTable from "../components/review-table";
 
-import ScheduleCalendar from "@/components/common/schedule-calendar";
-import { getDateTime } from "@/lib/utils";
 import { RootState } from "@/store";
-import { useGetGroupScheduleReviewsQuery } from "@/store/api/v1/endpoints/groups";
-import { CalendarConfig } from "@schedule-x/calendar";
 import "@schedule-x/theme-default/dist/index.css";
-import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -18,36 +13,18 @@ const Reviews = () => {
     (state: RootState) => state.resource.currentSemester
   );
 
-  const { data: scheduleReviews } = useGetGroupScheduleReviewsQuery(
+  const { data: reviews } = useGetGroupReviewsQuery(
     {
-      capstone_group_id: Number(groupId),
-      start_time: currentSemester?.start_time.toString() || "",
-      end_time: currentSemester?.end_time.toString() || "",
-    },
-    { skip: !currentSemester }
+      group_id: Number(groupId),
+    }
   );
 
-  const [schedules, setSchedules] = useState<CalendarConfig["events"]>([]);
+  console.log(reviews);
 
-  useEffect(() => {
-    if (scheduleReviews && scheduleReviews.data) {
-      const groupSchedules = scheduleReviews.data.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        start: getDateTime(item.start_time),
-        end: getDateTime(item.end_time),
-      }));
-      setSchedules(groupSchedules);
-    }
-  }, [scheduleReviews]);
 
   return (
     <div className="flex flex-col gap-5">
       <ReviewTable></ReviewTable>
-      <SettingCard title="Calendar">
-        <ScheduleCalendar events={schedules} />
-      </SettingCard>
     </div>
   );
 };
