@@ -1,10 +1,9 @@
 import ScheduleCalendar from "@/components/common/schedule-calendar";
-import { SettingCard } from "@/components/custom/setting";
-import { getDateTime } from "@/lib/utils";
+import { parseSchedulesToCalendarEvents } from "@/lib/schedule-review";
 import { RootState } from "@/store";
 import { useGetGroupScheduleReviewsQuery } from "@/store/api/v1/endpoints/groups";
 import { CalendarConfig } from "@schedule-x/calendar";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -28,13 +27,9 @@ const Calendar = () => {
 
   useEffect(() => {
     if (scheduleReviews && scheduleReviews.data) {
-      const groupSchedules = scheduleReviews.data.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        start: getDateTime(item.start_time),
-        end: getDateTime(item.end_time),
-      }));
+      const groupSchedules = parseSchedulesToCalendarEvents(
+        scheduleReviews.data
+      );
       setSchedules(groupSchedules);
     }
   }, [scheduleReviews]);

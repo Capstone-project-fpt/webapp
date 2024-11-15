@@ -28,19 +28,21 @@ const columns = (): ColumnDef<EvaluationType>[] => [
     cell: ({ row }) => <TextCell size={200}>{row.original.name}</TextCell>,
   },
   {
+    accessorKey: "teacher_ids",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="Total Members" />
+    ),
+    cell: ({ row }) => (
+      <TextCell size={200}>{row.original.teacher_ids.length}</TextCell>
+    ),
+  },
+  {
     accessorKey: "created_at",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} columnTitle="Created At" />
     ),
     cell: ({ row }) => <DateCell date={row.original.created_at} />,
   },
-  // {
-  //   accessorKey: "",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} columnTitle="Total Members" />
-  //   ),
-  //   cell: ({ row }) => <TextCell size={200}>{row.original.total_members}</TextCell>,
-  // },
   {
     id: "actions",
     cell: ({ row }) => <Actions row={row} />,
@@ -65,10 +67,10 @@ const EvaluationGroups: React.FC = () => {
   } = useGetEvaluationsQuery(
     currentSemesterData?.data?.id
       ? {
-        page: pagination.pageIndex + 1,
-        limit: pagination.pageSize,
-        semester_id: currentSemesterData.data.id,
-      }
+          page: pagination.pageIndex + 1,
+          limit: pagination.pageSize,
+          semester_id: currentSemesterData.data.id,
+        }
       : skipToken
   );
 

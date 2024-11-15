@@ -19,7 +19,6 @@ import {
   startOfMonth,
   startOfYear
 } from "date-fns";
-import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
 import { DateRange } from "react-day-picker";
 import { twMerge } from "tailwind-merge";
@@ -151,12 +150,4 @@ export const getLabelsForView = (viewMode: 'day' | 'week' | 'month' | 'year', da
     default:
       return [];
   }
-}
-
-export const getDateTime = (date: Date) => {
-  if (date) {
-    const format = "YYYY-MM-DD HH:mm"
-    return dayjs(date).format(format)
-  }
-  return "";
 }

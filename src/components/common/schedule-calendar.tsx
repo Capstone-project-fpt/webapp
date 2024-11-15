@@ -11,6 +11,7 @@ import { createEventsServicePlugin } from "@schedule-x/events-service";
 import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react";
 import { createScrollControllerPlugin } from "@schedule-x/scroll-controller";
 import { useEffect } from "react";
+import "@schedule-x/theme-default/dist/index.css";
 
 const ScheduleCalendar = ({
   events = [],
