@@ -7,6 +7,7 @@ import {
   DataTableColumnHeader,
   TextCell,
 } from "@/components/data-table";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
@@ -140,7 +141,7 @@ const Groups: React.FC = () => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (

@@ -269,6 +269,9 @@ export const {
 
   useGetGroupReviewsQuery,
   useGetGroupScheduleReviewsQuery,
+  useGetGroupReviewQuery,
+  useUpdateReportsGroupReviewMutation,
+  useFeedbackGroupReviewMutation,
 
   useGetListStudentsHaveCapstoneGroupQuery,
 } = groupsApi;

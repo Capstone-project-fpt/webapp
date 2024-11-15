@@ -19,6 +19,7 @@ import {
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import Actions from "./components/actions";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 
 const columns = (): ColumnDef<EvaluationType>[] => [
   {
@@ -93,7 +94,7 @@ const EvaluationGroups: React.FC = () => {
   }
 
   if (evaluationsError) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (

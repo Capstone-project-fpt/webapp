@@ -6,6 +6,7 @@ import {
   DataTableColumnHeader,
   TextCell,
 } from "@/components/data-table";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useGetEvaluationsQuery } from "@/store/api/v1/endpoints/evaluations";
 import { EvaluationType } from "@/types/evaluation";
 import {
@@ -100,7 +101,7 @@ const EvaluationGroups: React.FC = () => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (

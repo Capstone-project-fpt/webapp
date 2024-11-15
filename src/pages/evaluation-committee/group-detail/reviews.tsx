@@ -20,6 +20,7 @@ import {
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import CreateScheduleDialog from "../components/create-schedule-dialog";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 
 const Actions: React.FC<{
   row: Row<GroupType>;
@@ -104,7 +105,7 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({ status }) => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (

@@ -1,12 +1,18 @@
+import { LoadingTableLottie } from "@/components";
+import DateDisplay from "@/components/common/date";
 import EmptyResources from "@/components/common/empty-resource";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
+import {
+  useFeedbackGroupReviewMutation,
+  useGetGroupReviewQuery,
+} from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { ResponseErrorType } from "@/types";
 import { GroupReview } from "@/types/group";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
@@ -16,6 +22,26 @@ import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "./components/comment-composer";
+
+interface ReviewHeaderProps {
+  review: GroupReview;
+}
+
+const ReviewHeader: React.FC<ReviewHeaderProps> = ({ review }) => {
+  return (
+    <div>
+      <div className="text-xl mb-4">{"Review"}</div>
+      <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
+        <span>Status</span>
+        <div></div>
+        <span>Create date</span>
+        <DateDisplay date={new Date(review.created_at)} showTime={true} />
+        <span>Update date</span>
+        <DateDisplay date={new Date(review.updated_at)} showTime={true} />
+      </div>
+    </div>
+  );
+};
 
 interface DocumentSectionProps {
   review: GroupReview;
@@ -69,22 +95,58 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
 interface FeedbackSectionProps {
   groupId: string;
   reviewId: string;
+  refetchReview?: () => void;
 }
 
 const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   groupId,
   reviewId,
+  refetchReview,
 }) => {
   const { toast } = useToast();
   const [feedback, setFeedback] = useState<Content>("");
+  const [feedbackGroupReview] = useFeedbackGroupReviewMutation();
 
-  const handleComment = () => {};
+  const handleComment = async () => {
+    try {
+      await feedbackGroupReview({
+        group_id: parseInt(groupId),
+        capstone_group_review_id: parseInt(reviewId),
+        feedback: feedback as string,
+      }).unwrap();
+
+      setFeedback("");
+      toast({
+        duration: 1000,
+        variant: "default",
+        title: "Feedback Topic",
+        description: "Feedback Topic Successfully.",
+      });
+
+      if (refetchReview) {
+        refetchReview();
+      }
+    } catch (error) {
+      toast({
+        title: `Feedback review`,
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="mt-4">
-      <EmptyResources title="No feedback yet" />
+      <EmptyResources
+        title="No feedback yet"
+        content="The evaluation committee has not given feedback yet."
+      />
 
       <div>
+        {/* TODO: Just evaluation committee give feedback */}
+        {/* TODO: Hide before review */}
         <CommentComposer
           value={feedback}
           setValue={setFeedback}
@@ -102,7 +164,16 @@ const ReportDetail: React.FC = () => {
   }>();
   const dispatch = useDispatch();
   const { currentGroup } = useSelector((state: RootState) => state.resource);
-  console.log(currentGroup);
+  const {
+    data: reviewData,
+    isLoading,
+    isError,
+    refetch,
+  } = useGetGroupReviewQuery({
+    group_id: Number(groupId),
+    capstone_group_review_id: Number(reviewId),
+  });
+  const review = reviewData?.data;
 
   useEffect(() => {
     dispatch(
@@ -121,32 +192,23 @@ const ReportDetail: React.FC = () => {
       ])
     );
   }, [dispatch, groupId, reviewId, currentGroup]);
-  let review: GroupReview;
 
-  const [newFeedback, setNewFeedback] = useState<string>("");
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10 p-5">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
+  }
 
+  if (isError) {
+    return <ErrorBoundaryComponent />;
+  }
   return (
     <div>
-      <div className=" text-xl ">Review 1</div>
-      <div className="flex flex-col mb-6">
-        <div className="flex items-center gap-4">
-          <span>Status:</span>
-          <Badge variant="outline">On Progress</Badge>
-        </div>
-        <div>
-          <span>Due date:</span> <span>5 Oct 2024</span>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="mb-2">Description</h2>
-        <Alert>
-          <AlertDescription>
-            This page aims to provide real-time insights into employee
-            performance metrics and key business indicators.
-          </AlertDescription>
-        </Alert>
-      </div>
+      <ReviewHeader review={review!} />
 
       <DocumentSection
         groupId={groupId!}
@@ -158,13 +220,17 @@ const ReportDetail: React.FC = () => {
       <Tabs defaultValue="feedback" className="my-4">
         <TabsList>
           <TabsTrigger value="feedback" className="lg:w-[150px] w-full">
-            Feedbacks
+            Feedback
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="feedback">
           <div className="mt-4">
-            <FeedbackSection groupId={groupId!} reviewId={reviewId!} />
+            <FeedbackSection
+              groupId={groupId!}
+              reviewId={reviewId!}
+              refetchReview={refetch}
+            />
           </div>
         </TabsContent>
       </Tabs>
