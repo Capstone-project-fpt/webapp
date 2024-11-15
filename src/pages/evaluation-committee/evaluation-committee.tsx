@@ -1,14 +1,14 @@
 import { LoadingTableLottie } from "@/components";
+import EmptyResources from "@/components/common/empty-resource";
 import { SettingCard } from "@/components/custom/setting";
 import {
-  ActionCell,
   DataTable,
   DataTableColumnHeader,
   DateCell,
   TextCell,
 } from "@/components/data-table";
+import { RootState } from "@/store";
 import { useGetEvaluationsQuery } from "@/store/api/v1/endpoints/evaluations";
-import { useGetCurrentSemesterQuery } from "@/store/api/v1/endpoints/semesters";
 import { EvaluationType } from "@/types/evaluation";
 import { skipToken } from "@reduxjs/toolkit/query/react";
 import {
@@ -17,6 +17,7 @@ import {
   TableOptions,
 } from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import Actions from "./components/actions";
 
 const columns = (): ColumnDef<EvaluationType>[] => [
@@ -55,21 +56,20 @@ const EvaluationGroups: React.FC = () => {
     pageSize: 10,
   });
 
-  const {
-    data: currentSemesterData,
-    error: currentSemesterError,
-    isLoading: isCurrentSemesterLoading,
-  } = useGetCurrentSemesterQuery(null);
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+
   const {
     data: queryData,
     error: evaluationsError,
     isLoading: isEvaluationsLoading,
   } = useGetEvaluationsQuery(
-    currentSemesterData?.data?.id
+    currentSemester?.id
       ? {
           page: pagination.pageIndex + 1,
           limit: pagination.pageSize,
-          semester_id: currentSemesterData.data.id,
+          semester_id: currentSemester.id,
         }
       : skipToken
   );
@@ -82,7 +82,7 @@ const EvaluationGroups: React.FC = () => {
     return queryData ? queryData.data.meta.total : 0;
   }, [queryData]);
 
-  if (isCurrentSemesterLoading || isEvaluationsLoading) {
+  if (isEvaluationsLoading) {
     return (
       <div className="flex justify-center pt-10 ">
         <div className="w-[250px]">
@@ -92,13 +92,13 @@ const EvaluationGroups: React.FC = () => {
     );
   }
 
-  if (currentSemesterError || evaluationsError) {
+  if (evaluationsError) {
     return <div>Something went wrong!</div>;
   }
 
   return (
     <div>
-      {currentSemesterData ? (
+      {currentSemester ? (
         <SettingCard title={`Evaluation Committee Groups (${totalRecord})`}>
           <DataTable
             data={tableData}
@@ -115,7 +115,10 @@ const EvaluationGroups: React.FC = () => {
           />
         </SettingCard>
       ) : (
-        <div>This semester does not have an evaluation group.</div>
+        <EmptyResources
+          title="No evaluation committee groups"
+          content="This semester does not have an evaluation group."
+        />
       )}
     </div>
   );
