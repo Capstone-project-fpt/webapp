@@ -42,15 +42,20 @@ export function StudentsTable({ searchKey }: StudentsTableProps) {
         };
       });
 
-      const normalizedSearchKey = searchKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const filteredData = data.filter((item) => {
-        const normalizedName = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const normalizedEmail = item.email.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return normalizedName.includes(normalizedSearchKey) || normalizedEmail.includes(normalizedSearchKey);
-      });
+      if (searchKey) {
+        const normalizedSearchKey = searchKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const filteredData = data.filter((item) => {
+          const normalizedName = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const normalizedEmail = item.email.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return normalizedName.includes(normalizedSearchKey) || normalizedEmail.includes(normalizedSearchKey);
+        });
 
-      setTableData(filteredData as StudentType[]);
-      setTotalRecord(filteredData.length);
+        setTableData(filteredData as StudentType[]);
+        setTotalRecord(filteredData.length);
+      } else {
+        setTableData(data as StudentType[]);
+        setTotalRecord(meta.total);
+      }
     }
   }, [queryData, searchKey]);
 
