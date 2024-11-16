@@ -132,10 +132,7 @@ const TopicHeader: React.FC<TopicHeaderProps> = ({ topic }) => {
 };
 
 interface DocumentSectionProps {
-  topic: {
-    document_path: string;
-    status_review: TopicReviewStatus;
-  };
+  topic: TopicGroup;
   groupId: string;
   topicId: string;
 }

@@ -7,6 +7,7 @@ import {
   DateCell,
   TextCell,
 } from "@/components/data-table";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
@@ -151,7 +152,7 @@ const EmptyGroup: React.FC = () => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (

@@ -1,6 +1,7 @@
 import { ListPaginationType, PaginationType, ResponseType } from "@/types";
 import {
   CreateGroupBody,
+  GroupReview,
   GroupType,
   InvitationMentor,
   InvitationMentorStatus,
@@ -188,7 +189,38 @@ const groupsApi = api.injectEndpoints({
     //#endregion
 
     //#region Review
-    getScheduleReviews: builder.query<
+    getGroupReviews: builder.query<
+      ResponseType<GroupReview[]>,
+      { group_id: number }
+    >({
+      query: ({ group_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
+      }),
+    }),
+    updateReportsGroupReview: builder.mutation<void, { group_id: number, capstone_group_review_id: number, report_files: string[] }>({
+      query: ({ group_id, capstone_group_review_id, report_files }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
+        method: "PATCH",
+        body: { capstone_group_review_id, report_files },
+      }),
+    }),
+    feedbackGroupReview: builder.mutation<void, { group_id: number, capstone_group_review_id: number, feedback: string }>({
+      query: ({ group_id, capstone_group_review_id, feedback }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
+        method: "PATCH",
+        body: { capstone_group_review_id, feedback },
+      }),
+    }),
+    getGroupReview: builder.query<
+      ResponseType<GroupReview>,
+      { group_id: number, capstone_group_review_id: number }
+    >({
+      query: ({ group_id, capstone_group_review_id }) => ({
+        url: `/capstone-groups/${group_id}/capstone-group-reviews/${capstone_group_review_id}`,
+      }),
+    }),
+
+    getGroupScheduleReviews: builder.query<
       ResponseType<ScheduleType[]>,
       { capstone_group_id: number, start_time: string | Date, end_time: string | Date }
     >({
@@ -235,7 +267,11 @@ export const {
   useGetMembersQuery,
   useGetInvitationMentorsQuery,
 
-  useGetScheduleReviewsQuery,
+  useGetGroupReviewsQuery,
+  useGetGroupScheduleReviewsQuery,
+  useGetGroupReviewQuery,
+  useUpdateReportsGroupReviewMutation,
+  useFeedbackGroupReviewMutation,
 
   useGetListStudentsHaveCapstoneGroupQuery,
 } = groupsApi;

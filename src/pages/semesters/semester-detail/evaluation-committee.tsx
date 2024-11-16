@@ -6,6 +6,7 @@ import {
   DataTableColumnHeader,
   TextCell,
 } from "@/components/data-table";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useGetEvaluationsQuery } from "@/store/api/v1/endpoints/evaluations";
 import { EvaluationType } from "@/types/evaluation";
 import {
@@ -17,52 +18,24 @@ import {
 import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-// const Actions: React.FC<{
-//   row: Row<EvaluationType>;
-// }> = ({ row }) => {
-//   const [triggerGetMentorAndListMembersGroup] =
-//     useLazyGetMentorAndListMembersGroupQuery();
-//   const navigate = useNavigate();
-//   const { toast } = useToast();
-//   const currentUser = useSelector((state: RootState) => state.auth.user);
+const Actions: React.FC<{ row: Row<EvaluationType> }> = ({ row }) => {
+  const navigate = useNavigate();
 
-//   const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
-//     if (currentUser?.common_info.user_type === UserTypes.STUDENT) {
-//       const {
-//         data: { members },
-//       } = await triggerGetMentorAndListMembersGroup({
-//         capstone_group_id,
-//       }).unwrap();
-
-//       if (
-//         !members
-//           .map((m) => m.id)
-//           .includes(currentUser.extra_info.student!.student_id)
-//       ) {
-//         toast({
-//           title: "View Detail Capstone Group",
-//           description: "You are not a member of this capstone group",
-//           variant: "destructive",
-//         });
-//       }
-//     }
-
-//     navigate("/groups/" + capstone_group_id);
-//   };
-
-//   return (
-//     <ActionCell
-//       items={[
-//         {
-//           item: "View Detail",
-//           onClick: () => {
-//             handleViewDetailCapstoneGroup(row.original.id);
-//           },
-//         },
-//       ]}
-//     />
-//   );
-// };
+  return (
+    <>
+      <ActionCell
+        items={[
+          {
+            item: "View Details",
+            onClick: () => {
+              navigate(`/evaluation-committees/${row.original.id}`);
+            },
+          },
+        ]}
+      />
+    </>
+  );
+};
 
 const columns = (): ColumnDef<EvaluationType>[] => [
   {
@@ -71,9 +44,9 @@ const columns = (): ColumnDef<EvaluationType>[] => [
       <DataTableColumnHeader column={column} columnTitle="Name" />
     ),
     cell: ({ row }) => (
-      <div  className="py-2">
-      <TextCell size={200} >{row.original.name}</TextCell>
-    </div>
+      <div className="py-2">
+        <TextCell size={200}>{row.original.name}</TextCell>
+      </div>
     ),
   },
   {
@@ -85,11 +58,10 @@ const columns = (): ColumnDef<EvaluationType>[] => [
       <TextCell size={200}>{row.original.teacher_ids.length}</TextCell>
     ),
   },
-  // {
-  //   id: "actions",
-  //   header: () => <TextCell>Actions</TextCell>,
-  //   cell: ({ row }) => <Actions row={row} />,
-  // },
+  {
+    id: "actions",
+    cell: ({ row }) => <Actions row={row} />,
+  },
 ];
 
 const EvaluationGroups: React.FC = () => {
@@ -129,13 +101,15 @@ const EvaluationGroups: React.FC = () => {
   }
 
   if (error) {
-    return <div>Something went wrong!</div>;
+    return <ErrorBoundaryComponent />;
   }
 
   return (
     <div>
       <SettingCard
-        title={`Evaluation Committee Groups(${queryData ? queryData.data.meta.total : 0})`}
+        title={`Evaluation Committee Groups(${
+          queryData ? queryData.data.meta.total : 0
+        })`}
       >
         <DataTable
           data={tableData}

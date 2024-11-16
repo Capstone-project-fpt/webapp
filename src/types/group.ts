@@ -129,3 +129,13 @@ export interface TopicGroupFeedback {
   updated_at: Date;
   capstone_group_topic_id: number;
 }
+
+export interface GroupReview {
+  id: number;
+  capstone_group_id: number;
+  feedback: string;
+  report_files: string[];
+  schedule_review_id: number;
+  created_at: Date;
+  updated_at: Date;
+}

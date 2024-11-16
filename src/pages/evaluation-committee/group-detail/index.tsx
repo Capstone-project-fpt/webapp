@@ -8,8 +8,10 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "./calendar";
 import Peoples from "./peoples";
+import Reviews from "./reviews";
 
 const TABS = [
+  { name: "reviews", label: "Reviews", component: Reviews },
   { name: "calendar", label: "Calendar", component: Calendar },
   { name: "peoples", label: "Peoples", component: Peoples },
 ];
@@ -37,7 +39,7 @@ const EvaluationDetail: React.FC = () => {
   const evaluation = evaluationData?.data;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState(tab || "calendar");
+  const [currentTab, setCurrentTab] = useState(tab || "reviews");
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
