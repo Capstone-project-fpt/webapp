@@ -9,7 +9,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, onSearchChange }) => 
   return (
     <div className="flex items-center">
       <Input
-        title="Search Lecturer"
+        title="Search"
         type="text"
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}

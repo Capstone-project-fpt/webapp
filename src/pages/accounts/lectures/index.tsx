@@ -17,7 +17,7 @@ import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { LecturesTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
-import SearchBar from "./components/search-bar";
+import SearchBar from "@/components/common/search-bar";
 
 const Lectures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
