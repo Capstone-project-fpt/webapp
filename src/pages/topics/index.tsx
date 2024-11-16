@@ -9,6 +9,7 @@ import { RootState } from "@/store";
 import { userInfo } from "@/store/slice/auth";
 import { UserTypes } from "@/types/accounts";
 import SearchBar from "@/components/common/search-bar";
+import { Label } from "@/components/ui/label"
 
 const Topics: React.FC = () => {
   const dispatch = useDispatch();
@@ -30,7 +31,10 @@ const Topics: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="flex flex-col gap-2 mb-4">
+          <Label className="text-base font-medium text-gray-700">Search Suggested Topic</Label>
+          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        </div>
         <Button
           variant="outline"
           className="ml-1"

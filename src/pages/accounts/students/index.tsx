@@ -18,6 +18,7 @@ import CreateUpdateDialog from "./components/create-update-dialog";
 import { StudentsTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
 import SearchBar from "@/components/common/search-bar";
+import { Label } from "@/components/ui/label"
 
 const Students = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,10 +44,10 @@ const Students = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-2">
-        <SearchBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+        <div className="flex flex-col gap-2 mb-4">
+          <Label className="text-base font-medium text-gray-700">Search Student</Label>
+          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        </div>
         <div className="flex items-center">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -70,7 +71,7 @@ const Students = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
+
         {modalType === "form" ? (
           <CreateUpdateDialog
             open={isModalOpen}
