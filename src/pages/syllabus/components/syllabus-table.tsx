@@ -67,7 +67,7 @@
 import { DataTable } from "@/components/data-table";
 import { SyllabusType } from "@/types/syllabus";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { columns } from "./columns";
 
 const fakeSyllabuses: SyllabusType[] = [
@@ -133,21 +133,38 @@ const fakeSyllabuses: SyllabusType[] = [
   },
 ];
 
-export function SyllabusTable() {
+interface SyllabusTableProps {
+  searchKey: string;
+}
+
+export function SyllabusTable({ searchKey }: SyllabusTableProps) {
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+    pageIndex: searchKey ? 1 : 0,
+    pageSize: searchKey ? 1000 : 10,
   });
+
+  const filteredSyllabuses = useMemo(() => {
+    const normalizedSearchKey = searchKey.toLowerCase();
+    return fakeSyllabuses.filter(
+      (syllabus) =>
+        syllabus.name.toLowerCase().includes(normalizedSearchKey) ||
+        syllabus.code.toLowerCase().includes(normalizedSearchKey)
+    );
+  }, [searchKey]);
 
   const tableData = useMemo(() => {
     const start = pagination.pageIndex * pagination.pageSize;
     const end = start + pagination.pageSize;
-    return fakeSyllabuses.slice(start, end);
-  }, [pagination]);
+    return filteredSyllabuses.slice(start, end);
+  }, [pagination, filteredSyllabuses]);
 
   const totalRecord = useMemo(() => {
-    return fakeSyllabuses.length;
-  }, []);
+    return filteredSyllabuses.length;
+  }, [filteredSyllabuses]);
+
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, [searchKey]);
 
   return (
     <DataTable
@@ -164,3 +181,4 @@ export function SyllabusTable() {
     />
   );
 }
+
