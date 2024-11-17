@@ -1,4 +1,4 @@
-import { ScheduleType } from "@/types/schedule";
+import { ScheduleStatus, ScheduleType } from "@/types/schedule";
 import { CalendarConfig } from "@schedule-x/calendar";
 import dayjs from "dayjs";
 
@@ -31,3 +31,21 @@ export const getDuration = ({ startTime, endTime }: { startTime: Date, endTime: 
   }
   return "";
 }
+
+export const getStatus = (schedule: ScheduleType): ScheduleStatus => {
+  const now = new Date();
+  const startTime = new Date(schedule.start_time);
+  const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  if (startTime < now) {
+    if (schedule.capstone_group_review.feedback) {
+      return ScheduleStatus.Archived;
+    } else {
+      return ScheduleStatus.Reviewing;
+    }
+  } else if (startTime <= oneWeekFromNow) {
+    return ScheduleStatus.InProgress;
+  } else {
+    return ScheduleStatus.Incoming;
+  }
+};

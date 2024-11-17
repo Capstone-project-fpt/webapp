@@ -15,9 +15,10 @@ export interface ScheduleType {
 }
 
 export enum ScheduleStatus {
+  Archived = "archived",
+  Reviewing = "reviewing",
   InProgress = "inProgress",
   Incoming = "incoming",
-  Archived = "archived",
 }
 
 export interface CreateScheduleType {

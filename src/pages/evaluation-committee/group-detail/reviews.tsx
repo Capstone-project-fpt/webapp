@@ -18,8 +18,79 @@ import { useGetSchedulesQuery } from "@/store/api/v1/endpoints/evaluations";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateScheduleDialog from "../components/create-schedule-dialog";
+import { getStatus } from "@/lib/schedule-review";
+import { ScheduleStatus, ScheduleType } from "@/types/schedule";
 
-const ReviewsTable = () => {
+const ReviewsTable: React.FC<{ reviews: ScheduleType[]; title: string }> = ({
+  reviews = [],
+  title,
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <SettingCard title={`${title} (${reviews.length})`}>
+      <div className="flex flex-col gap-5">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Group</TableHead>
+              <TableHead>Start time</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {reviews.length > 0 && (
+              <>
+                {reviews.map((scheduleReview) => (
+                  <TableRow>
+                    <TableCell>{scheduleReview.title}</TableCell>
+                    <TableCell>
+                      {scheduleReview.capstone_group.name_group}
+                    </TableCell>
+                    <TableCell>
+                      <DateDisplay
+                        date={new Date(scheduleReview.start_time)}
+                        showTime={true}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <ReviewStatusBadge
+                        status={getStatus(scheduleReview)}
+                      ></ReviewStatusBadge>
+                    </TableCell>
+                    <ActionCell
+                      items={[
+                        {
+                          item: "View details",
+                          onClick: () => {
+                            navigate(
+                              `/groups/${scheduleReview.capstone_group.id}/reviews/${scheduleReview.capstone_group_review.id}`
+                            );
+                          },
+                        },
+                      ]}
+                    ></ActionCell>
+                  </TableRow>
+                ))}
+              </>
+            )}
+          </TableBody>
+        </Table>
+        {!reviews.length && (
+          <EmptyResources
+            shape="empty-task"
+            title={`Empty ${title} Review`}
+            content="There is no review yet"
+          />
+        )}
+      </div>
+    </SettingCard>
+  );
+};
+
+const Reviews = () => {
   const { evaluationId } = useParams<{ evaluationId: string }>();
 
   const currentSemester = useSelector(
@@ -40,7 +111,6 @@ const ReviewsTable = () => {
   );
 
   const scheduleReviews = scheduleReviewsData?.data || [];
-  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -55,71 +125,35 @@ const ReviewsTable = () => {
   if (isError) {
     return <ErrorBoundaryComponent />;
   }
-
-  return (
-    <div className="flex flex-col gap-5">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Group</TableHead>
-            <TableHead>Start time</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {scheduleReviews && scheduleReviews.length > 0 && (
-            <>
-              {scheduleReviews.map((scheduleReview) => (
-                <TableRow>
-                  <TableCell>{scheduleReview.title}</TableCell>
-                  <TableCell>
-                    {scheduleReview.capstone_group.name_group}
-                  </TableCell>
-                  <TableCell>
-                    <DateDisplay
-                      date={new Date(scheduleReview.start_time)}
-                      showTime={true}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <ReviewStatusBadge status="test"></ReviewStatusBadge>
-                  </TableCell>
-                  <ActionCell
-                    items={[
-                      {
-                        item: "View details",
-                        onClick: () => {
-                          navigate(
-                            `/groups/${scheduleReview.capstone_group.id}/reviews/${scheduleReview.capstone_group_review.id}`
-                          );
-                        },
-                      },
-                    ]}
-                  ></ActionCell>
-                </TableRow>
-              ))}
-            </>
-          )}
-        </TableBody>
-      </Table>
-      {(!scheduleReviews || !scheduleReviews.length) && (
-        <EmptyResources title="Empty Review" content="There is no review" />
-      )}
-    </div>
-  );
-};
-
-const Reviews = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end mb-2">
         <CreateScheduleDialog />
       </div>
-      <SettingCard title="In Progress">
-        <ReviewsTable />
-      </SettingCard>
+      <ReviewsTable
+        title="Reviewing"
+        reviews={scheduleReviews.filter(
+          (review) => getStatus(review) === ScheduleStatus.Reviewing
+        )}
+      />
+      <ReviewsTable
+        title="In Progress"
+        reviews={scheduleReviews.filter(
+          (review) => getStatus(review) === ScheduleStatus.InProgress
+        )}
+      />
+      <ReviewsTable
+        title="Incoming"
+        reviews={scheduleReviews.filter(
+          (review) => getStatus(review) === ScheduleStatus.Incoming
+        )}
+      />
+      <ReviewsTable
+        title="Archived"
+        reviews={scheduleReviews.filter(
+          (review) => getStatus(review) === ScheduleStatus.Archived
+        )}
+      />
     </div>
   );
 };

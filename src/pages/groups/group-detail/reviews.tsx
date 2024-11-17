@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getStatus } from "@/lib/schedule-review";
 import { RootState } from "@/store";
 import { useGetGroupScheduleReviewsQuery } from "@/store/api/v1/endpoints/groups";
 import { useSelector } from "react-redux";
@@ -82,7 +83,9 @@ const Reviews = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      <ReviewStatusBadge status="test"></ReviewStatusBadge>
+                      <ReviewStatusBadge
+                        status={getStatus(scheduleReview)}
+                      ></ReviewStatusBadge>
                     </TableCell>
                     <ActionCell
                       items={[

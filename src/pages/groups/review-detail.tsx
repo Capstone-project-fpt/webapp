@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { getDuration } from "@/lib/schedule-review";
+import { getDuration, getStatus } from "@/lib/schedule-review";
 import { RootState } from "@/store";
 import {
   useFeedbackGroupReviewMutation,
@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "./components/comment-composer";
 import SelectReportsDialog from "./components/select-reports";
+import { ReviewStatusBadge } from "@/components/common/status-badge";
 
 interface ReviewHeaderProps {
   review: GroupReview;
@@ -49,7 +50,11 @@ const ReviewHeader: React.FC<ReviewHeaderProps> = ({
 
       <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
         <span>Status</span>
-        <div>TODO STATUS</div>
+        <div>
+          <ReviewStatusBadge
+            status={getStatus(reviewSchedule)}
+          ></ReviewStatusBadge>
+        </div>
         <span>Due</span>
         <DateDisplay
           date={new Date(reviewSchedule.start_time)}
