@@ -1,11 +1,13 @@
+import { EvaluationType } from "./evaluation";
+import { GroupType } from "./group";
 
 export interface ScheduleType {
   id: number,
   title: string,
   type: string,
   description: string,
-  capstone_group_id: number,
-  evaluation_committee_id: number,
+  capstone_group: GroupType,
+  evaluation_committee: EvaluationType,
   link_meeting: string,
   start_time: Date,
   end_time: Date,

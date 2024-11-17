@@ -18,6 +18,8 @@ export const parseSchedulesToCalendarEvents = (schedules: ScheduleType[]): Calen
     description: item.description,
     start: getDateTime(item.start_time),
     end: getDateTime(item.end_time),
+    people: [item.capstone_group?.name_group, item.evaluation_committee?.name],
+    location: item.link_meeting,
   }));
   return groupSchedules;
 }

@@ -60,7 +60,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
   return (
     <div className="my-6">
       <div className="flex items-center gap-2 mb-2">
-        <h2 className="">Document</h2>
+        <h2 className="">Report</h2>
         <FaRegEdit
           className="cursor-pointer"
           onClick={() => setIsModalOpen(true)}
