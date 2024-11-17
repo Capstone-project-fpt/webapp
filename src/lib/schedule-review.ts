@@ -23,3 +23,11 @@ export const parseSchedulesToCalendarEvents = (schedules: ScheduleType[]): Calen
   }));
   return groupSchedules;
 }
+
+export const getDuration = ({ startTime, endTime }: { startTime: Date, endTime: Date }) => {
+  if (startTime && endTime) {
+    const duration = dayjs(endTime).diff(dayjs(startTime), 'minute');
+    return `${duration} minutes`;
+  }
+  return "";
+}

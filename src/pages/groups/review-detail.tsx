@@ -1,19 +1,26 @@
 import { LoadingTableLottie } from "@/components";
+import Comment from "@/components/common/comment";
 import DateDisplay from "@/components/common/date";
 import EmptyResources from "@/components/common/empty-resource";
+import { ActionDialog } from "@/components/custom/action-dialog";
+import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { getDuration } from "@/lib/schedule-review";
 import { RootState } from "@/store";
 import {
   useFeedbackGroupReviewMutation,
   useGetGroupReviewQuery,
+  useGetGroupScheduleReviewQuery,
+  useUpdateReportsGroupReviewMutation,
 } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { ResponseErrorType } from "@/types";
 import { GroupReview } from "@/types/group";
+import { ScheduleType } from "@/types/schedule";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
 import { FileIcon } from "lucide-react";
@@ -22,22 +29,52 @@ import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "./components/comment-composer";
+import SelectReportsDialog from "./components/select-reports";
 
 interface ReviewHeaderProps {
   review: GroupReview;
+  reviewSchedule: ScheduleType;
 }
 
-const ReviewHeader: React.FC<ReviewHeaderProps> = ({ review }) => {
+const ReviewHeader: React.FC<ReviewHeaderProps> = ({
+  review,
+  reviewSchedule,
+}) => {
   return (
     <div>
-      <div className="text-xl mb-4">{"Review"}</div>
+      <div className=" mb-4">
+        <div className="text-xl">{reviewSchedule.title}</div>
+        <span>{reviewSchedule.description}</span>
+      </div>
+
       <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
         <span>Status</span>
-        <div></div>
-        <span>Create date</span>
-        <DateDisplay date={new Date(review.created_at)} showTime={true} />
-        <span>Update date</span>
-        <DateDisplay date={new Date(review.updated_at)} showTime={true} />
+        <div>TODO STATUS</div>
+        <span>Due</span>
+        <DateDisplay
+          date={new Date(reviewSchedule.start_time)}
+          showTime={true}
+        />
+        <span>Review Time</span>
+        <DateDisplay
+          date={new Date(reviewSchedule.start_time)}
+          showTime={true}
+        />
+        <span>Duration</span>
+        <span>
+          {getDuration({
+            startTime: reviewSchedule.start_time,
+            endTime: reviewSchedule.end_time,
+          })}
+        </span>
+        <span>Link Meeting</span>
+        <a
+          href={reviewSchedule.link_meeting}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {reviewSchedule.link_meeting}
+        </a>
       </div>
     </div>
   );
@@ -45,73 +82,112 @@ const ReviewHeader: React.FC<ReviewHeaderProps> = ({ review }) => {
 
 interface DocumentSectionProps {
   review: GroupReview;
-  groupId: string;
-  reviewId: string;
+  reviewSchedule: ScheduleType;
+  refetchReview?: () => void;
 }
 
 const DocumentSection: React.FC<DocumentSectionProps> = ({
   review,
-  groupId,
-  reviewId,
+  reviewSchedule,
+  refetchReview,
 }) => {
+  const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const document_path = "test.docx";
+  const [updateReports, updateReportsData] =
+    useUpdateReportsGroupReviewMutation();
+  const handleSelectReports = async (reports: string[]) => {
+    try {
+      const { data } = await updateReports({
+        group_id: review.capstone_group_id,
+        capstone_group_review_id: review.id,
+        report_files: reports,
+      }).unwrap();
+
+      if (refetchReview) {
+        refetchReview();
+      }
+
+      toast({
+        title: `Select reports`,
+        description: data || "Select reports successfully.",
+      });
+      setIsModalOpen(false);
+    } catch (error) {
+      toast({
+        title: `Select reports`,
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="my-6">
       <div className="flex items-center gap-2 mb-2">
-        <h2 className="">Report</h2>
-        <FaRegEdit
-          className="cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        />
-        {/* <UploadReviewDialog
+        <h2 className="">Reports</h2>
+        {new Date() < new Date(reviewSchedule.start_time) && (
+          <FaRegEdit
+            className="cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+          />
+        )}
+
+        <SelectReportsDialog
           open={isModalOpen}
           onOpenChange={setIsModalOpen}
-          groupId={groupId}
-          reviewId={reviewId}
-        /> */}
+          groupId={review.capstone_group_id}
+          onSelectReports={handleSelectReports}
+          isLoading={updateReportsData.isLoading}
+        />
       </div>
       <div className="flex gap-4">
-        <div className="flex items-center border px-5 py-3 rounded-lg max-w-lg">
-          <FileIcon className="mr-2" />
-          <span className="truncate">{getFileName(document_path)}</span>
-          <Button variant={"outline"} className="ml-3" size="sm">
-            <a
-              href={getUrlFile(document_path)}
-              download={getFileName(document_path)}
-              className="text-accent underline flex items-center"
-              target="_blank"
-            >
-              Download
-            </a>
-          </Button>
-        </div>
+        {review.report_files.map((report, index) => (
+          <div
+            key={index}
+            className="flex items-center border px-5 py-3 rounded-lg max-w-lg"
+          >
+            <FileIcon className="mr-2" />
+            <span className="truncate">{getFileName(report)}</span>
+            <Button variant={"outline"} className="ml-3" size="sm">
+              <a
+                href={getUrlFile(report)}
+                download={getFileName(report)}
+                className="text-accent underline flex items-center"
+                target="_blank"
+              >
+                Download
+              </a>
+            </Button>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 interface FeedbackSectionProps {
-  groupId: string;
-  reviewId: string;
+  review: GroupReview;
   refetchReview?: () => void;
 }
 
 const FeedbackSection: React.FC<FeedbackSectionProps> = ({
-  groupId,
-  reviewId,
+  review,
   refetchReview,
 }) => {
   const { toast } = useToast();
   const [feedback, setFeedback] = useState<Content>("");
-  const [feedbackGroupReview] = useFeedbackGroupReviewMutation();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [feedbackGroupReview, feedbackGroupReviewData] =
+    useFeedbackGroupReviewMutation();
 
-  const handleComment = async () => {
+  const handleComment = async (isDelete = false) => {
     try {
-      await feedbackGroupReview({
-        group_id: parseInt(groupId),
-        capstone_group_review_id: parseInt(reviewId),
+      const commentData = await feedbackGroupReview({
+        group_id: review.capstone_group_id,
+        capstone_group_review_id: review.id,
         feedback: feedback as string,
       }).unwrap();
 
@@ -119,8 +195,8 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       toast({
         duration: 1000,
         variant: "default",
-        title: "Feedback Topic",
-        description: "Feedback Topic Successfully.",
+        title: `${isDelete ? "Delete feedback review" : "isDelete"}`,
+        description: commentData.data || "Feedback review Successfully.",
       });
 
       if (refetchReview) {
@@ -128,7 +204,7 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       }
     } catch (error) {
       toast({
-        title: `Feedback review`,
+        title: `${isDelete ? "Delete feedback review" : "isDelete"}`,
         description:
           (error as ResponseErrorType)?.data?.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
@@ -139,19 +215,64 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
 
   return (
     <div className="mt-4">
-      <EmptyResources
-        title="No feedback yet"
-        content="The evaluation committee has not given feedback yet."
-      />
+      {review.feedback ? (
+        <>
+          <ActionDialog
+            open={isDeleteOpen}
+            onOpenChange={setIsDeleteOpen}
+            title="Delete feedback"
+            danger
+            cancelButton
+            okButton={{
+              label: "Delete",
+              onClick: async () => {
+                handleComment(true);
+              },
+              isLoading: feedbackGroupReviewData.isLoading,
+            }}
+            confirmText="I understand that this action cannot be undone."
+          >
+            {`Are you sure you want to delete the feedback ?`}
+          </ActionDialog>
+          <Comment
+            comment={{
+              content: review.feedback,
+              created_at: review.updated_at,
+            }}
+            actions={
+              <ActionCell
+                items={[
+                  {
+                    item: "Delete",
+                    danger: true,
+                    onClick: () => {
+                      setFeedback("");
+                      setIsDeleteOpen(true);
+                    },
+                  },
+                ]}
+              />
+            }
+          />
+        </>
+      ) : (
+        <EmptyResources
+          title="No feedback yet"
+          content="The evaluation committee has not given feedback yet."
+        />
+      )}
 
       <div>
-        {/* TODO: Just evaluation committee give feedback */}
-        {/* TODO: Hide before review */}
-        <CommentComposer
-          value={feedback}
-          setValue={setFeedback}
-          handleComment={handleComment}
-        />
+        {!review.feedback && (
+          <CommentComposer
+            value={feedback}
+            setValue={setFeedback}
+            handleComment={() => {
+              handleComment();
+            }}
+            isLoading={feedbackGroupReviewData.isLoading}
+          />
+        )}
       </div>
     </div>
   );
@@ -164,16 +285,30 @@ const ReportDetail: React.FC = () => {
   }>();
   const dispatch = useDispatch();
   const { currentGroup } = useSelector((state: RootState) => state.resource);
+
   const {
     data: reviewData,
     isLoading,
     isError,
-    refetch,
+    refetch: refetchReview,
   } = useGetGroupReviewQuery({
     group_id: Number(groupId),
     capstone_group_review_id: Number(reviewId),
   });
+
+  const {
+    data: reviewScheduleData,
+    isLoading: isLoadingSchedule,
+    isError: isErrorSchedule,
+  } = useGetGroupScheduleReviewQuery(
+    {
+      schedule_review_id: reviewData?.data.schedule_review_id || 0,
+    },
+    { skip: !reviewData }
+  );
+
   const review = reviewData?.data;
+  const reviewSchedule = reviewScheduleData?.data;
 
   useEffect(() => {
     dispatch(
@@ -193,7 +328,7 @@ const ReportDetail: React.FC = () => {
     );
   }, [dispatch, groupId, reviewId, currentGroup]);
 
-  if (isLoading) {
+  if (isLoading || isLoadingSchedule) {
     return (
       <div className=" flex justify-center pt-10 p-5">
         <div className=" w-[250px] ">
@@ -203,17 +338,22 @@ const ReportDetail: React.FC = () => {
     );
   }
 
-  if (isError) {
+  if (isError || isErrorSchedule) {
     return <ErrorBoundaryComponent />;
   }
+
+  if (!review || !reviewSchedule) {
+    return <EmptyResources title="No review found" />;
+  }
+
   return (
     <div>
-      <ReviewHeader review={review!} />
+      <ReviewHeader review={review} reviewSchedule={reviewSchedule} />
 
       <DocumentSection
-        groupId={groupId!}
-        review={review!}
-        reviewId={reviewId!}
+        review={review}
+        reviewSchedule={reviewSchedule}
+        refetchReview={refetchReview}
       />
 
       <Separator />
@@ -226,11 +366,7 @@ const ReportDetail: React.FC = () => {
 
         <TabsContent value="feedback">
           <div className="mt-4">
-            <FeedbackSection
-              groupId={groupId!}
-              reviewId={reviewId!}
-              refetchReview={refetch}
-            />
+            <FeedbackSection review={review} refetchReview={refetchReview} />
           </div>
         </TabsContent>
       </Tabs>

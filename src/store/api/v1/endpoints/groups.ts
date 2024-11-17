@@ -1,4 +1,5 @@
 import { ListPaginationType, PaginationType, ResponseType } from "@/types";
+import { StudentType } from "@/types/accounts";
 import {
   CreateGroupBody,
   GroupReview,
@@ -12,9 +13,8 @@ import {
   TopicGroupFeedback,
   TopicReviewStatus,
 } from "@/types/group";
-import { api } from "..";
 import { ScheduleType } from "@/types/schedule";
-import { StudentType } from "@/types/accounts";
+import { api } from "..";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -197,16 +197,16 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
       }),
     }),
-    updateReportsGroupReview: builder.mutation<void, { group_id: number, capstone_group_review_id: number, report_files: string[] }>({
+    updateReportsGroupReview: builder.mutation<ResponseType<string>, { group_id: number, capstone_group_review_id: number, report_files: string[] }>({
       query: ({ group_id, capstone_group_review_id, report_files }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
         method: "PATCH",
         body: { capstone_group_review_id, report_files },
       }),
     }),
-    feedbackGroupReview: builder.mutation<void, { group_id: number, capstone_group_review_id: number, feedback: string }>({
+    feedbackGroupReview: builder.mutation<ResponseType<string>, { group_id: number, capstone_group_review_id: number, feedback: string }>({
       query: ({ group_id, capstone_group_review_id, feedback }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
+        url: `/capstone-groups/${group_id}/capstone-group-reviews/feedback`,
         method: "PATCH",
         body: { capstone_group_review_id, feedback },
       }),
@@ -227,6 +227,14 @@ const groupsApi = api.injectEndpoints({
       query: ({ capstone_group_id, start_time, end_time }) => ({
         url: `/schedule-reviews/`,
         params: { capstone_group_id, start_time, end_time },
+      }),
+    }),
+    getGroupScheduleReview: builder.query<
+      ResponseType<ScheduleType>,
+      { schedule_review_id: number }
+    >({
+      query: ({ schedule_review_id }) => ({
+        url: `/schedule-reviews/${schedule_review_id}`,
       }),
     }),
     //#endregion
@@ -268,9 +276,11 @@ export const {
   useGetInvitationMentorsQuery,
 
   useGetGroupReviewsQuery,
-  useGetGroupScheduleReviewsQuery,
   useGetGroupReviewQuery,
   useUpdateReportsGroupReviewMutation,
+  useGetGroupScheduleReviewsQuery,
+  useGetGroupScheduleReviewQuery,
+
   useFeedbackGroupReviewMutation,
 
   useGetListStudentsHaveCapstoneGroupQuery,

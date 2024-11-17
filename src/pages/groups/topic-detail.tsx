@@ -1,9 +1,3 @@
-import { Content } from "@tiptap/react";
-import { FileIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { FaRegEdit } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router";
 import Comment from "@/components/common/comment";
 import DateDisplay from "@/components/common/date";
 import EmptyResources from "@/components/common/empty-resource";
@@ -22,6 +16,12 @@ import {
 import { setBreadCrumb } from "@/store/slice/app";
 import { CommentType } from "@/types/common";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
+import { Content } from "@tiptap/react";
+import { FileIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router";
 
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { SettingCard } from "@/components/custom/setting";
