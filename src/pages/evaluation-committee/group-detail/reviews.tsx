@@ -1,98 +1,46 @@
 import { LoadingTableLottie } from "@/components";
-import { GroupStatusBadge } from "@/components/common/status-badge";
+import DateDisplay from "@/components/common/date";
+import EmptyResources from "@/components/common/empty-resource";
+import { ReviewStatusBadge } from "@/components/common/status-badge";
 import { SettingCard } from "@/components/custom/setting";
-import {
-  ActionCell,
-  DataTable,
-  DataTableColumnHeader,
-  TextCell,
-} from "@/components/data-table";
-import { RootState } from "@/store";
-import { useGetGroupsQuery } from "@/store/api/v1/endpoints/groups";
-import { GroupType } from "@/types/group";
-import { ScheduleStatus } from "@/types/schedule";
-import {
-  ColumnDef,
-  PaginationState,
-  Row,
-  TableOptions,
-} from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
-import CreateScheduleDialog from "../components/create-schedule-dialog";
+import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { RootState } from "@/store";
+import { useGetSchedulesQuery } from "@/store/api/v1/endpoints/evaluations";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import CreateScheduleDialog from "../components/create-schedule-dialog";
 
-const Actions: React.FC<{
-  row: Row<GroupType>;
-}> = ({ row }) => {
-  return (
-    <ActionCell
-      items={[
-        {
-          item: "View Detail",
-          onClick: () => {
-            console.log("View Detail");
-          },
-        },
-      ]}
-    />
-  );
-};
+const ReviewsTable = () => {
+  const { evaluationId } = useParams<{ evaluationId: string }>();
 
-const columns = (): ColumnDef<GroupType>[] => [
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} columnTitle="Name" />
-    ),
-    cell: ({ row }) => (
-      <TextCell size={200}>{row.original.name_group}</TextCell>
-    ),
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} columnTitle="Status" />
-    ),
-    cell: ({ row }) => <GroupStatusBadge status={row.original.status} />,
-  },
-  {
-    id: "actions",
-    header: () => <TextCell>Actions</TextCell>,
-    cell: ({ row }) => <Actions row={row} />,
-  },
-];
-interface ReviewsTableProps {
-  status: ScheduleStatus;
-}
-
-const ReviewsTable: React.FC<ReviewsTableProps> = ({ status }) => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
   const {
-    data: queryData,
-    error,
+    data: scheduleReviewsData,
     isLoading,
-  } = useGetGroupsQuery({
-    page: pagination.pageIndex + 1,
-    limit: pagination.pageSize,
-    semester_id: Number(currentSemester?.id),
-  });
+    isError,
+  } = useGetSchedulesQuery(
+    {
+      evaluation_committee_id: Number(evaluationId),
+      start_time: currentSemester?.start_time.toString() || "",
+      end_time: currentSemester?.end_time.toString() || "",
+    },
+    { skip: !currentSemester }
+  );
 
-  const tableData = useMemo(() => {
-    return queryData ? queryData.data.items : [];
-  }, [queryData]);
-
-  const totalRecord = useMemo(() => {
-    return queryData ? queryData.data.meta.total : 0;
-  }, [queryData]);
+  const scheduleReviews = scheduleReviewsData?.data || [];
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -104,24 +52,62 @@ const ReviewsTable: React.FC<ReviewsTableProps> = ({ status }) => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return <ErrorBoundaryComponent />;
   }
 
   return (
-    <DataTable
-      data={tableData}
-      columns={columns()}
-      state={{ pagination }}
-      options={
-        {
-          onPaginationChange: setPagination,
-          manualPagination: true,
-          pageCount: Math.ceil(totalRecord / pagination.pageSize),
-        } as TableOptions<GroupType>
-      }
-      showToolbar={false}
-    />
+    <div className="flex flex-col gap-5">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Group</TableHead>
+            <TableHead>Start time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {scheduleReviews && scheduleReviews.length > 0 && (
+            <>
+              {scheduleReviews.map((scheduleReview) => (
+                <TableRow>
+                  <TableCell>{scheduleReview.title}</TableCell>
+                  <TableCell>
+                    {scheduleReview.capstone_group.name_group}
+                  </TableCell>
+                  <TableCell>
+                    <DateDisplay
+                      date={new Date(scheduleReview.start_time)}
+                      showTime={true}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <ReviewStatusBadge status="test"></ReviewStatusBadge>
+                  </TableCell>
+                  <ActionCell
+                    items={[
+                      {
+                        item: "View details",
+                        onClick: () => {
+                          navigate(
+                            `/groups/${scheduleReview.capstone_group.id}/reviews/${scheduleReview.capstone_group_review.id}`
+                          );
+                        },
+                      },
+                    ]}
+                  ></ActionCell>
+                </TableRow>
+              ))}
+            </>
+          )}
+        </TableBody>
+      </Table>
+      {(!scheduleReviews || !scheduleReviews.length) && (
+        <EmptyResources title="Empty Review" content="There is no review" />
+      )}
+    </div>
   );
 };
 
@@ -132,14 +118,8 @@ const Reviews = () => {
         <CreateScheduleDialog />
       </div>
       <SettingCard title="In Progress">
-        <ReviewsTable status={ScheduleStatus.InProgress} />
+        <ReviewsTable />
       </SettingCard>
-      {/* <SettingCard title="Incoming" description="The schedules in the future">
-        <ReviewsTable status={ScheduleStatus.Incoming} />
-      </SettingCard>
-      <SettingCard title="Archived" description="The schedules in the past">
-        <ReviewsTable status={ScheduleStatus.Archived} />
-      </SettingCard> */}
     </div>
   );
 };
