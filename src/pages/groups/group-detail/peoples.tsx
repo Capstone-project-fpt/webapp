@@ -29,6 +29,7 @@ import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import InviteMentorDialog from "../components/invite-mentor-dialog";
+import DeleteMemberDialog from "../components/delete-member-dialog";
 
 type BadgeVariant = "success" | "info" | "destructive" | "outline";
 
@@ -149,62 +150,90 @@ const MentorTable: React.FC<{
 const MemberTable: React.FC<{
   members: GroupMember[];
   leaderId: number | null;
-}> = ({ members, leaderId }) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Code</TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Email</TableHead>
-        <TableHead>Major</TableHead>
-        <TableHead>Role</TableHead>
-        <TableHead>Actions</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {members.map((member) => (
-        <TableRow key={member.id}>
-          <TableCell>{member.code}</TableCell>
-          <TableCell className="flex items-center space-x-2">
-            <Avatar>
-              <AvatarImage
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  member.name
-                )}&size=32`}
-                alt={member.name}
-              />
-              <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p>{member.name}</p>
-            </div>
-          </TableCell>
-          <TableCell>{member.email}</TableCell>
-          <TableCell>
-            <SubMajor id={member.sub_major_id} />
-          </TableCell>
-          <TableCell>
-            <Badge variant="outline" className="capitalize">
-              {member.id === leaderId ? "Leader" : "Member"}
-            </Badge>
-          </TableCell>
-          <TableCell>
-            <ActionCell
-              items={[
-                {
-                  item: "Send Email",
-                  onClick: () => {
-                    window.location.href = `mailto:${member.email}`;
-                  },
-                },
-              ]}
-            />
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
+  groupId: number;
+}> = ({ members, leaderId, groupId }) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+
+  const handleDelete = () => {
+    setSelectedMemberId(null);
+  };
+
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Code</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Major</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {members.map((member) => (
+            <TableRow key={member.id}>
+              <TableCell>{member.code}</TableCell>
+              <TableCell className="flex items-center space-x-2">
+                <Avatar>
+                  <AvatarImage
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      member.name
+                    )}&size=32`}
+                    alt={member.name}
+                  />
+                  <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p>{member.name}</p>
+                </div>
+              </TableCell>
+              <TableCell>{member.email}</TableCell>
+              <TableCell>
+                <SubMajor id={member.sub_major_id} />
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline" className="capitalize">
+                  {member.id === leaderId ? "Leader" : "Member"}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <ActionCell
+                  items={[
+                    {
+                      item: "Send Email",
+                      onClick: () => {
+                        window.location.href = `mailto:${member.email}`;
+                      },
+                    },
+                    {
+                      item: "Remove",
+                      onClick: () => {
+                        setSelectedMemberId(member.id);
+                        setDeleteDialogOpen(true);
+                      },
+                    },
+                  ]}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {selectedMemberId && (
+        <DeleteMemberDialog
+          groupId={groupId}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          memberId={selectedMemberId}
+          onDelete={handleDelete}
+        />
+      )}
+    </>
+  );
+};
 
 const Peoples = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -297,7 +326,11 @@ const Peoples = () => {
       </SettingCard>
 
       <SettingCard title={`Members (${members.length})`}>
-        <MemberTable members={members} leaderId={leaderId} />
+        <MemberTable
+          members={members}
+          leaderId={leaderId}
+          groupId={parseInt(groupId!)}
+        />
       </SettingCard>
     </div>
   );

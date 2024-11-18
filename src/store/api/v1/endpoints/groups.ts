@@ -152,6 +152,14 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
+    updateMembers: builder.mutation<ResponseType<MembersType>, { group_id: number, student_ids: number[]}>({
+      query: ({ group_id, student_ids }) => ({
+        url: `/capstone-groups/${group_id}/members`,
+        method: 'PUT',
+        body: { student_ids },
+      }),
+      invalidatesTags: ["Group"],
+    }),
 
     getInvitationMentors: builder.query<
       ResponseType<ListPaginationType<InvitationMentor>>,
@@ -257,6 +265,7 @@ export const {
   useLazyGetMentorAndListMembersGroupQuery,
   useUpdateGroupMutation,
 
+
   useInviteMentorMutation,
   useAcceptInvitationMutation,
 
@@ -273,6 +282,7 @@ export const {
   useDeleteTopicFeedbackMutation,
 
   useGetMembersQuery,
+  useUpdateMembersMutation,
   useGetInvitationMentorsQuery,
 
   useGetGroupReviewsQuery,
