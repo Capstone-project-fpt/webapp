@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { SyllabusTable } from "./components/syllabus-table";
 import { Label } from "@/components/ui/label";
-import SearchBar from "@/components/common/search-bar";
+import { Input } from "@/components/ui/input";
 
 const Syllabus: React.FC = () => {
   const dispatch = useDispatch();
@@ -25,11 +25,15 @@ const Syllabus: React.FC = () => {
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <div className="flex flex-col gap-2 mb-4">
-          <Label className="text-base font-medium text-gray-700">
-            Search Syllabus
-          </Label>
-          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <div className="flex flex-col gap-2">
+          <Input
+            title="Search"
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-48"
+          />
         </div>
         <Button
           variant="outline"

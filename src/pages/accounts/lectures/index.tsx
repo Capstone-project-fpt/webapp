@@ -17,8 +17,8 @@ import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { LecturesTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
-import SearchBar from "@/components/common/search-bar";
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const Lectures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,10 +43,16 @@ const Lectures = () => {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-2">
-        <div className="flex flex-col gap-2 mb-4">
-          <Label className="text-base font-medium text-gray-700">Search Lecturer</Label>
-          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col gap-2">
+          <Input
+            title="Search"
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-48"
+          />
         </div>
         <div className="flex items-center">
           <DropdownMenu>
