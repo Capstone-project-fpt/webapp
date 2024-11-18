@@ -18,7 +18,6 @@ import CreateUpdateDialog from "./components/create-update-dialog";
 import { LecturesTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const Lectures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

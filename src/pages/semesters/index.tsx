@@ -5,7 +5,6 @@ import { GoPlus } from "react-icons/go";
 import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { SemesterTable } from "./components/semester-table";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 const Semesters: React.FC = () => {
