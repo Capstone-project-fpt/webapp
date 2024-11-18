@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "./calendar";
+import Assign from "./groups";
 import Peoples from "./peoples";
 import Reviews from "./reviews";
 
@@ -14,6 +15,7 @@ const TABS = [
   { name: "reviews", label: "Reviews", component: Reviews },
   { name: "calendar", label: "Calendar", component: Calendar },
   { name: "peoples", label: "Peoples", component: Peoples },
+  { name: "assign", label: "Assign", component: Assign },
 ];
 
 const TABS_NAMES = TABS.reduce((acc, tab) => {

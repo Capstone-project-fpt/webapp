@@ -1,20 +1,24 @@
+import { EvaluationType } from "./evaluation";
+import { GroupReview, GroupType } from "./group";
 
 export interface ScheduleType {
   id: number,
   title: string,
   type: string,
   description: string,
-  capstone_group_id: number,
-  evaluation_committee_id: number,
   link_meeting: string,
   start_time: Date,
   end_time: Date,
+  capstone_group: GroupType,
+  evaluation_committee: EvaluationType,
+  capstone_group_review: GroupReview
 }
 
 export enum ScheduleStatus {
+  Archived = "archived",
+  Reviewing = "reviewing",
   InProgress = "inProgress",
   Incoming = "incoming",
-  Archived = "archived",
 }
 
 export interface CreateScheduleType {

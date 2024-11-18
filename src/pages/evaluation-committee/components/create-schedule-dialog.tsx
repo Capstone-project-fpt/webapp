@@ -31,7 +31,7 @@ import {
   useCreateScheduleMutation,
   useGetEvaluationQuery,
 } from "@/store/api/v1/endpoints/evaluations";
-import { OptionType } from "@/types";
+import { OptionType, ResponseErrorType } from "@/types";
 import { GroupType } from "@/types/group";
 import { CreateScheduleType } from "@/types/schedule";
 import { ReloadIcon } from "@radix-ui/react-icons";
@@ -105,7 +105,7 @@ const CreateScheduleDialog: React.FC = () => {
     if (!values.semester_id) {
       toast({
         title: "Create Schedule",
-        description: "Something went wrong",
+        description: "The current semester is not available. Please try again",
         variant: "destructive",
       });
       return;
@@ -123,7 +123,9 @@ const CreateScheduleDialog: React.FC = () => {
     } catch (error) {
       toast({
         title: "Create Schedule",
-        description: "Something went wrong",
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator",
         variant: "destructive",
       });
     }
@@ -289,6 +291,8 @@ const CreateScheduleDialog: React.FC = () => {
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
+                          fromDate={new Date()}
+                          toDate={new Date(currentSemester?.end_time || "")}
                           selected={new Date(values.start_time)}
                           onSelect={(date) => {
                             if (date) {
@@ -296,6 +300,10 @@ const CreateScheduleDialog: React.FC = () => {
                               date.setHours(currentTime.getHours());
                               date.setMinutes(currentTime.getMinutes());
                               setFieldValue("start_time", date);
+                              setFieldValue(
+                                "end_time",
+                                new Date(date.getTime() + 60 * 60 * 1000)
+                              );
                             }
                           }}
                           initialFocus
@@ -342,6 +350,8 @@ const CreateScheduleDialog: React.FC = () => {
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
+                          fromDate={new Date(values.start_time || "")}
+                          toDate={new Date(currentSemester?.end_time || "")}
                           selected={new Date(values.end_time)}
                           onSelect={(date) => {
                             if (date) {
