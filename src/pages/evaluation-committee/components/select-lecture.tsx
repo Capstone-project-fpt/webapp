@@ -4,6 +4,9 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import { Member, OptionType } from "../type";
 import { ActionMeta, SingleValue } from "react-select";
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useGetListTeachersHaveEvaluationComitteeGroupQuery } from "@/store/api/v1/endpoints/evaluations";
 
 const defaultAdditional = { page: 1 };
 
@@ -15,15 +18,26 @@ interface SelectLectureProps {
     actionMeta: ActionMeta<OptionType>
   ) => void)
   | undefined;
-  selectedMembers: Member[]; 
+  selectedMembers: Member[];
 }
 
 const SelectLecture: React.FC<SelectLectureProps> = ({
   value,
   onChangeValue,
   selectedMembers,
- 
+
 }) => {
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+  const {
+    data: listTeacherHaveEvaluationCommitteeGroup,
+    error,
+    isLoading,
+  } = useGetListTeachersHaveEvaluationComitteeGroupQuery(
+    { semester_id: currentSemester?.id! },
+    { skip: !currentSemester }
+  );
   const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
@@ -42,10 +56,19 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         user_types: UserTypes.TEACHER,
       }).unwrap();
 
+      const disableTeacherIds: number[] = [
+        ...selectedMembers.map((t) => t.teacherId),
+        ...(listTeacherHaveEvaluationCommitteeGroup
+          ? listTeacherHaveEvaluationCommitteeGroup.data.map((l) => l.id)
+          : [])
+      ]
+
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
-        disabled: selectedMembers.some((m) => m.teacherId === item.extra_info.teacher?.teacher_id),
+        disabled: disableTeacherIds.includes(
+          item.extra_info.teacher!.teacher_id
+        )
       }));
 
       return {
