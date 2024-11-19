@@ -2,6 +2,7 @@ import { ListPaginationType, ResponseType } from "@/types";
 import { CreateEvaluationGroup, EvaluationType, QueryEvaluationsParams, UpdateEvaluationGroup } from "@/types/evaluation";
 import { api } from "..";
 import { CreateScheduleType, ScheduleType } from "@/types/schedule";
+import { LectureType } from "@/types/accounts";
 
 const evaluationsApi = api.injectEndpoints({
     endpoints: (builder) => ({
@@ -70,6 +71,13 @@ const evaluationsApi = api.injectEndpoints({
                     evaluation_committee_id, start_time, end_time
                 }
             }),
+        }),
+
+        getListTeachersHaveEvaluationComitteeGroup: builder.query<ResponseType<LectureType[]>, {semester_id: number}>({
+            query: ({ semester_id }) =>({
+                url: `/evaluation-committees/semesters/${semester_id}/teachers`
+            }),
+            providesTags: ["EvaluationCommittee"],
         })
 
     })
@@ -82,7 +90,8 @@ export const {
     useDeleteEvaluationMutation,
     useUpdateEvaluationMutation,
     useCreateScheduleMutation,
-    useGetSchedulesQuery
+    useGetSchedulesQuery,
+    useGetListTeachersHaveEvaluationComitteeGroupQuery
 } = evaluationsApi
 
 
