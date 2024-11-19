@@ -5,9 +5,13 @@ import { GoPlus } from "react-icons/go";
 import { useDispatch } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { SyllabusTable } from "./components/syllabus-table";
+import { Input } from "@/components/ui/input";
 
 const Syllabus: React.FC = () => {
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   useEffect(() => {
     dispatch(
       setBreadCrumb([
@@ -17,11 +21,19 @@ const Syllabus: React.FC = () => {
     );
   }, [dispatch]);
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
   return (
     <>
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col gap-2">
+          <Input
+            title="Search"
+            type="text"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-48"
+          />
+        </div>
         <Button
           variant="outline"
           className="ml-1"
@@ -29,14 +41,14 @@ const Syllabus: React.FC = () => {
         >
           <GoPlus className="h-4 w-4" />
         </Button>
-        {isCreateModalOpen && (
-          <CreateUpdateDialog
-            open={isCreateModalOpen}
-            onOpenChange={setIsCreateModalOpen}
-          />
-        )}
       </div>
-      <SyllabusTable />
+      {isCreateModalOpen && (
+        <CreateUpdateDialog
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
+        />
+      )}
+      <SyllabusTable searchKey={searchTerm} />
     </>
   );
 };

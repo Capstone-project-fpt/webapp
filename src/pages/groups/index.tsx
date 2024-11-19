@@ -28,6 +28,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Input } from "@/components/ui/input";
 
 const Actions: React.FC<{
   row: Row<GroupType>;
@@ -122,6 +123,7 @@ const EmptyGroup: React.FC = () => {
     pageIndex: 0,
     pageSize: 10,
   });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: queryData,
@@ -134,8 +136,25 @@ const EmptyGroup: React.FC = () => {
   });
 
   const tableData = useMemo(() => {
-    return queryData ? queryData.data.items : [];
-  }, [queryData]);
+    if (!queryData) return [];
+    const { items } = queryData.data;
+
+    // Filter data based on search term
+    if (searchTerm) {
+      const normalizedSearchTerm = searchTerm
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      return items.filter((group: GroupType) =>
+        group.name_group
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .includes(normalizedSearchTerm)
+      );
+    }
+    return items;
+  }, [queryData, searchTerm]);
 
   const totalRecord = useMemo(() => {
     return queryData ? queryData.data.meta.total : 0;
@@ -157,7 +176,15 @@ const EmptyGroup: React.FC = () => {
 
   return (
     <div>
-      <div className="flex justify-end mb-2">
+      <div className="flex justify-between items-center mb-4">
+        <Input
+          title="Search"
+          type="text"
+          placeholder="Search Groups"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-48"
+        />
         <Link to="/groups/create">
           <Button variant="outline">
             <GoPlus className="h-4 w-4" />
