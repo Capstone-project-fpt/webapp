@@ -1,85 +1,83 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
-import { UpdateEvaluationGroup } from "@/types/evaluation";
-import React, { useEffect, useState } from "react";
-import {Member, OptionType } from "../type";
-import SelectLecture from "./select-lecture";
+import { useUpdateMembersMutation } from "@/store/api/v1/endpoints/groups";
+import React, { useState } from "react";
+import { Member, OptionType } from "../type";
+import SelectStudent from "./select-student";
 
-const AddTeacherDialog: React.FC<{
-  group: UpdateEvaluationGroup;
+const AddMemberDialog: React.FC<{
+  groupId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAdd: () => void;
-}> = ({ group, open, onOpenChange, onAdd }) => {
+  onAddMember: () => void;
+  selectedMembers: Member[];
+}> = ({ groupId, open, onOpenChange, onAddMember, selectedMembers }) => {
   const { toast } = useToast();
-  const [members, setMembers] = useState<Member[]>([]);
-  const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] = useUpdateEvaluationMutation();
-  const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<OptionType | null>(null);
+  const [updateMembersMutation, { isSuccess, isError, isLoading }] =
+    useUpdateMembersMutation();
 
-  const handleAdd = async () => {
-    if (!selectedLecture || !selectedLecture.value.extra_info.teacher) {
+  const handleAddMember = async () => {
+    if (!selectedStudent || !selectedStudent.value.extra_info.student) {
       toast({
         duration: 2000,
-        title: "Invalid Lecturer",
-        description: "Please select a valid lecturer to add.",
+        title: "Invalid Student",
+        description: "Please select a valid student to add.",
       });
       return;
     }
 
-    const updatedTeacherIds = [...group.teacher_ids, selectedLecture.value.extra_info.teacher.teacher_id];
-    await updateEvaluationCommitteeMutation({
-      id: group.id,
-      name: group.name,
-      teacher_ids: updatedTeacherIds,
-    });
-  };
+    const newStudentId = selectedStudent.value.extra_info.student.student_id;
 
-  useEffect(() => {
-    if (isSuccess) {
+    try {
+      await updateMembersMutation({
+        group_id: groupId,
+        student_ids: [newStudentId],
+      }).unwrap();
+
       toast({
         duration: 1000,
-        title: "Lecturer Added",
-        description: "Lecturer successfully added to the evaluation committee group.",
+        title: "Member Added",
+        description: "Student successfully added to the group.",
       });
-      setSelectedLecture(null);
-      onAdd();
-      onOpenChange(false);
-    }
 
-    if (isError) {
+      setSelectedStudent(null);
+      onAddMember();
+      onOpenChange(false);
+    } catch {
       toast({
         duration: 1000,
         variant: "destructive",
-        title: "Error Adding Lecturer",
-        description: "An error occurred while adding the lecturer. Please try again.",
+        title: "Error Adding Student",
+        description: "An error occurred while adding the student. Please try again.",
       });
     }
-  }, [isSuccess, isError, onOpenChange, onAdd, toast]);
+  };
 
   return (
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Lecturer to Evaluation Committee Group"
+      title="Add Student to Group"
       cancelButton
       okButton={{
         label: "Confirm Addition",
-        onClick: handleAdd,
+        onClick: handleAddMember,
         isLoading,
       }}
     >
       <div>
-        <label>Select Lecturer</label>
-        <SelectLecture
-          value={selectedLecture}
-          onChangeValue={setSelectedLecture}
-          selectedMembers={members}
-          existingGroupMembers={group.teacher_ids}
+        <label className="block mb-2 text-sm font-medium text-gray-700">
+          Select Student
+        </label>
+        <SelectStudent
+          value={selectedStudent}
+          onChangeValue={setSelectedStudent}
+          selectedMembers={selectedMembers}
         />
       </div>
     </ActionDialog>
   );
 };
 
-export default AddTeacherDialog;
+export default AddMemberDialog;

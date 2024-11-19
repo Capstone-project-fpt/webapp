@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import InviteMentorDialog from "../components/invite-mentor-dialog";
 import DeleteMemberDialog from "../components/delete-member-dialog";
+import AddMemberDialog from "../components/add-member-dialog";
 
 type BadgeVariant = "success" | "info" | "destructive" | "outline";
 
@@ -153,10 +154,16 @@ const MemberTable: React.FC<{
   groupId: number;
 }> = ({ members, leaderId, groupId }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+
 
   const handleDelete = () => {
     setSelectedMemberId(null);
+  };
+
+  const handleAddMember = () => {
+    // Logic to refresh the member list after adding a new member.
   };
 
   return (
@@ -263,6 +270,7 @@ const Peoples = () => {
   const [mentor, setMentor] = useState<GroupMentor | null>(null);
   const [leaderId, setLeaderId] = useState<number | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     if (membersData) {
@@ -276,6 +284,11 @@ const Peoples = () => {
       setInvitationMentors(items);
     }
   }, [membersData, invitationMentorsData]);
+
+  const handleAddMember = () => {
+    // Logic to refresh the member list after adding a new member.
+    // E.g., re-fetch members or update state directly if available
+  };
 
   if (isLoading) {
     return (
@@ -330,6 +343,16 @@ const Peoples = () => {
           members={members}
           leaderId={leaderId}
           groupId={parseInt(groupId!)}
+        />
+        <div className="flex justify-end mt-4">
+          <Button onClick={() => setAddDialogOpen(true)}>Add Member</Button>
+        </div>
+        <AddMemberDialog
+          groupId={parseInt(groupId!)}
+          open={isAddDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          onAddMember={handleAddMember}
+          selectedMembers={members}
         />
       </SettingCard>
     </div>
