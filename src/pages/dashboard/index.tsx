@@ -1,7 +1,9 @@
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import CarouselHome from "./components/carousel-home";
+import ReportCurrentSemester from "./components/report-current-semester";
+import ReportChart from "./components/report-chart";
+
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
@@ -12,7 +14,12 @@ const Dashboard: React.FC = () => {
   return (
     <>
       <div>
-        <CarouselHome/>
+        <ReportCurrentSemester />
+        <div className="pt-4"> 
+          <ReportChart />
+          </div>
+
+        {/* <CarouselHome/> */}
       </div>
     </>
   );
