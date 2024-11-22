@@ -62,7 +62,6 @@ const Topics: React.FC = () => {
         title: "Set group's topic",
         description: data.message || "Set group's topic successfully",
       });
-
     } catch (error) {
       toast({
         title: "Set group's topic",
@@ -78,6 +77,9 @@ const Topics: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-5">
+      <div>
+        <Button onClick={() => setIsModalOpen(true)}>Create Topic</Button>
+      </div>
       <UploadTopicDialog
         open={isModalOpen}
         onOpenChange={setIsModalOpen}

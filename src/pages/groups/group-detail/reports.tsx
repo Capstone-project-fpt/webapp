@@ -1,117 +1,137 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetCapstoneGroupReportDocumentsQuery } from "@/store/api/v1/endpoints/groups";
+import { LoadingTableLottie } from "@/components";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import {
-  draggable,
-  dropTargetForElements,
-} from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+  MentorReviewReportDocumentStatus,
+  ReportDocumentType,
+} from "@/types/report-document";
+import { Button } from "@/components/ui/button";
+import { FiFilePlus } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { UserItem, UserTypes } from "@/types/accounts";
+import { useToast } from "@/hooks/use-toast";
+import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
 
 const Reports: React.FC = () => {
-  const [reports, setReports] = useState([
-    {
-      id: 1,
-      title: "Report 1",
-      dueDate: "2023-10-01",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Report 2",
-      dueDate: "2023-10-05",
-      status: "Due",
-    },
-    // Add more reports as needed
-  ]);
+  const currentUser = useSelector(
+    (state: RootState) => state.auth.user as UserItem
+  );
 
-  const handleDrop = (reportId: number, newStatus: string) => {
-    setReports((prevReports) =>
-      prevReports.map((report) =>
-        report.id === reportId ? { ...report, status: newStatus } : report
-      )
+  const { groupId } = useParams<{ groupId: string }>();
+  const { toast } = useToast();
+  const [isCreateUpdateModelOpen, setIsCreateUpdateModelOpen] =
+    React.useState(false);
+
+  const { data, isError, isLoading } = useGetCapstoneGroupReportDocumentsQuery({
+    capstone_group_id: Number(groupId),
+  });
+
+  const reportData = useMemo(() => {
+    return data ? data.data : [];
+  }, [data]);
+
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
+      </div>
     );
+  }
+
+  if (isError) {
+    return <ErrorBoundaryComponent />;
+  }
+
+  const handleOpenCreateUpdateReportDocumentDialog = () => {
+    if (currentUser.common_info.user_type !== UserTypes.STUDENT) {
+      toast({
+        title: "Submit Report",
+        description: "Only student can submit report",
+        variant: "destructive",
+        duration: 3000, // 5 seconds
+      });
+
+      return;
+    }
+
+    setIsCreateUpdateModelOpen(true);
   };
 
   const categorizedReports = {
-    Due: reports.filter((report) => report.status === "Due"),
-    "Ready to Review": reports.filter(
-      (report) => report.status === "Ready to Review"
+    Reviewing: reportData.filter(
+      (report) =>
+        report.mentor_review_status ===
+        MentorReviewReportDocumentStatus.Reviewing
     ),
-    Reviewing: reports.filter((report) => report.status === "Reviewing"),
-    Done: reports.filter((report) => report.status === "Completed"),
+    Done: reportData.filter(
+      (report) =>
+        report.mentor_review_status === MentorReviewReportDocumentStatus.Done
+    ),
   };
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="flex flex-row ">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-4/5">
         {Object.entries(categorizedReports).map(([category, reports]) => (
           <CategoryColumn
             key={category}
             category={category}
             reports={reports}
-            onDrop={handleDrop}
           />
         ))}
       </div>
-    </>
+      <div className="w-1/5 flex">
+        <Button
+          onClick={() => {
+            handleOpenCreateUpdateReportDocumentDialog();
+          }}
+        >
+          <FiFilePlus />
+          Submit Report
+        </Button>
+        <CreateUpdateReportDocumentDialog
+          open={isCreateUpdateModelOpen}
+          onOpenChange={setIsCreateUpdateModelOpen}
+          reportDocument={undefined}
+        />
+      </div>
+    </div>
   );
 };
 
 const CategoryColumn: React.FC<{
   category: string;
-  reports: any[];
-  onDrop: (reportId: number, newStatus: string) => void;
-}> = ({ category, reports, onDrop }) => {
-  const columnRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const element = columnRef.current!;
-    return dropTargetForElements({
-      element,
-      getData: () => ({ category }),
-      onDrop: ({ source }) => {
-        const reportId = source.data.reportId;
-        onDrop(reportId, category);
-      },
-    });
-  }, [category, onDrop]);
-
+  reports: ReportDocumentType[];
+}> = ({ category, reports }) => {
   return (
-    <div ref={columnRef}>
+    <div>
       <div className=" text-xl ">{category}</div>
       {reports.map((report, index) => (
-        <DraggableReportCard key={index} report={report} />
+        <ReportCard key={index} report={report} />
       ))}
     </div>
   );
 };
 
-const DraggableReportCard: React.FC<{ report: any }> = ({ report }) => {
+const ReportCard: React.FC<{ report: ReportDocumentType }> = ({ report }) => {
   const navigate = useNavigate();
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-
-  useEffect(() => {
-    const element = cardRef.current!;
-    return draggable({
-      element,
-      getInitialData: () => ({ reportId: report.id }),
-      onDragStart: () => setIsDragging(true),
-      onDrop: () => setIsDragging(false),
-    });
-  }, [report.id]);
 
   return (
     <Card
-      ref={cardRef}
-      className={`p-4 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
+      className={`p-4 cursor-pointer`}
       onClick={() => navigate(`./${report.id}`)}
     >
       <CardHeader>
-        <CardTitle>{report.title}</CardTitle>
+        <CardTitle>{report.name}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p>Due Date: {report.dueDate}</p>
-        <p>Status: {report.status}</p>
+        <p>Type report: {report.type_report}</p>
       </CardContent>
     </Card>
   );

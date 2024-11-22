@@ -6,12 +6,12 @@ const API_VERSION = "v1";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_APP_API_URL + '/' + API_VERSION,
+    baseUrl: import.meta.env.VITE_APP_API_URL + "/" + API_VERSION,
     prepareHeaders: (headers, { getState }) => {
       const authState = getState().auth;
       const authToken = token(authState);
       headers.set("Content-Type", "application/json");
-      headers.set("Accept-Language", "vi")
+      headers.set("Accept-Language", "vi");
 
       if (authToken) {
         headers.set("authorization", `Bearer ${authToken}`);
@@ -20,6 +20,18 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Category", "Product", "User", "Topic", "Account", "Group", "Semester", "Syllabus","EvaluationCommittee","Schedule"],
+  tagTypes: [
+    "Category",
+    "Product",
+    "User",
+    "Topic",
+    "Account",
+    "Group",
+    "Semester",
+    "Syllabus",
+    "EvaluationCommittee",
+    "Schedule",
+    "Upload",
+  ],
   endpoints: () => ({}),
 });

@@ -13,7 +13,19 @@ const uploadApi = api.injectEndpoints({
         invalidatesTags: ["Upload"],
       }
     ),
+    generateMultiplePresignUrls: builder.mutation<
+      ResponseType<string[]>,
+      { key: string[] }
+    >({
+      query: (data) => ({
+        url: "/uploads/presign-urls",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Upload"],
+    }),
   }),
 });
 
-export const { useGeneratePresignUrlMutation } = uploadApi;
+export const { useGeneratePresignUrlMutation, useGenerateMultiplePresignUrlsMutation } =
+  uploadApi;
