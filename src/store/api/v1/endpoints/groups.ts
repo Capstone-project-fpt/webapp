@@ -15,6 +15,10 @@ import {
 } from "@/types/group";
 import { ScheduleType } from "@/types/schedule";
 import { api } from "..";
+import {
+  CreateReportDocumentBody,
+  ReportDocumentType,
+} from "@/types/report-document";
 
 const groupsApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -99,49 +103,74 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
       }),
     }),
-    updateTopic: builder.mutation<void, { group_id: number, topic_id: number, document_path: string, topic: string }>({
+    updateTopic: builder.mutation<
+      void,
+      {
+        group_id: number;
+        topic_id: number;
+        document_path: string;
+        topic: string;
+      }
+    >({
       query: ({ group_id, topic_id, document_path, topic }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
         method: "PUT",
         body: { document_path, topic },
       }),
     }),
-    deleteTopic: builder.mutation<void, { group_id: number, topic_id: number }>({
+    deleteTopic: builder.mutation<void, { group_id: number; topic_id: number }>(
+      {
+        query: ({ group_id, topic_id }) => ({
+          url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
+          method: "DELETE",
+        }),
+      }
+    ),
+    setGroupTopic: builder.mutation<
+      ResponseType<string>,
+      { group_id: number; topic_id: number }
+    >({
       query: ({ group_id, topic_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
-        method: 'DELETE',
+        method: "POST",
       }),
     }),
-    setGroupTopic: builder.mutation<ResponseType<string>, { group_id: number, topic_id: number }>({
-      query: ({ group_id, topic_id }) => ({
-        url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
-        method: 'POST',
-      }),
-    }),
-    reviewTopic: builder.mutation<ResponseType<string>, { group_id: number, topic_id: number, status_review: TopicReviewStatus }>({
+    reviewTopic: builder.mutation<
+      ResponseType<string>,
+      { group_id: number; topic_id: number; status_review: TopicReviewStatus }
+    >({
       query: ({ group_id, topic_id, status_review }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/teacher-reviews/`,
-        method: 'PUT',
+        method: "PUT",
         body: { status_review },
       }),
     }),
-    getTopicFeedbacks: builder.query<ResponseType<ListPaginationType<TopicGroupFeedback>>, PaginationType & { group_id: number, topic_id: number }>({
+    getTopicFeedbacks: builder.query<
+      ResponseType<ListPaginationType<TopicGroupFeedback>>,
+      PaginationType & { group_id: number; topic_id: number }
+    >({
       query: ({ group_id, topic_id, limit = 10, page = 1 }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
         params: { limit, page },
       }),
     }),
-    createTopicFeedback: builder.mutation<void, { group_id: number, topic_id: number, feedback: string }>({
+    createTopicFeedback: builder.mutation<
+      void,
+      { group_id: number; topic_id: number; feedback: string }
+    >({
       query: ({ group_id, topic_id, feedback }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
-        method: 'POST',
+        method: "POST",
         body: { feedback },
       }),
     }),
-    deleteTopicFeedback: builder.mutation<void, { group_id: number, topic_id: number, feedback_id: number }>({
+    deleteTopicFeedback: builder.mutation<
+      void,
+      { group_id: number; topic_id: number; feedback_id: number }
+    >({
       query: ({ group_id, topic_id, feedback_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/${feedback_id}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
     }),
     //#endregion
@@ -177,7 +206,7 @@ const groupsApi = api.injectEndpoints({
     }),
     acceptInvitation: builder.mutation<
       ResponseType<string>,
-      { group_id: number; token: string, status: InvitationMentorStatus }
+      { group_id: number; token: string; status: InvitationMentorStatus }
     >({
       query: ({ group_id, token, status }) => ({
         url: `/capstone-groups/${group_id}/mentors/invitations`,
@@ -197,14 +226,24 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
       }),
     }),
-    updateReportsGroupReview: builder.mutation<ResponseType<string>, { group_id: number, capstone_group_review_id: number, report_files: string[] }>({
+    updateReportsGroupReview: builder.mutation<
+      ResponseType<string>,
+      {
+        group_id: number;
+        capstone_group_review_id: number;
+        report_files: string[];
+      }
+    >({
       query: ({ group_id, capstone_group_review_id, report_files }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/`,
         method: "PATCH",
         body: { capstone_group_review_id, report_files },
       }),
     }),
-    feedbackGroupReview: builder.mutation<ResponseType<string>, { group_id: number, capstone_group_review_id: number, feedback: string }>({
+    feedbackGroupReview: builder.mutation<
+      ResponseType<string>,
+      { group_id: number; capstone_group_review_id: number; feedback: string }
+    >({
       query: ({ group_id, capstone_group_review_id, feedback }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/feedback`,
         method: "PATCH",
@@ -213,7 +252,7 @@ const groupsApi = api.injectEndpoints({
     }),
     getGroupReview: builder.query<
       ResponseType<GroupReview>,
-      { group_id: number, capstone_group_review_id: number }
+      { group_id: number; capstone_group_review_id: number }
     >({
       query: ({ group_id, capstone_group_review_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-reviews/${capstone_group_review_id}`,
@@ -222,7 +261,11 @@ const groupsApi = api.injectEndpoints({
 
     getGroupScheduleReviews: builder.query<
       ResponseType<ScheduleType[]>,
-      { capstone_group_id: number, start_time: string | Date, end_time: string | Date }
+      {
+        capstone_group_id: number;
+        start_time: string | Date;
+        end_time: string | Date;
+      }
     >({
       query: ({ capstone_group_id, start_time, end_time }) => ({
         url: `/schedule-reviews/`,
@@ -238,11 +281,38 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     //#endregion
-    getListStudentsHaveCapstoneGroup: builder.query<ResponseType<StudentType[]>, { semester_id: number }>({
+    getListStudentsHaveCapstoneGroup: builder.query<
+      ResponseType<StudentType[]>,
+      { semester_id: number }
+    >({
       query: ({ semester_id }) => ({
         url: `/capstone-groups/semesters/${semester_id}/students`,
       }),
       providesTags: ["Group"],
+    }),
+    getCapstoneGroupReportDocuments: builder.query<
+      ResponseType<ReportDocumentType[]>,
+      { capstone_group_id: number }
+    >({
+      query: ({ capstone_group_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/report-documents/`,
+      }),
+      providesTags: ["Group"],
+    }),
+    createReportDocument: builder.mutation<
+      ResponseType<string>,
+      CreateReportDocumentBody
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/`,
+        method: "POST",
+        body: {
+          file_ids: data.file_ids,
+          name: data.name,
+          type_report: data.type_report,
+        },
+      }),
+      invalidatesTags: ["Group"],
     }),
   }),
 });
@@ -284,4 +354,8 @@ export const {
   useFeedbackGroupReviewMutation,
 
   useGetListStudentsHaveCapstoneGroupQuery,
+
+  useGetCapstoneGroupReportDocumentsQuery,
+  useLazyGetCapstoneGroupReportDocumentsQuery,
+  useCreateReportDocumentMutation,
 } = groupsApi;
