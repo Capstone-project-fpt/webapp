@@ -29,6 +29,8 @@ import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import InviteMentorDialog from "../components/invite-mentor-dialog";
+import DeleteMemberDialog from "../components/delete-member-dialog";
+import AddMemberDialog from "../components/add-member-dialog";
 
 type BadgeVariant = "success" | "info" | "destructive" | "outline";
 
@@ -149,62 +151,97 @@ const MentorTable: React.FC<{
 const MemberTable: React.FC<{
   members: GroupMember[];
   leaderId: number | null;
-}> = ({ members, leaderId }) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Code</TableHead>
-        <TableHead>Name</TableHead>
-        <TableHead>Email</TableHead>
-        <TableHead>Major</TableHead>
-        <TableHead>Role</TableHead>
-        <TableHead>Actions</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {members.map((member) => (
-        <TableRow key={member.id}>
-          <TableCell>{member.code}</TableCell>
-          <TableCell className="flex items-center space-x-2">
-            <Avatar>
-              <AvatarImage
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  member.name
-                )}&size=32`}
-                alt={member.name}
-              />
-              <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p>{member.name}</p>
-            </div>
-          </TableCell>
-          <TableCell>{member.email}</TableCell>
-          <TableCell>
-            <SubMajor id={member.sub_major_id} />
-          </TableCell>
-          <TableCell>
-            <Badge variant="outline" className="capitalize">
-              {member.id === leaderId ? "Leader" : "Member"}
-            </Badge>
-          </TableCell>
-          <TableCell>
-            <ActionCell
-              items={[
-                {
-                  item: "Send Email",
-                  onClick: () => {
-                    window.location.href = `mailto:${member.email}`;
-                  },
-                },
-              ]}
-            />
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
+  groupId: number;
+}> = ({ members, leaderId, groupId }) => {
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+
+
+  const handleDelete = () => {
+    setSelectedMemberId(null);
+  };
+
+  const handleAddMember = () => {
+    // Logic to refresh the member list after adding a new member.
+  };
+
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Code</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Major</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {members.map((member) => (
+            <TableRow key={member.id}>
+              <TableCell>{member.code}</TableCell>
+              <TableCell className="flex items-center space-x-2">
+                <Avatar>
+                  <AvatarImage
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      member.name
+                    )}&size=32`}
+                    alt={member.name}
+                  />
+                  <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p>{member.name}</p>
+                </div>
+              </TableCell>
+              <TableCell>{member.email}</TableCell>
+              <TableCell>
+                <SubMajor id={member.sub_major_id} />
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline" className="capitalize">
+                  {member.id === leaderId ? "Leader" : "Member"}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <ActionCell
+                  items={[
+                    {
+                      item: "Send Email",
+                      onClick: () => {
+                        window.location.href = `mailto:${member.email}`;
+                      },
+                    },
+                    {
+                      item: "Remove",
+                      danger: true,
+                      onClick: () => {
+                        setSelectedMemberId(member.id);
+                        setDeleteDialogOpen(true);
+                      },
+                    },
+                  ]}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      {selectedMemberId && (
+        <DeleteMemberDialog
+          groupId={groupId}
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          memberId={selectedMemberId}
+          onDelete={handleDelete}
+        />
+      )}
+    </>
+  );
+};
 
 const Peoples = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -234,6 +271,7 @@ const Peoples = () => {
   const [mentor, setMentor] = useState<GroupMentor | null>(null);
   const [leaderId, setLeaderId] = useState<number | null>(null);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isAddDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     if (membersData) {
@@ -247,6 +285,11 @@ const Peoples = () => {
       setInvitationMentors(items);
     }
   }, [membersData, invitationMentorsData]);
+
+  const handleAddMember = () => {
+    // Logic to refresh the member list after adding a new member.
+    // E.g., re-fetch members or update state directly if available
+  };
 
   if (isLoading) {
     return (
@@ -297,7 +340,21 @@ const Peoples = () => {
       </SettingCard>
 
       <SettingCard title={`Members (${members.length})`}>
-        <MemberTable members={members} leaderId={leaderId} />
+        <MemberTable
+          members={members}
+          leaderId={leaderId}
+          groupId={parseInt(groupId!)}
+        />
+        <div className="flex justify-end mt-4">
+          <Button onClick={() => setAddDialogOpen(true)}>Add Member</Button>
+        </div>
+        <AddMemberDialog
+          groupId={parseInt(groupId!)}
+          open={isAddDialogOpen}
+          onOpenChange={setAddDialogOpen}
+          onAddMember={handleAddMember}
+          selectedMembers={members}
+        />
       </SettingCard>
     </div>
   );
