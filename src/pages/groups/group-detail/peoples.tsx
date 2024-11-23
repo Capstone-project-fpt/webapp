@@ -217,6 +217,7 @@ const MemberTable: React.FC<{
                     },
                     {
                       item: "Remove",
+                      danger: true,
                       onClick: () => {
                         setSelectedMemberId(member.id);
                         setDeleteDialogOpen(true);
