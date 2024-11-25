@@ -1,3 +1,4 @@
+
 import { SemestersType, SemesterType } from "@/types/semester";
 import { api } from "..";
 import { PaginationType, ResponseType } from "@/types";
@@ -50,6 +51,14 @@ const semesterApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Semester"],
     }),
+
+    getSemestersWithCount: builder.query<ResponseType<SemestersType>, PaginationType>({
+      query: ({ limit = 10, page = 1, order_by = "DESC" }) => ({
+        url: "/semesters/count",
+        params: { limit, page, order_by },
+      }),
+      providesTags: ["Semester"],
+    }),
   }),
 });
 
@@ -60,4 +69,5 @@ export const {
   useCreateSemestersMutation,
   useUpdateSemestersMutation,
   useDeleteSemestersMutation,
+  useGetSemestersWithCountQuery
 } = semesterApi;
