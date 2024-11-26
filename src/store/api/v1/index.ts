@@ -28,7 +28,6 @@ export const api = createApi({
     "Account",
     "Group",
     "Semester",
-    "Syllabus",
     "EvaluationCommittee",
     "Schedule",
     "Upload",
