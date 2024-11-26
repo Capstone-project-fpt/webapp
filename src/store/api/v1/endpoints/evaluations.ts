@@ -39,8 +39,9 @@ const evaluationsApi = api.injectEndpoints({
             query: ({ id }) => ({
                 url: `/evaluation-committees/${id}`,
             }),
+            providesTags: ["EvaluationCommittee"],
         }),
-        updateEvaluation: builder.mutation<void, UpdateEvaluationGroup>({
+        updateEvaluation: builder.mutation<ResponseType<string>, UpdateEvaluationGroup>({
             query: (data) => ({
                 url: "/evaluation-committees/",
                 method: "PUT",
@@ -73,8 +74,8 @@ const evaluationsApi = api.injectEndpoints({
             }),
         }),
 
-        getListTeachersHaveEvaluationComitteeGroup: builder.query<ResponseType<LectureType[]>, {semester_id: number}>({
-            query: ({ semester_id }) =>({
+        getListTeachersHaveEvaluationComitteeGroup: builder.query<ResponseType<LectureType[]>, { semester_id: number }>({
+            query: ({ semester_id }) => ({
                 url: `/evaluation-committees/semesters/${semester_id}/teachers`
             }),
             providesTags: ["EvaluationCommittee"],

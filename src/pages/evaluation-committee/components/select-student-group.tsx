@@ -8,6 +8,7 @@ import { ActionMeta, SingleValue } from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 
 interface SelectGroupStudentProps {
+  selectedGroups: number[];
   value: OptionType<GroupType> | null;
   onChangeValue:
     | ((
@@ -22,6 +23,7 @@ const defaultAdditional = { page: 1 };
 const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   value,
   onChangeValue,
+  selectedGroups = [],
 }) => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
@@ -39,12 +41,13 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
       } = await getGroups({
         limit,
         page,
-        semester_id: currentSemester?.id
+        semester_id: currentSemester?.id,
       }).unwrap();
 
       const options = items.map((item) => ({
         value: item,
         label: item.name_group,
+        disabled: selectedGroups.includes(item.id),
       }));
 
       return {

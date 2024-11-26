@@ -1,19 +1,28 @@
 import { LoadingTableLottie } from "@/components";
+import EmptyResources from "@/components/common/empty-resource";
 import SubMajor from "@/components/common/major";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertCircle } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import AddTeacherDialog from "@/pages/evaluation-committee/components/add-teacher-dialog";
+import DeleteTeacherDialog from "@/pages/evaluation-committee/components/delete-teacher-dialog";
 import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
-import { MemberEvaluationGroup, UpdateEvaluationGroup } from "@/types/evaluation";
+import {
+  MemberEvaluationGroup,
+  UpdateEvaluationGroup,
+} from "@/types/evaluation";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import DeleteTeacherDialog from "@/pages/evaluation-committee/components/delete-teacher-dialog";
-import AddTeacherDialog from "@/pages/evaluation-committee/components/add-teacher-dialog";
 
 const MemberTable: React.FC<{
   members: MemberEvaluationGroup[];
@@ -21,10 +30,10 @@ const MemberTable: React.FC<{
   onDeleteMember: (teacherId: number) => void;
 }> = ({ members, groupInfo, onDeleteMember }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isAddModalOpen, setisAddModalOpen] = useState<number | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<number | null>(null);
 
   const openDeleteDialog = (teacherId: number) => {
-    setisAddModalOpen(teacherId);
+    setIsAddModalOpen(teacherId);
     setIsDeleteModalOpen(true);
   };
 
@@ -45,7 +54,9 @@ const MemberTable: React.FC<{
             <TableCell className="flex items-center space-x-2">
               <Avatar>
                 <AvatarImage
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}&size=32`}
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    member.name
+                  )}&size=32`}
                   alt={member.name}
                 />
                 <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
@@ -86,12 +97,18 @@ const MemberTable: React.FC<{
 
 const EvaluationCommittee = () => {
   const { evaluationId } = useParams<{ evaluationId: string }>();
-  const { data: committeeData, error, isLoading } = useGetEvaluationQuery(
+  const {
+    data: committeeData,
+    error,
+    isLoading,
+  } = useGetEvaluationQuery(
     { id: parseInt(evaluationId!) },
     { skip: !evaluationId }
   );
   const [members, setMembers] = useState<MemberEvaluationGroup[]>([]);
-  const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(null);
+  const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(
+    null
+  );
   const [isAddTeacherModalOpen, setIsAddTeacherModalOpen] = useState(false);
 
   useEffect(() => {
@@ -110,7 +127,9 @@ const EvaluationCommittee = () => {
   };
 
   const handleDeleteMember = (teacherId: number) => {
-    setMembers((prevMembers) => prevMembers.filter((member) => member.id !== teacherId));
+    setMembers((prevMembers) =>
+      prevMembers.filter((member) => member.id !== teacherId)
+    );
 
     if (groupInfo) {
       setGroupInfo({
@@ -151,23 +170,22 @@ const EvaluationCommittee = () => {
       <SettingCard
         title={`Lecturers ${members.length ? `(${members.length})` : ""}`}
         actions={
-          <Button
-            onClick={() => setIsAddTeacherModalOpen(true)}
-          >
+          <Button onClick={() => setIsAddTeacherModalOpen(true)}>
             Add Lecturer
           </Button>
         }
       >
         {members.length ? (
-          <MemberTable members={members} groupInfo={groupInfo!} onDeleteMember={handleDeleteMember} />
+          <MemberTable
+            members={members}
+            groupInfo={groupInfo!}
+            onDeleteMember={handleDeleteMember}
+          />
         ) : (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>No lecturers assigned</AlertTitle>
-            <AlertDescription>
-              Your group does not have any lecturers assigned. Please add a lecturer.
-            </AlertDescription>
-          </Alert>
+          <EmptyResources
+            title="No lecturers assigned"
+            content="Your group does not have any lecturers assigned. Please add a lecturer."
+          ></EmptyResources>
         )}
       </SettingCard>
     </div>
