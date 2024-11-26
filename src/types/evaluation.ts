@@ -1,3 +1,4 @@
+import { GroupType } from "./group";
 import { PaginationType } from "./utils";
 
 export interface QueryEvaluationsParams extends PaginationType {
@@ -12,9 +13,10 @@ export interface EvaluationType {
   semester_id: number;
   teacher_ids: number[];
   teachers: MemberEvaluationGroup[];
+  assign_groups?: GroupType[];
 }
 
-export interface CreateEvaluationGroup{
+export interface CreateEvaluationGroup {
   semester_id: number;
   teacher_ids: number[];
   name: string;
@@ -30,8 +32,9 @@ export interface MemberEvaluationGroup {
   user_type: string;
 }
 
-export interface UpdateEvaluationGroup{
+export interface UpdateEvaluationGroup {
   id: number;
   name: string;
   teacher_ids: number[];
+  assign_group_ids: number[];
 }

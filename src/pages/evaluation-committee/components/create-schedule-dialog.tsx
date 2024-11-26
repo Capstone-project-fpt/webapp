@@ -260,6 +260,10 @@ const CreateScheduleDialog: React.FC = () => {
                     <SelectStudentGroup
                       value={selectGroup}
                       onChangeValue={setSelectGroup}
+                      selectedGroups={(
+                        evaluationData?.data.assign_groups || []
+                      ).map((group) => group.id)}
+                      isSwapDisabled={true}
                     />
                     <ErrorMessage
                       name="capstone_group_id"
