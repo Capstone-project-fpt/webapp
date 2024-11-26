@@ -28,7 +28,7 @@ const Syllabus: React.FC = () => {
           <Input
             title="Search"
             type="text"
-            placeholder="Search"
+            placeholder="Search by code"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-48"

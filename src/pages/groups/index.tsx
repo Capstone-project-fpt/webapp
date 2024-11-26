@@ -180,7 +180,7 @@ const EmptyGroup: React.FC = () => {
         <Input
           title="Search"
           type="text"
-          placeholder="Search Groups"
+          placeholder="Search by name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-48"
