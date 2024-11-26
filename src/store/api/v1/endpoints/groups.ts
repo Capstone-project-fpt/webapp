@@ -9,9 +9,11 @@ import {
   MembersType,
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
+  StudentReportDocumentScore,
   TopicGroup,
   TopicGroupFeedback,
   TopicReviewStatus,
+  UpdateListStudentScore,
 } from "@/types/group";
 import { ScheduleType } from "@/types/schedule";
 import { api } from "..";
@@ -334,6 +336,44 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
+    getStudentReportDocuments: builder.query<
+      ResponseType<StudentReportDocumentScore[]>,
+      { capstone_group_id: number; report_id: number }
+    >({
+      query: ({ capstone_group_id, report_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/report-documents/scores/${report_id}`,
+      }),
+      providesTags: ["Group"],
+    }),
+    mentorUpdateStudentScoreForReportDocument: builder.mutation<
+      ResponseType<string>,
+      UpdateListStudentScore
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/scores`,
+        method: "PUT",
+        body: {
+          report_document_id: data.report_document_id,
+          student_score_data: data.student_score_data,
+          conclusion: data.conclusion,
+        },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    adminUpdateStudentScoreReportDocument: builder.mutation<
+      ResponseType<string>,
+      { id: number; score: number; capstone_group_id: number }
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/scores`,
+        method: "PATCH",
+        body: {
+          id: data.id,
+          score: data.score,
+        },
+      }),
+      invalidatesTags: ["Group"],
+    }),
   }),
 });
 
@@ -380,4 +420,9 @@ export const {
   useGetCapstoneGroupReportDocumentQuery,
   useLazyGetCapstoneGroupReportDocumentsQuery,
   useCreateReportDocumentMutation,
+
+  useGetStudentReportDocumentsQuery,
+
+  useMentorUpdateStudentScoreForReportDocumentMutation,
+  useAdminUpdateStudentScoreReportDocumentMutation,
 } = groupsApi;
