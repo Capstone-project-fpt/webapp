@@ -1,8 +1,7 @@
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -10,18 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { setBreadCrumb } from "@/store/slice/app";
 import { FileIcon } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import Comment from "./components/comment-composer";
-
-interface Attachment {
-  id: number;
-  name: string;
-  size: string;
-  downloadLink: string;
-}
+import { RootState } from "@/store";
+import { useGetCapstoneGroupReportDocumentQuery } from "@/store/api/v1/endpoints/groups";
+import { LoadingTableLottie } from "@/components";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
+import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 
 const ReportDetail: React.FC = () => {
   const { groupId, reportId } = useParams<{
@@ -29,20 +26,31 @@ const ReportDetail: React.FC = () => {
     reportId?: string;
   }>();
   const dispatch = useDispatch();
+  const { currentGroup } = useSelector((state: RootState) => state.resource);
+
+  const { data, isError, isLoading } = useGetCapstoneGroupReportDocumentQuery({
+    capstone_group_id: Number(groupId),
+    report_id: Number(reportId),
+  });
+
+  const reportData = useMemo(() => {
+    return data ? data.data : null;
+  }, [data]);
+
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: "Group Name", link: `/groups/${groupId}` }, //TODO: Replace Group Name with actual group name
+        { title: currentGroup?.name_group, link: `/groups/${groupId}` },
         { title: "Reports", link: `/groups/${groupId}/reports` },
         {
-          title: "Report Name",
-          link: `/groups/${groupId}/reports/${reportId}`, //TODO: Replace Report Name with actual report name
+          title: reportData?.name,
+          link: `/groups/${groupId}/reports/${reportId}`,
         },
       ])
     );
-  }, [dispatch, groupId, reportId]);
+  }, [dispatch, groupId, reportId, reportData, currentGroup]);
 
   const [comments, setComments] = useState([
     {
@@ -60,21 +68,6 @@ const ReportDetail: React.FC = () => {
       timeAgo: "2 hours ago",
     },
   ]);
-
-  const attachments: Attachment[] = [
-    {
-      id: 1,
-      name: "Design brief.pdf",
-      size: "1.5 MB",
-      downloadLink: "#",
-    },
-    {
-      id: 2,
-      name: "Craftboard logo.ai",
-      size: "2.5 MB",
-      downloadLink: "#",
-    },
-  ];
 
   const initialMembers = [
     { name: "Alice", score: 85, feedback: "Good job!" },
@@ -113,29 +106,33 @@ const ReportDetail: React.FC = () => {
       setNewFeedback("");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className=" flex justify-center pt-10">
+        <div className=" w-[250px] ">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <ErrorBoundaryComponent />;
+  }
+
   return (
     <div>
-      <div className=" text-xl ">Report 1 - Project Introduction</div>
+      <div className=" text-xl ">{reportData?.name}</div>
       {/* Status and Due Date */}
       <div className="flex flex-col mb-6">
         <div className="flex items-center gap-4">
           <span>Status:</span>
-          <Badge variant="outline">On Progress</Badge>
+          <Badge variant="outline">{reportData?.mentor_review_status}</Badge>
         </div>
-        <div>
+        {/* <div>
           <span>Due date:</span> <span>5 Oct 2024</span>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div>
-        <h2 className="mb-2">Description</h2>
-        <Alert>
-          <AlertDescription>
-            This page aims to provide real-time insights into employee
-            performance metrics and key business indicators.
-          </AlertDescription>
-        </Alert>
+        </div> */}
       </div>
 
       {/* Attachments */}
@@ -144,24 +141,25 @@ const ReportDetail: React.FC = () => {
           <h2 className="">Attachments</h2>
           <FaRegEdit />
         </div>
-        <div className="flex gap-4">
-          {attachments.map((file) => (
-            <Card key={file.id}>
-              <CardHeader>
-                <FaRegTrashAlt className="ml-auto" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col">
-                  <div>
-                    <FileIcon className="mr-2" />
-                    <div>
-                      <p>{file.name}</p>
-                    </div>
-                  </div>
-                  <Button size="sm">Download</Button>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="flex gap-4 flex-wrap">
+          {reportData?.file_ids.map((file, index) => (
+            <div
+              key={index}
+              className="flex items-center border px-5 py-3 rounded-lg max-w-[512px]"
+            >
+              <FileIcon className="mr-2" />
+              <span className="truncate">{getFileName(file)}</span>
+              <Button variant={"outline"} className="ml-3" size="sm">
+                <a
+                  href={getUrlFile(file)}
+                  download={getFileName(file)}
+                  className="text-accent underline flex items-center"
+                  target="_blank"
+                >
+                  Download
+                </a>
+              </Button>
+            </div>
           ))}
         </div>
       </div>

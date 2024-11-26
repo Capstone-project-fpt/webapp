@@ -181,10 +181,13 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
-    updateMembers: builder.mutation<ResponseType<MembersType>, { group_id: number, student_ids: number[]}>({
+    updateMembers: builder.mutation<
+      ResponseType<MembersType>,
+      { group_id: number; student_ids: number[] }
+    >({
       query: ({ group_id, student_ids }) => ({
         url: `/capstone-groups/${group_id}/members`,
-        method: 'PUT',
+        method: "PUT",
         body: { student_ids },
       }),
       invalidatesTags: ["Group"],
@@ -307,6 +310,15 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
+    getCapstoneGroupReportDocument: builder.query<
+      ResponseType<ReportDocumentType>,
+      { capstone_group_id: number; report_id: number }
+    >({
+      query: ({ capstone_group_id, report_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/report-documents/${report_id}`,
+      }),
+      providesTags: ["Group"],
+    }),
     createReportDocument: builder.mutation<
       ResponseType<string>,
       CreateReportDocumentBody
@@ -334,7 +346,6 @@ export const {
   useGetMentorAndListMembersGroupQuery,
   useLazyGetMentorAndListMembersGroupQuery,
   useUpdateGroupMutation,
-
 
   useInviteMentorMutation,
   useAcceptInvitationMutation,
@@ -366,6 +377,7 @@ export const {
   useGetListStudentsHaveCapstoneGroupQuery,
 
   useGetCapstoneGroupReportDocumentsQuery,
+  useGetCapstoneGroupReportDocumentQuery,
   useLazyGetCapstoneGroupReportDocumentsQuery,
   useCreateReportDocumentMutation,
 } = groupsApi;

@@ -111,7 +111,7 @@ const CategoryColumn: React.FC<{
 }> = ({ category, reports }) => {
   return (
     <div>
-      <div className=" text-xl ">{category}</div>
+      <div className="text-xl">{category}</div>
       {reports.map((report, index) => (
         <ReportCard key={index} report={report} />
       ))}
