@@ -16,6 +16,7 @@ interface SelectGroupStudentProps {
         actionMeta: ActionMeta<OptionType<GroupType>>
       ) => void)
     | undefined;
+  isSwapDisabled?: boolean;
 }
 
 const defaultAdditional = { page: 1 };
@@ -24,6 +25,7 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   value,
   onChangeValue,
   selectedGroups = [],
+  isSwapDisabled = false,
 }) => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
@@ -47,7 +49,9 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
       const options = items.map((item) => ({
         value: item,
         label: item.name_group,
-        disabled: selectedGroups.includes(item.id),
+        disabled: isSwapDisabled
+          ? !selectedGroups.includes(item.id)
+          : selectedGroups.includes(item.id),
       }));
 
       return {
