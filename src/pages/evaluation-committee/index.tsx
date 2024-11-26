@@ -23,7 +23,7 @@ const EvaluationCommittee: React.FC = () => {
     <div>
       <div className="flex justify-end mb-2">
         <Link to="/evaluation-committees/create">
-          {user_type !== "student" && (
+          {user_type !== "student" && user_type !== "teacher" && (
             <Button variant="outline">
               <GoPlus className="h-4 w-4" />
             </Button>
