@@ -33,8 +33,8 @@ export function ReportChart() {
       const filteredData = filterLast5Years(countData.data.items); 
       const formattedData = filteredData.map((semester) => ({
         semester: semester.name,
-        capstone: semester.capstone_groups,
-        evaluations: semester.evaluation_committees,
+        capstone: semester.total_capstone_groups,
+        evaluations: semester.total_evaluation_committees,
       }));
   
       setChartData(formattedData);

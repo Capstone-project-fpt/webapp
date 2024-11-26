@@ -25,8 +25,8 @@ const ReportStatis: React.FC = () => {
         (semester) => semester.id === currentSemester?.id
     );
 
-    const capstoneGroups = (currentData as any)?.capstone_groups;
-    const evaluationCommittees = (currentData as any)?.evaluation_committees;
+    const capstoneGroups = (currentData as any)?.total_capstone_groups;
+    const evaluationCommittees = (currentData as any)?.total_evaluation_committees;
  
     return (
         <div className="flex flex-col md:flex-row md:justify-between gap-4">

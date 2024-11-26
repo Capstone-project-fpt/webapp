@@ -54,7 +54,7 @@ const semesterApi = api.injectEndpoints({
 
     getSemestersWithCount: builder.query<ResponseType<SemestersType>, PaginationType>({
       query: ({ limit = 10, page = 1, order_by = "DESC" }) => ({
-        url: "/semesters/count",
+        url: "/semesters/statistics",
         params: { limit, page, order_by },
       }),
       providesTags: ["Semester"],
