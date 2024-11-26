@@ -116,6 +116,8 @@ const columns = (): ColumnDef<GroupType>[] => [
 ];
 
 const EmptyGroup: React.FC = () => {
+  const currentUser = useSelector((state: RootState) => state.auth.user as any);
+  const { user_type } = currentUser.common_info || {};
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
@@ -186,9 +188,11 @@ const EmptyGroup: React.FC = () => {
           className="w-48"
         />
         <Link to="/groups/create">
-          <Button variant="outline">
-            <GoPlus className="h-4 w-4" />
-          </Button>
+          {user_type !== "teacher" && (
+            <Button variant="outline">
+              <GoPlus className="h-4 w-4" />
+            </Button>
+          )}
         </Link>
       </div>
       <DataTable
