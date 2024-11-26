@@ -1,8 +1,9 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
+import { ResponseErrorType } from "@/types";
 import { UpdateEvaluationGroup } from "@/types/evaluation";
-import React, { useEffect } from "react";
+import React from "react";
 
 const DeleteTeacherDialog: React.FC<{
   group: UpdateEvaluationGroup;
@@ -12,46 +13,50 @@ const DeleteTeacherDialog: React.FC<{
   onDelete: () => void;
 }> = ({ group, open, onOpenChange, teacherId, onDelete }) => {
   const { toast } = useToast();
-  const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] = useUpdateEvaluationMutation();
+  const [updateEvaluationCommitteeMutation, { isLoading }] =
+    useUpdateEvaluationMutation();
 
   const handleDelete = async () => {
-    if (group.teacher_ids.length <= 2) {
-      toast({
-        duration: 2000,
-        title: "Can not remove",
-        description: "The evaluation committee must have at least 2 members",
-      });
-      return;
-    }
+    try {
+      if (group.teacher_ids.length <= 2) {
+        toast({
+          duration: 2000,
+          title: "Can not remove",
+          description: "The evaluation committee must have at least 2 members",
+        });
+        return;
+      }
 
-    const updatedTeacherIds = group.teacher_ids.filter(id => id !== teacherId);
-    await updateEvaluationCommitteeMutation({
-      id: group.id,
-      name: group.name,
-      teacher_ids: updatedTeacherIds,
-    });
-  };
+      const updatedTeacherIds = group.teacher_ids.filter(
+        (id) => id !== teacherId
+      );
+      const res = await updateEvaluationCommitteeMutation({
+        id: group.id,
+        name: group.name,
+        teacher_ids: updatedTeacherIds,
+        assign_group_ids: group.assign_group_ids,
+      }).unwrap();
 
-  useEffect(() => {
-    if (isSuccess) {
       toast({
         duration: 1000,
         title: "Lecturer removed",
-        description: "Teacher removed from evaluation committee group successfully.",
+        description:
+          res.data ||
+          "Teacher removed from evaluation committee group successfully.",
       });
       onDelete();
       onOpenChange(false);
-    }
-
-    if (isError) {
+    } catch (error) {
       toast({
         duration: 1000,
         variant: "destructive",
         title: "Error removing teacher",
-        description: "An error occurred while removing the lecturer. Please try again.",
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator",
       });
     }
-  }, [isSuccess, isError, onOpenChange, onDelete, toast]);
+  };
 
   return (
     <ActionDialog

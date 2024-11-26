@@ -19,3 +19,4 @@ export interface SemestersType {
     total: number;
   };
 }
+
