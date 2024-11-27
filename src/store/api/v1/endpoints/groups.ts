@@ -9,9 +9,11 @@ import {
   MembersType,
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
+  StudentReportDocumentScore,
   TopicGroup,
   TopicGroupFeedback,
   TopicReviewStatus,
+  UpdateListStudentScore,
 } from "@/types/group";
 import { ScheduleType } from "@/types/schedule";
 import { api } from "..";
@@ -181,10 +183,13 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
-    updateMembers: builder.mutation<ResponseType<MembersType>, { group_id: number, student_ids: number[]}>({
+    updateMembers: builder.mutation<
+      ResponseType<MembersType>,
+      { group_id: number; student_ids: number[] }
+    >({
       query: ({ group_id, student_ids }) => ({
         url: `/capstone-groups/${group_id}/members`,
-        method: 'PUT',
+        method: "PUT",
         body: { student_ids },
       }),
       invalidatesTags: ["Group"],
@@ -307,6 +312,15 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
+    getCapstoneGroupReportDocument: builder.query<
+      ResponseType<ReportDocumentType>,
+      { capstone_group_id: number; report_id: number }
+    >({
+      query: ({ capstone_group_id, report_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/report-documents/${report_id}`,
+      }),
+      providesTags: ["Group"],
+    }),
     createReportDocument: builder.mutation<
       ResponseType<string>,
       CreateReportDocumentBody
@@ -318,6 +332,44 @@ const groupsApi = api.injectEndpoints({
           file_ids: data.file_ids,
           name: data.name,
           type_report: data.type_report,
+        },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    getStudentReportDocuments: builder.query<
+      ResponseType<StudentReportDocumentScore[]>,
+      { capstone_group_id: number; report_id: number }
+    >({
+      query: ({ capstone_group_id, report_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/report-documents/scores/${report_id}`,
+      }),
+      providesTags: ["Group"],
+    }),
+    mentorUpdateStudentScoreForReportDocument: builder.mutation<
+      ResponseType<string>,
+      UpdateListStudentScore
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/scores`,
+        method: "PUT",
+        body: {
+          report_document_id: data.report_document_id,
+          student_score_data: data.student_score_data,
+          conclusion: data.conclusion,
+        },
+      }),
+      invalidatesTags: ["Group"],
+    }),
+    adminUpdateStudentScoreReportDocument: builder.mutation<
+      ResponseType<string>,
+      { id: number; score: number; capstone_group_id: number }
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/scores`,
+        method: "PATCH",
+        body: {
+          id: data.id,
+          score: data.score,
         },
       }),
       invalidatesTags: ["Group"],
@@ -334,7 +386,6 @@ export const {
   useGetMentorAndListMembersGroupQuery,
   useLazyGetMentorAndListMembersGroupQuery,
   useUpdateGroupMutation,
-
 
   useInviteMentorMutation,
   useAcceptInvitationMutation,
@@ -366,6 +417,12 @@ export const {
   useGetListStudentsHaveCapstoneGroupQuery,
 
   useGetCapstoneGroupReportDocumentsQuery,
+  useGetCapstoneGroupReportDocumentQuery,
   useLazyGetCapstoneGroupReportDocumentsQuery,
   useCreateReportDocumentMutation,
+
+  useGetStudentReportDocumentsQuery,
+
+  useMentorUpdateStudentScoreForReportDocumentMutation,
+  useAdminUpdateStudentScoreReportDocumentMutation,
 } = groupsApi;

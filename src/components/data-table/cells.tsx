@@ -93,6 +93,7 @@ export type ActionItem =
       item: React.ReactNode;
       onClick: (e: React.MouseEvent) => void | Promise<void>;
       danger?: boolean;
+      isDisable?: boolean;
     };
 
 export function ActionCell(props: {
@@ -124,6 +125,7 @@ export function ActionCell(props: {
               onClick={item.onClick}
               onClickCapture={() => setOpen(false)}
               className={item.danger ? "text-danger" : ""}
+              disabled={item.isDisable}
             >
               {item.item}
             </DropdownMenuItem>

@@ -1,3 +1,4 @@
+import { StudentDetailType } from "./accounts";
 import { PaginationType } from "./utils";
 
 export enum GroupStatus {
@@ -14,6 +15,7 @@ export interface GroupType {
   created_at: Date;
   updated_at: Date;
   leader_id: number;
+  mentor_id: number;
   major_id: number;
   name_group: string;
   semester_id: number;
@@ -138,4 +140,26 @@ export interface GroupReview {
   schedule_review_id: number;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface StudentReportDocumentScore {
+  id: number;
+  student_id: number;
+  student: StudentDetailType;
+  score: number;
+  report_document_id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface UpdateStudentScore {
+  student_id: number;
+  score: number | null;
+}
+
+export interface UpdateListStudentScore {
+  report_document_id: number;
+  student_score_data: UpdateStudentScore[];
+  capstone_group_id: number;
+  conclusion: string | null;
 }

@@ -17,7 +17,7 @@ const FileDownload: React.FC<FileDownloadProps> = ({ pathFile }) => {
         target="_blank"
       >
         <FaFile className="mr-1" />
-        Download
+        {nameFile}
       </a>
     </div>
   );
