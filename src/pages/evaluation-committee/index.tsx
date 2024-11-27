@@ -8,8 +8,7 @@ import EvaluationGroups from "./evaluation-committee";
 import { RootState } from "@/store";
 
 const EvaluationCommittee: React.FC = () => {
-  const currentUser = useSelector((state: RootState) => state.auth.user as any);
-  const { user_type } = currentUser.common_info || {};
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -23,7 +22,7 @@ const EvaluationCommittee: React.FC = () => {
     <div>
       <div className="flex justify-end mb-2">
         <Link to="/evaluation-committees/create">
-          {user_type !== "student" && user_type !== "teacher" && (
+          {currentUser?.common_info.user_type !== "student" && currentUser?.common_info.user_type!== "teacher" && (
             <Button variant="outline">
               <GoPlus className="h-4 w-4" />
             </Button>

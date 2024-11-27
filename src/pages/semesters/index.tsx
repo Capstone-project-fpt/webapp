@@ -12,8 +12,7 @@ const Semesters: React.FC = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const currentUser = useSelector((state: RootState) => state.auth.user as any);
-  const { user_type } = currentUser.common_info || {};
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     dispatch(
@@ -37,7 +36,7 @@ const Semesters: React.FC = () => {
             className="w-48"
           />
         </div>
-        {user_type !== "student" && user_type !== "teacher" &&(
+        {currentUser?.common_info.user_type !== "student" && currentUser?.common_info.user_type !== "teacher" &&(
           <Button
             variant="outline"
             className="ml-1"
