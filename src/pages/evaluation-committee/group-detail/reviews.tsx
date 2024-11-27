@@ -20,6 +20,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CreateScheduleDialog from "../components/create-schedule-dialog";
 import { getStatus } from "@/lib/schedule-review";
 import { ScheduleStatus, ScheduleType } from "@/types/schedule";
+import { UserTypes } from "@/types/accounts";
 
 const ReviewsTable: React.FC<{ reviews: ScheduleType[]; title: string }> = ({
   reviews = [],
@@ -96,6 +97,7 @@ const Reviews = () => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const {
     data: scheduleReviewsData,
@@ -128,7 +130,9 @@ const Reviews = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end mb-2">
-        <CreateScheduleDialog />
+        {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER  && (
+          <CreateScheduleDialog />
+        )}
       </div>
       <ReviewsTable
         title="Reviewing"

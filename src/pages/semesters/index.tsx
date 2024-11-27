@@ -7,6 +7,7 @@ import CreateUpdateDialog from "./components/create-update-dialog";
 import { SemesterTable } from "./components/semester-table";
 import { Input } from "@/components/ui/input";
 import { RootState } from "@/store/index";
+import { UserTypes } from "@/types/accounts";
 
 const Semesters: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,7 +37,7 @@ const Semesters: React.FC = () => {
             className="w-48"
           />
         </div>
-        {currentUser?.common_info.user_type !== "student" && currentUser?.common_info.user_type !== "teacher" &&(
+        {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER &&(
           <Button
             variant="outline"
             className="ml-1"

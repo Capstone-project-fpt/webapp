@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import EvaluationGroups from "./evaluation-committee";
 import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
 
 const EvaluationCommittee: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -22,7 +23,7 @@ const EvaluationCommittee: React.FC = () => {
     <div>
       <div className="flex justify-end mb-2">
         <Link to="/evaluation-committees/create">
-          {currentUser?.common_info.user_type !== "student" && currentUser?.common_info.user_type!== "teacher" && (
+          {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER  && (
             <Button variant="outline">
               <GoPlus className="h-4 w-4" />
             </Button>

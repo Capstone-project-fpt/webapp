@@ -4,12 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "./calendar";
 import Assign from "./groups";
 import Peoples from "./peoples";
 import Reviews from "./reviews";
+import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
 
 const TABS = [
   { name: "reviews", label: "Reviews", component: Reviews },
@@ -42,6 +44,11 @@ const EvaluationDetail: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState(tab || "reviews");
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+
+  const filteredTabs = TABS.filter(
+    (tab) => !(tab.name === "assign" && currentUser?.common_info.user_type !== UserTypes.STUDENT )
+  );
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);
@@ -72,19 +79,18 @@ const EvaluationDetail: React.FC = () => {
         </div>
       </div>
     );
+  } else if (error) {
+    return (
+      <div className="h-full">
+        <ErrorBoundaryComponent />
+      </div>
+    );
   } else {
-    if (error) {
-      return (
-        <div className="h-full">
-          <ErrorBoundaryComponent />;
-        </div>
-      );
-    }
     return (
       <div>
         <Tabs defaultValue={currentTab} onValueChange={handleTabChange}>
           <TabsList>
-            {TABS.map((tab) => (
+            {filteredTabs.map((tab) => (
               <TabsTrigger
                 key={tab.name}
                 value={tab.name}
@@ -95,7 +101,7 @@ const EvaluationDetail: React.FC = () => {
             ))}
           </TabsList>
 
-          {TABS.map((tab) => (
+          {filteredTabs.map((tab) => (
             <TabsContent key={tab.name} value={tab.name} className="mt-4">
               <tab.component />
             </TabsContent>

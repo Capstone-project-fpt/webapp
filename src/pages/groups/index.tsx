@@ -187,7 +187,7 @@ const EmptyGroup: React.FC = () => {
           className="w-48"
         />
         <Link to="/groups/create">
-          {currentUser?.common_info.user_type !== "teacher" && (
+          {currentUser?.common_info.user_type !== UserTypes.TEACHER && (
             <Button variant="outline">
               <GoPlus className="h-4 w-4" />
             </Button>
