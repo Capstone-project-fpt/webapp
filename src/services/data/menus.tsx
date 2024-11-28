@@ -1,8 +1,8 @@
 import { FaRegLightbulb } from "react-icons/fa";
-import { Home, Settings2, Users } from "tabler-icons-react";
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { LuArrowUpLeftSquare, LuCalendarCheck } from "react-icons/lu";
 import { LiaObjectUngroupSolid } from "react-icons/lia";
+import { LuCalendarCheck } from "react-icons/lu";
+import { Home, Settings2, Users } from "tabler-icons-react";
 
 export interface MenuItem {
   title: string;

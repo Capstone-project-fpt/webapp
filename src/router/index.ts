@@ -9,7 +9,6 @@ import GroupsRoutes from "./groups";
 import MajorRoutes from "./majors";
 import ProductRoutes from "./products";
 import SemesterRoutes from "./semesters";
-import SyllabusRoutes from "./syllabus";
 import TopicRoutes from "./topics";
 import EvaluationRoutes from "./evaluations";
 
@@ -27,7 +26,6 @@ const router = createBrowserRouter([
   ...MajorRoutes,
   ...TopicRoutes,
   ...SemesterRoutes,
-  ...SyllabusRoutes,
   ...EvaluationRoutes,
 ]);
 

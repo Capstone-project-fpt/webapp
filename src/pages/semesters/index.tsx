@@ -2,15 +2,18 @@ import { Button } from "@/components/ui/button";
 import { setBreadCrumb } from "@/store/slice/app";
 import React, { useEffect, useState } from "react";
 import { GoPlus } from "react-icons/go";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { SemesterTable } from "./components/semester-table";
 import { Input } from "@/components/ui/input";
+import { RootState } from "@/store/index";
+import { UserTypes } from "@/types/accounts";
 
 const Semesters: React.FC = () => {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     dispatch(
@@ -28,19 +31,21 @@ const Semesters: React.FC = () => {
           <Input
             title="Search"
             type="text"
-            placeholder="Search"
+            placeholder="Search by name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-48"
           />
         </div>
-        <Button
-          variant="outline"
-          className="ml-1"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <GoPlus className="h-4 w-4" />
-        </Button>
+        {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER &&(
+          <Button
+            variant="outline"
+            className="ml-1"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <GoPlus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       {isCreateModalOpen && (
         <CreateUpdateDialog

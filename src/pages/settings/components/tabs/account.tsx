@@ -46,22 +46,16 @@ const Account: React.FC = () => {
               <Card className="rounded-lg">
                 <CardHeader>
                   <h3 className="text-xl font-bold">
-                    {isAdmin ? "FPT University" : "Group Capstone Project"}
+                    FPT University
                   </h3>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between mb-4">
                     <p className=" font-semibold">
-                      {isAdmin ? "Campus" : "Name Group"}
+                      Campus
                     </p>
-                    <p className="">{isAdmin ? "Đà Nẵng" : "Đom Đóm"}</p>
+                    Đà Nẵng
                   </div>
-                  {isTeacher || isAdmin ? null : (
-                    <div className="flex justify-between mb-4">
-                      <p className=" font-semibold">Mentor</p>
-                      <p className="">Trần Văn Hoàng</p>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 

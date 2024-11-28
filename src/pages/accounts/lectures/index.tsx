@@ -47,7 +47,7 @@ const Lectures = () => {
           <Input
             title="Search"
             type="text"
-            placeholder="Search"
+            placeholder="Search by name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-48"

@@ -116,6 +116,7 @@ const columns = (): ColumnDef<GroupType>[] => [
 ];
 
 const EmptyGroup: React.FC = () => {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
@@ -180,15 +181,17 @@ const EmptyGroup: React.FC = () => {
         <Input
           title="Search"
           type="text"
-          placeholder="Search Groups"
+          placeholder="Search by name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-48"
         />
         <Link to="/groups/create">
-          <Button variant="outline">
-            <GoPlus className="h-4 w-4" />
-          </Button>
+          {currentUser?.common_info.user_type !== UserTypes.TEACHER && (
+            <Button variant="outline">
+              <GoPlus className="h-4 w-4" />
+            </Button>
+          )}
         </Link>
       </div>
       <DataTable
