@@ -40,7 +40,7 @@ const EmptyResources: FC<EmptyResourcesProps> = ({
 
   useEffect(() => {
     setSrc(
-      `https://media.chative.io/placeholders/${shape || "empty-resources"}.svg`
+      `https://media.chative.io/placeholders/${shape || "empty-document"}.svg`
     );
   }, [shape]);
 

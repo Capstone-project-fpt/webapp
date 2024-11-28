@@ -59,36 +59,32 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
   const [deleteTopicFeedback, data] = useDeleteTopicFeedbackMutation();
 
   const handleDelete = async () => {
-    if (feedback && feedback.id) {
-      await deleteTopicFeedback({
-        feedback_id: feedback.id,
-        group_id: parseInt(groupId),
-        topic_id: parseInt(topicId),
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (data.isSuccess) {
-      toast({
-        duration: 1000,
-        title: "Delete feedback",
-        description: "Delete student successfully.",
-      });
-      onOpenChange(false);
-      refetchFeedbacks();
-    }
-
-    if (data.isError) {
+    try {
+      if (feedback && feedback.id) {
+        const deleteData = await deleteTopicFeedback({
+          feedback_id: feedback.id,
+          group_id: parseInt(groupId),
+          topic_id: parseInt(topicId),
+        }).unwrap();
+        toast({
+          duration: 1000,
+          title: "Delete feedback",
+          description: deleteData.data || "Delete student successfully.",
+        });
+        onOpenChange(false);
+        refetchFeedbacks();
+      }
+    } catch (error) {
       toast({
         duration: 1000,
         variant: "destructive",
         title: "Delete feedback",
         description:
+          (error as ResponseErrorType)?.data?.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-  }, [data, onOpenChange, toast, refetchFeedbacks]);
+  };
 
   return (
     <ActionDialog
@@ -213,41 +209,32 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
     }
   }, [feedbacksData]);
 
-  useEffect(() => {
-    if (createTopicFeedbackData.isSuccess) {
+  const handleComment = async () => {
+    try {
+      const createData = await createTopicFeedback({
+        group_id: parseInt(groupId),
+        topic_id: parseInt(topicId),
+        feedback: feedback as string,
+      }).unwrap();
+
       setFeedback("");
       refetchFeedbacks();
       toast({
         duration: 1000,
         variant: "default",
         title: "Feedback Topic",
-        description: "Feedback Topic Successfully.",
+        description: createData.data || "Feedback Topic Successfully.",
       });
-    }
-
-    if (createTopicFeedbackData.isError) {
-      const { data } = createTopicFeedbackData.error as {
-        data?: { code?: number; error?: string };
-      };
-      const messageError =
-        data?.code === 409
-          ? data.error
-          : "Something went wrong, please try again. If the problem persists, please contact the administrator.";
+    } catch (error) {
       toast({
         duration: 1000,
         variant: "destructive",
         title: "Feedback Topic",
-        description: messageError,
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-  }, [createTopicFeedbackData, refetchFeedbacks, toast]);
-
-  const handleComment = () => {
-    createTopicFeedback({
-      group_id: parseInt(groupId),
-      topic_id: parseInt(topicId),
-      feedback: feedback as string,
-    });
   };
 
   return (
