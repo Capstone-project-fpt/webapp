@@ -9,7 +9,7 @@ export interface MenuItem {
   link?: string;
   icon?: JSX.Element;
   children?: MenuItem[];
-  isOpen?: boolean; 
+  isOpen?: boolean;
 }
 
 const menus: MenuItem[] = [
@@ -22,14 +22,17 @@ const menus: MenuItem[] = [
   {
     icon: <LuCalendarCheck size={18} strokeWidth={2} />,
     title: "Semesters",
-    link: "/semesters",
     isOpen: false,
-  },
-  {
-    icon: <LuArrowUpLeftSquare size={18} strokeWidth={2} />,
-    title: "Syllabus",
-    link: "/syllabus",
-    isOpen: false,
+    children: [
+      {
+        title: "List",
+        link: "/semesters",
+      },
+      {
+        title: "Current semester",
+        link: "/semesters/current",
+      },
+    ],
   },
   {
     icon: <HiOutlineUserGroup size={18} strokeWidth={2} />,
@@ -37,7 +40,7 @@ const menus: MenuItem[] = [
     link: "/groups",
   },
   {
-    icon: <LiaObjectUngroupSolid  size={18}  />,
+    icon: <LiaObjectUngroupSolid size={18} />,
     title: "Evaluation Committee",
     link: "/evaluation-committees",
   },

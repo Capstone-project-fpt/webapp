@@ -1,21 +1,29 @@
-import DateDisplay from "@/components/common/date";
-import { SettingCard } from "@/components/custom/setting";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import { useGetSemesterQuery } from "@/store/api/v1/endpoints/semesters";
 import { setBreadCrumb } from "@/store/slice/app";
+import { isNaN } from "lodash";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import Decentralization from "./decentralization";
 import EvaluationCommittee from "./evaluation-committee";
 import Groups from "./groups";
+import Information from "./information";
 
 const TABS = [
+  { name: "information", label: "Information", component: Information },
   { name: "groups", label: "Groups", component: Groups },
   {
     name: "evaluation-committee",
     label: "Evaluation Committee",
     component: EvaluationCommittee,
+  },
+  {
+    name: "decentralization",
+    label: "Decentralization",
+    component: Decentralization,
   },
 ];
 
@@ -27,16 +35,42 @@ const TABS_NAMES = TABS.reduce((acc, tab) => {
 const SemesterDetail: React.FC = () => {
   const { semesterId, tab } = useParams<{ semesterId: string; tab?: string }>();
   const dispatch = useDispatch();
-  const [currentTab, setCurrentTab] = useState(tab || "groups");
+  const [currentTab, setCurrentTab] = useState(tab || "information");
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester
+  );
+
+  const validSemesterId =
+    semesterId === "current" ? currentSemester?.id : Number(semesterId);
+
+  useEffect(() => {
+    if (isNaN(validSemesterId)) {
+      toast({
+        title: "Invalid semester ID",
+        description:
+          "The semester ID is invalid. Redirecting to semesters list.",
+        variant: "destructive",
+      });
+      navigate("/semesters");
+      return;
+    }
+  }, [validSemesterId, navigate, toast]);
+
   const { data, error } = useGetSemesterQuery(
-    { id: Number(semesterId) },
-    { skip: !semesterId }
+    { id: validSemesterId },
+    { skip: !validSemesterId || isNaN(validSemesterId) }
   );
 
   const semester = data?.data;
+
+  useEffect(() => {
+    if (semesterId === "current" && currentSemester?.id) {
+      navigate(`/semesters/${currentSemester.id}`);
+    }
+  }, [semesterId, currentSemester, currentTab, navigate]);
 
   if (error) {
     toast({
@@ -77,25 +111,6 @@ const SemesterDetail: React.FC = () => {
 
   return (
     <div className="flex gap-4">
-      <div className="flex-none w-1/4">
-        {semester ? (
-          <SettingCard title={`${semester.name}`}>
-            <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
-              <span>Start date</span>
-              <DateDisplay
-                date={new Date(semester.start_time)}
-                format="MMM DD, YYYY"
-              />
-              <span>End date</span>
-              <DateDisplay
-                date={new Date(semester.end_time)}
-                format="MMM DD, YYYY"
-              />
-            </div>
-          </SettingCard>
-        ) : null}
-      </div>
-
       <div className="flex-grow">
         <Tabs value={currentTab} onValueChange={handleTabChange}>
           <TabsList>
