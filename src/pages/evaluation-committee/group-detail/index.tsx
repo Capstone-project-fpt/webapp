@@ -47,7 +47,7 @@ const EvaluationDetail: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const filteredTabs = TABS.filter(
-    (tab) => !(tab.name === "assign" && currentUser?.common_info.user_type !== UserTypes.STUDENT )
+    (tab) => !(tab.name === "assign" && currentUser?.common_info.user_type === UserTypes.STUDENT )
   );
 
   const handleTabChange = (tab: string) => {
