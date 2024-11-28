@@ -32,6 +32,7 @@ const AddTeacherDialog: React.FC<{
       id: group.id,
       name: group.name,
       teacher_ids: updatedTeacherIds,
+      assign_group_ids: group.assign_group_ids,
     });
   };
 
@@ -75,7 +76,7 @@ const AddTeacherDialog: React.FC<{
           value={selectedLecture}
           onChangeValue={setSelectedLecture}
           selectedMembers={members}
-          existingGroupMembers={group.teacher_ids}
+          // existingGroupMembers={group.teacher_ids}
         />
       </div>
     </ActionDialog>

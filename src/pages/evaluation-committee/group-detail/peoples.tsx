@@ -118,6 +118,9 @@ const EvaluationCommittee = () => {
         id: committeeData.data.id,
         name: committeeData.data.name,
         teacher_ids: committeeData.data.teachers.map((teacher) => teacher.id),
+        assign_group_ids: (committeeData.data.assign_groups || []).map(
+          (group) => group.id
+        ),
       });
     }
   }, [committeeData]);
