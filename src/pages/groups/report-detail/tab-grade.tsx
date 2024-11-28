@@ -32,6 +32,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { UserItem, UserTypes } from "@/types/accounts";
 import { ResponseErrorType } from "@/types";
+import EmptyResources from "@/components/common/empty-resource";
 
 interface TabGradePros {
   members: GroupMember[];
@@ -99,18 +100,20 @@ const TabGrade: React.FC<TabGradePros> = ({
         </div>
       ) : (
         <div className="flex flex-col gap-2 pt-3">
-          <Label>
-            Mentor after review need to mark score for each student for this
-            report.
-          </Label>
-          <Button
-            variant="outline"
-            className="ml-1 w-[100px]"
-            onClick={() => setIsOpenModel(true)}
-            disabled={isDisableButtonUpdateScore}
+          <EmptyResources
+            title="No student score"
+            content="Mentor after review need to mark score for each student for this report."
           >
-            Update Score
-          </Button>
+            <Button
+              variant="outline"
+              className="ml-1 w-[100px]"
+              onClick={() => setIsOpenModel(true)}
+              disabled={isDisableButtonUpdateScore}
+            >
+              Update Score
+            </Button>
+          </EmptyResources>
+
           {isOpenModel && (
             <UpdateScoreDialog
               onOpenChange={setIsOpenModel}

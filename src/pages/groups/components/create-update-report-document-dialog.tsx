@@ -75,9 +75,8 @@ const CreateUpdateReportDocumentDialog: React.FC<
         ? (createReportDocumentData.error as ResponseErrorType)
         : { data: null };
       const messageError =
-        data?.code === 409
-          ? data.error
-          : "Something went wrong, please try again. If the problem persists, please contact the administrator.";
+        data?.error ||
+        "Something went wrong, please try again. If the problem persists, please contact the administrator.";
 
       toast({
         duration: 1000,
@@ -134,6 +133,7 @@ const CreateUpdateReportDocumentDialog: React.FC<
       toast({
         title: `Submit Report Document`,
         description:
+          (error as ResponseErrorType)?.data.error ||
           "Something went wrong, please try again. If the problem persists, contact support.",
         variant: "destructive",
       });

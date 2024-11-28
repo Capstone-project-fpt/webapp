@@ -11,8 +11,6 @@ export const api = createApi({
       const authState = getState().auth;
       const authToken = token(authState);
       headers.set("Content-Type", "application/json");
-      headers.set("Accept-Language", "vi");
-
       if (authToken) {
         headers.set("authorization", `Bearer ${authToken}`);
       }

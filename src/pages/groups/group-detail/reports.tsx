@@ -1,25 +1,25 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React, { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useGetCapstoneGroupReportDocumentsQuery } from "@/store/api/v1/endpoints/groups";
 import { LoadingTableLottie } from "@/components";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
+import { useGetCapstoneGroupReportDocumentsQuery } from "@/store/api/v1/endpoints/groups";
+import { UserTypes } from "@/types/accounts";
 import {
   MentorReviewReportDocumentStatus,
   ReportDocumentType,
 } from "@/types/report-document";
-import { Button } from "@/components/ui/button";
+import React, { useMemo } from "react";
 import { FiFilePlus } from "react-icons/fi";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { UserItem, UserTypes } from "@/types/accounts";
-import { useToast } from "@/hooks/use-toast";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
+import { Label } from "@/components/ui/label";
+import EmptyResources from "@/components/common/empty-resource";
 
 const Reports: React.FC = () => {
-  const currentUser = useSelector(
-    (state: RootState) => state.auth.user as UserItem
-  );
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const { groupId } = useParams<{ groupId: string }>();
   const { toast } = useToast();
@@ -45,11 +45,14 @@ const Reports: React.FC = () => {
   }
 
   if (isError) {
-    return <ErrorBoundaryComponent />;
+    // return <ErrorBoundaryComponent />;
   }
 
   const handleOpenCreateUpdateReportDocumentDialog = () => {
-    if (currentUser.common_info.user_type !== UserTypes.STUDENT) {
+    if (
+      currentUser &&
+      currentUser.common_info.user_type !== UserTypes.STUDENT
+    ) {
       toast({
         title: "Submit Report",
         description: "Only student can submit report",
@@ -64,43 +67,63 @@ const Reports: React.FC = () => {
   };
 
   const categorizedReports = {
-    Reviewing: reportData.filter(
+    Reviewing: (reportData || []).filter(
       (report) =>
         report.mentor_review_status ===
         MentorReviewReportDocumentStatus.Reviewing
     ),
-    Done: reportData.filter(
+    Done: (reportData || []).filter(
       (report) =>
         report.mentor_review_status === MentorReviewReportDocumentStatus.Done
     ),
   };
 
   return (
-    <div className="flex flex-row ">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-4/5">
-        {Object.entries(categorizedReports).map(([category, reports]) => (
-          <CategoryColumn
-            key={category}
-            category={category}
-            reports={reports}
-          />
-        ))}
-      </div>
-      <div className="w-1/5 flex">
-        <Button
-          onClick={() => {
-            handleOpenCreateUpdateReportDocumentDialog();
-          }}
-        >
-          <FiFilePlus />
-          Submit Report
-        </Button>
-        <CreateUpdateReportDocumentDialog
-          open={isCreateUpdateModelOpen}
-          onOpenChange={setIsCreateUpdateModelOpen}
-          reportDocument={undefined}
-        />
-      </div>
+    <div className="flex flex-row w-full">
+      <CreateUpdateReportDocumentDialog
+        open={isCreateUpdateModelOpen}
+        onOpenChange={setIsCreateUpdateModelOpen}
+        reportDocument={undefined}
+      />
+      {!reportData || reportData.length === 0 ? (
+        <div className="w-full">
+          <EmptyResources
+            title="Your group has no report yet"
+            content="Submit your report to your mentor for review and feedback"
+          >
+            <Button
+              onClick={() => {
+                handleOpenCreateUpdateReportDocumentDialog();
+              }}
+            >
+              <FiFilePlus />
+              Submit Report
+            </Button>
+          </EmptyResources>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-4/5">
+            {Object.entries(categorizedReports).map(([category, reports]) => (
+              <CategoryColumn
+                key={category}
+                category={category}
+                reports={reports}
+              />
+            ))}
+          </div>
+          <div className="w-1/5 flex">
+            <Button
+              onClick={() => {
+                handleOpenCreateUpdateReportDocumentDialog();
+              }}
+            >
+              <FiFilePlus />
+              Submit Report
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -111,7 +134,7 @@ const CategoryColumn: React.FC<{
 }> = ({ category, reports }) => {
   return (
     <div>
-      <div className="text-xl">{category}</div>
+      <Label className="text-xl">{category}</Label>
       {reports.map((report, index) => (
         <ReportCard key={index} report={report} />
       ))}

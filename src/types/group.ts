@@ -1,4 +1,4 @@
-import { StudentDetailType } from "./accounts";
+import { StudentDetailType, UserType } from "./accounts";
 import { PaginationType } from "./utils";
 
 export enum GroupStatus {
@@ -130,6 +130,14 @@ export interface TopicGroupFeedback {
   created_at: Date;
   updated_at: Date;
   capstone_group_topic_id: number;
+}
+
+export interface ReportComment {
+  id: number;
+  message: string;
+  user: GroupMember | GroupMentor;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface GroupReview {

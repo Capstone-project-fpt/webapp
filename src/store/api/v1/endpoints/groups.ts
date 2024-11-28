@@ -9,6 +9,7 @@ import {
   MembersType,
   MentorAndListMembersCapstoneGroup,
   QueryGroupsParams,
+  ReportComment,
   StudentReportDocumentScore,
   TopicGroup,
   TopicGroupFeedback,
@@ -87,7 +88,7 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     createTopic: builder.mutation<
-      void,
+      ResponseType<string>,
       { group_id: number; document_path: string; topic: string }
     >({
       query: ({ group_id, document_path, topic }) => ({
@@ -157,7 +158,7 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     createTopicFeedback: builder.mutation<
-      void,
+      ResponseType<string>,
       { group_id: number; topic_id: number; feedback: string }
     >({
       query: ({ group_id, topic_id, feedback }) => ({
@@ -167,7 +168,7 @@ const groupsApi = api.injectEndpoints({
       }),
     }),
     deleteTopicFeedback: builder.mutation<
-      void,
+      ResponseType<string>,
       { group_id: number; topic_id: number; feedback_id: number }
     >({
       query: ({ group_id, topic_id, feedback_id }) => ({
@@ -303,6 +304,7 @@ const groupsApi = api.injectEndpoints({
       }),
       providesTags: ["Group"],
     }),
+    //#region Report Document
     getCapstoneGroupReportDocuments: builder.query<
       ResponseType<ReportDocumentType[]>,
       { capstone_group_id: number }
@@ -374,6 +376,37 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
+    getReportComments: builder.query<
+      ResponseType<ReportComment[]>,
+      { group_id: number; report_id: number }
+    >({
+      query: ({ group_id, report_id }) => ({
+        url: `/capstone-groups/${group_id}/report-documents/${report_id}/comments/`,
+      }),
+    }),
+    createReportComment: builder.mutation<
+      ResponseType<string>,
+      { group_id: number; report_id: number; message: string }
+    >({
+      query: ({ group_id, report_id, message }) => ({
+        url: `/capstone-groups/${group_id}/report-documents/${report_id}/comments/`,
+        method: "POST",
+        body: { message },
+      }),
+    }),
+    deleteReportComment: builder.mutation<
+      ResponseType<string>,
+      { group_id: number; report_id: number; comment_id: number }
+    >({
+      query: ({ group_id, report_id, comment_id }) => ({
+        url: `/capstone-groups/${group_id}/report-documents/${report_id}/comments/`,
+        method: "DELETE",
+        body: {
+          id: comment_id
+        }
+      }),
+    }),
+    //#endregion
   }),
 });
 
@@ -420,8 +453,11 @@ export const {
   useGetCapstoneGroupReportDocumentQuery,
   useLazyGetCapstoneGroupReportDocumentsQuery,
   useCreateReportDocumentMutation,
-
   useGetStudentReportDocumentsQuery,
+
+  useGetReportCommentsQuery,
+  useCreateReportCommentMutation,
+  useDeleteReportCommentMutation,
 
   useMentorUpdateStudentScoreForReportDocumentMutation,
   useAdminUpdateStudentScoreReportDocumentMutation,
