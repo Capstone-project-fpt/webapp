@@ -17,7 +17,7 @@ const TABS = [
   { name: "reviews", label: "Reviews", component: Reviews },
   { name: "calendar", label: "Calendar", component: Calendar },
   { name: "peoples", label: "Peoples", component: Peoples },
-  { name: "assign", label: "Assign", component: Assign },
+  { name: "group-assign", label: "Assign", component: Assign },
 ];
 
 const TABS_NAMES = TABS.reduce((acc, tab) => {

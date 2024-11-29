@@ -5,6 +5,7 @@ import { UpdateEvaluationGroup } from "@/types/evaluation";
 import React, { useEffect, useState } from "react";
 import { Member, OptionType } from "../type";
 import SelectLecture from "./select-lecture";
+import { ResponseErrorType } from "@/types";
 
 const AddTeacherDialog: React.FC<{
   group: UpdateEvaluationGroup;
@@ -21,50 +22,47 @@ const AddTeacherDialog: React.FC<{
   );
 
   const handleAdd = async () => {
-    if (!selectedLecture || !selectedLecture.value.extra_info.teacher) {
-      toast({
-        duration: 2000,
-        title: "Invalid Lecturer",
-        description: "Please select a valid lecturer to add.",
-      });
-      return;
-    }
+    try {
+      if (!selectedLecture || !selectedLecture.value.extra_info.teacher) {
+        toast({
+          duration: 2000,
+          title: "Invalid Lecturer",
+          description: "Please select a valid lecturer to add.",
+        });
+        return;
+      }
 
-    const updatedTeacherIds = [
-      ...group.teacher_ids,
-      selectedLecture.value.extra_info.teacher.teacher_id,
-    ];
-    await updateEvaluationCommitteeMutation({
-      id: group.id,
-      name: group.name,
-      teacher_ids: updatedTeacherIds,
-      assign_group_ids: group.assign_group_ids,
-    });
-  };
-
-  useEffect(() => {
-    if (isSuccess) {
+      const updatedTeacherIds = [
+        ...group.teacher_ids,
+        selectedLecture.value.extra_info.teacher.teacher_id,
+      ];
+      const updateData = await updateEvaluationCommitteeMutation({
+        id: group.id,
+        name: group.name,
+        teacher_ids: updatedTeacherIds,
+        assign_group_ids: group.assign_group_ids,
+      }).unwrap();
       toast({
         duration: 1000,
         title: "Lecturer Added",
         description:
+          updateData.data ||
           "Lecturer successfully added to the evaluation committee group.",
       });
       setSelectedLecture(null);
       onAdd();
       onOpenChange(false);
-    }
-
-    if (isError) {
+    } catch (error) {
       toast({
         duration: 1000,
         variant: "destructive",
         title: "Error Adding Lecturer",
         description:
-          "An error occurred while adding the lecturer. Please try again.",
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-  }, [isSuccess, isError, onOpenChange, onAdd, toast]);
+  };
 
   return (
     <ActionDialog
