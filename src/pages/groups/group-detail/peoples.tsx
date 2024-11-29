@@ -59,16 +59,75 @@ const InvitingStatus: React.FC<{ status: InvitationMentorStatus | string }> = ({
   );
 };
 
-const MentorTable: React.FC<{
-  mentor: GroupMentor | null;
+const InvitationMentorTable: React.FC<{
   invitationMentors: InvitationMentor[];
-}> = ({ mentor, invitationMentors }) => (
+}> = ({ invitationMentors }) => (
   <Table>
     <TableHeader>
       <TableRow>
         <TableHead>Name</TableHead>
         <TableHead>Email</TableHead>
         <TableHead>Status</TableHead>
+        <TableHead>Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {(invitationMentors || []).map((invitationMentor) => {
+        const { mentor } = invitationMentor;
+        return (
+          <TableRow key={invitationMentor.id}>
+            <TableCell className="flex items-center space-x-2">
+              <Avatar>
+                <AvatarImage
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    mentor.name
+                  )}&size=32`}
+                  alt={mentor.name}
+                />
+                <AvatarFallback>{mentor.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p>{mentor.name}</p>
+              </div>
+            </TableCell>
+            <TableCell>{mentor.email}</TableCell>
+            <TableCell>
+              <InvitingStatus
+                status={
+                  Date.now() <= new Date(invitationMentor.expired_at).getTime()
+                    ? invitationMentor.status
+                    : "Expired"
+                }
+              />
+            </TableCell>
+
+            <TableCell>
+              <ActionCell
+                items={[
+                  {
+                    item: "Send Email",
+                    onClick: () => {
+                      window.location.href = `mailto:${mentor.email}`;
+                    },
+                  },
+                ]}
+              />
+            </TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+);
+
+const MentorTable: React.FC<{
+  mentor: GroupMentor | null;
+}> = ({ mentor }) => (
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Name</TableHead>
+        <TableHead>Email</TableHead>
         <TableHead>Actions</TableHead>
       </TableRow>
     </TableHeader>
@@ -107,43 +166,6 @@ const MentorTable: React.FC<{
           </TableCell>
         </TableRow>
       )}
-      {(invitationMentors || []).map((invitationMentor) => {
-        const { mentor } = invitationMentor;
-        return (
-          <TableRow key={invitationMentor.id}>
-            <TableCell className="flex items-center space-x-2">
-              <Avatar>
-                <AvatarImage
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    mentor.name
-                  )}&size=32`}
-                  alt={mentor.name}
-                />
-                <AvatarFallback>{mentor.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p>{mentor.name}</p>
-              </div>
-            </TableCell>
-            <TableCell>{mentor.email}</TableCell>
-            <TableCell>
-              <InvitingStatus status={invitationMentor.status} />
-            </TableCell>
-            <TableCell>
-              <ActionCell
-                items={[
-                  {
-                    item: "Send Email",
-                    onClick: () => {
-                      window.location.href = `mailto:${mentor.email}`;
-                    },
-                  },
-                ]}
-              />
-            </TableCell>
-          </TableRow>
-        );
-      })}
     </TableBody>
   </Table>
 );
@@ -154,16 +176,10 @@ const MemberTable: React.FC<{
   groupId: number;
 }> = ({ members, leaderId, groupId }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
-
 
   const handleDelete = () => {
     setSelectedMemberId(null);
-  };
-
-  const handleAddMember = () => {
-    // Logic to refresh the member list after adding a new member.
   };
 
   return (
@@ -327,7 +343,11 @@ const Peoples = () => {
         }
       >
         {mentor || (invitationMentors || []).length ? (
-          <MentorTable mentor={mentor} invitationMentors={invitationMentors} />
+          mentor ? (
+            <MentorTable mentor={mentor} />
+          ) : (
+            <InvitationMentorTable invitationMentors={invitationMentors} />
+          )
         ) : (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />

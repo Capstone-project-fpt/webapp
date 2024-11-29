@@ -1,9 +1,10 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
 import { useUpdateMembersMutation } from "@/store/api/v1/endpoints/groups";
 import React, { useState } from "react";
 import { Member, OptionType } from "../type";
 import SelectStudent from "./select-student";
+import { ResponseErrorType } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 const AddMemberDialog: React.FC<{
   groupId: number;
@@ -13,7 +14,9 @@ const AddMemberDialog: React.FC<{
   selectedMembers: Member[];
 }> = ({ groupId, open, onOpenChange, onAddMember, selectedMembers }) => {
   const { toast } = useToast();
-  const [selectedStudent, setSelectedStudent] = useState<OptionType | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<OptionType | null>(
+    null
+  );
   const [updateMembersMutation, { isSuccess, isError, isLoading }] =
     useUpdateMembersMutation();
 
@@ -36,7 +39,7 @@ const AddMemberDialog: React.FC<{
       }).unwrap();
 
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Member Added",
         description: "Student successfully added to the group.",
       });
@@ -44,12 +47,14 @@ const AddMemberDialog: React.FC<{
       setSelectedStudent(null);
       onAddMember();
       onOpenChange(false);
-    } catch {
+    } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
         variant: "destructive",
         title: "Error Adding Student",
-        description: "An error occurred while adding the student. Please try again.",
       });
     }
   };

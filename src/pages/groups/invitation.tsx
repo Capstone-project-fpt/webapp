@@ -1,6 +1,8 @@
+import { PageNotFoundError } from "@/components";
 import { SettingCard } from "@/components/custom/setting";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import {
   useAcceptInvitationMutation,
   useGetGroupQuery,
@@ -8,11 +10,19 @@ import {
 import { setBreadCrumb } from "@/store/slice/app";
 import { InvitationMentorStatus } from "@/types/group";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { jwtDecode } from "jwt-decode";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router";
 
+interface ITokenInvitePayload {
+  CapstoneGroupID: number;
+  InviteID: number;
+  TeacherID: number;
+}
+
 const Invitation: React.FC = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -20,7 +30,13 @@ const Invitation: React.FC = () => {
     groupId: string;
   }>();
   const queryParams = new URLSearchParams(location.search);
-  const token = queryParams.get("token");
+  const token = queryParams.get("token") || "";
+
+  console.log("Decode: ", jwtDecode(token));
+  console.log("user: ", user);
+
+  const payload = jwtDecode(token).sub as ITokenInvitePayload | undefined;
+
   const { toast } = useToast();
 
   const { data: groupData } = useGetGroupQuery({ id: Number(groupId) });
@@ -78,6 +94,10 @@ const Invitation: React.FC = () => {
       });
     }
   }, [groupId, isError, isSuccess, navigate, toast]);
+
+  if (user?.extra_info?.teacher?.teacher_id !== payload?.TeacherID) {
+    return <PageNotFoundError />;
+  }
 
   return (
     <SettingCard
