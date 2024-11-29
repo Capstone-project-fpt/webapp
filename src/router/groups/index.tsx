@@ -7,6 +7,7 @@ import Invitation from "@/pages/groups/invitation";
 import ReportDetail from "@/pages/groups/report-detail";
 import ReviewDetail from "@/pages/groups/review-detail";
 import TopicDetail from "@/pages/groups/topic-detail";
+import YourGroups from "@/pages/groups/your-groups";
 import { RouteObject } from "react-router-dom";
 
 const GroupsRoutes: RouteObject[] = [
@@ -18,6 +19,10 @@ const GroupsRoutes: RouteObject[] = [
       {
         path: "",
         element: <Groups />,
+      },
+      {
+        path: "your-groups",
+        element: <YourGroups />,
       },
       {
         path: "create",

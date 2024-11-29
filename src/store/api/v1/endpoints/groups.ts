@@ -430,6 +430,17 @@ const groupsApi = api.injectEndpoints({
         },
       }),
     }),
+
+    getCurrentGroupsSemester: builder.query<
+      ResponseType<GroupType[]>,
+      { semester_id: number }>({
+        query: ({ semester_id }) => {
+          return {
+            url: "/capstone-groups/current-semester",
+            params: { semester_id },
+          };
+        },
+      }),
     //#endregion
   }),
 });
@@ -486,4 +497,6 @@ export const {
 
   useMentorUpdateStudentScoreForReportDocumentMutation,
   useAdminUpdateStudentScoreReportDocumentMutation,
+
+  useGetCurrentGroupsSemesterQuery
 } = groupsApi;
