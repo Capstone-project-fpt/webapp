@@ -35,7 +35,9 @@ export interface UserType {
   name: string;
   email: string;
   phone_number: string;
+  user_id: number;
   user_type: UserTypes;
+  sub_major_id: number;
 }
 
 export enum UserTypes {
