@@ -1,4 +1,5 @@
 import { LoadingTableLottie } from "@/components";
+import EmptyResources from "@/components/common/empty-resource";
 import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,10 +16,13 @@ import {
 } from "@/components/ui/table";
 import { TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import {
   useAdminUpdateStudentScoreReportDocumentMutation,
   useGetStudentReportDocumentsQuery,
 } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
+import { UserItem, UserTypes } from "@/types/accounts";
 import { GroupMember, StudentReportDocumentScore } from "@/types/group";
 import {
   MentorReviewReportDocumentStatus,
@@ -26,13 +30,9 @@ import {
   ReportDocumentType,
 } from "@/types/report-document";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import UpdateScoreDialog from "./update-score-dialog";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
-import { UserItem, UserTypes } from "@/types/accounts";
-import { ResponseErrorType } from "@/types";
-import EmptyResources from "@/components/common/empty-resource";
 
 interface TabGradePros {
   members: GroupMember[];
@@ -79,7 +79,7 @@ const TabGrade: React.FC<TabGradePros> = ({
     return <ErrorBoundaryComponent />;
   }
 
-  const isDisableButtonUpdateScore =
+  const isHideButtonUpdateScore =
     user.extra_info.teacher?.teacher_id !== currentGroup?.mentor_id;
 
   return (
@@ -104,14 +104,15 @@ const TabGrade: React.FC<TabGradePros> = ({
             title="No student score"
             content="Mentor after review need to mark score for each student for this report."
           >
-            <Button
-              variant="outline"
-              className="ml-1 w-[100px]"
-              onClick={() => setIsOpenModel(true)}
-              disabled={isDisableButtonUpdateScore}
-            >
-              Update Score
-            </Button>
+            {!isHideButtonUpdateScore && (
+              <Button
+                variant="outline"
+                className="ml-1 w-[100px]"
+                onClick={() => setIsOpenModel(true)}
+              >
+                Update Score
+              </Button>
+            )}
           </EmptyResources>
 
           {isOpenModel && (

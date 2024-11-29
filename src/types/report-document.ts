@@ -31,3 +31,10 @@ export interface CreateReportDocumentBody {
   type_report: ReportDocumentCategoryType;
   capstone_group_id: number;
 }
+
+export interface UpdateReportDocumentBody {
+  file_ids: string[];
+  name: string;
+  capstone_group_id: number;
+  id: number;
+}

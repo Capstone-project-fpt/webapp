@@ -1,22 +1,27 @@
 import { LoadingTableLottie } from "@/components";
+import EmptyResources from "@/components/common/empty-resource";
+import { SettingCard } from "@/components/custom/setting";
+import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import { useGetCapstoneGroupReportDocumentsQuery } from "@/store/api/v1/endpoints/groups";
 import { UserTypes } from "@/types/accounts";
-import {
-  MentorReviewReportDocumentStatus,
-  ReportDocumentType,
-} from "@/types/report-document";
 import React, { useMemo } from "react";
 import { FiFilePlus } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
-import { Label } from "@/components/ui/label";
-import EmptyResources from "@/components/common/empty-resource";
+import { Badge } from "@/components/ui/badge";
 
 const Reports: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -34,6 +39,8 @@ const Reports: React.FC = () => {
     return data ? data.data : [];
   }, [data]);
 
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <div className=" flex justify-center pt-10">
@@ -45,7 +52,7 @@ const Reports: React.FC = () => {
   }
 
   if (isError) {
-    // return <ErrorBoundaryComponent />;
+    return <ErrorBoundaryComponent />;
   }
 
   const handleOpenCreateUpdateReportDocumentDialog = () => {
@@ -55,9 +62,8 @@ const Reports: React.FC = () => {
     ) {
       toast({
         title: "Submit Report",
-        description: "Only student can submit report",
+        description: "Only member in the group can submit report",
         variant: "destructive",
-        duration: 3000, // 5 seconds
       });
 
       return;
@@ -66,97 +72,66 @@ const Reports: React.FC = () => {
     setIsCreateUpdateModelOpen(true);
   };
 
-  const categorizedReports = {
-    Reviewing: (reportData || []).filter(
-      (report) =>
-        report.mentor_review_status ===
-        MentorReviewReportDocumentStatus.Reviewing
-    ),
-    Done: (reportData || []).filter(
-      (report) =>
-        report.mentor_review_status === MentorReviewReportDocumentStatus.Done
-    ),
-  };
-
   return (
-    <div className="flex flex-row w-full">
+    <SettingCard
+      title="Reports"
+      actions={
+        <Button
+          onClick={() => {
+            handleOpenCreateUpdateReportDocumentDialog();
+          }}
+        >
+          <FiFilePlus />
+          Submit Report
+        </Button>
+      }
+    >
       <CreateUpdateReportDocumentDialog
         open={isCreateUpdateModelOpen}
         onOpenChange={setIsCreateUpdateModelOpen}
         reportDocument={undefined}
       />
-      {!reportData || reportData.length === 0 ? (
-        <div className="w-full">
-          <EmptyResources
-            title="Your group has no report yet"
-            content="Submit your report to your mentor for review and feedback"
-          >
-            <Button
-              onClick={() => {
-                handleOpenCreateUpdateReportDocumentDialog();
-              }}
-            >
-              <FiFilePlus />
-              Submit Report
-            </Button>
-          </EmptyResources>
-        </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-4/5">
-            {Object.entries(categorizedReports).map(([category, reports]) => (
-              <CategoryColumn
-                key={category}
-                category={category}
-                reports={reports}
-              />
-            ))}
-          </div>
-          <div className="w-1/5 flex">
-            <Button
-              onClick={() => {
-                handleOpenCreateUpdateReportDocumentDialog();
-              }}
-            >
-              <FiFilePlus />
-              Submit Report
-            </Button>
-          </div>
-        </>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {reportData && reportData.length > 0 && (
+            <>
+              {reportData.map((report) => (
+                <TableRow>
+                  <TableCell>{report.name}</TableCell>
+                  <TableCell>{report.type_report}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {report.mentor_review_status}
+                    </Badge>
+                  </TableCell>
+                  <ActionCell
+                    items={[
+                      {
+                        item: "View details",
+                        onClick: () => {
+                          navigate(`./${report.id}`);
+                        },
+                      },
+                    ]}
+                  ></ActionCell>
+                </TableRow>
+              ))}
+            </>
+          )}
+        </TableBody>
+      </Table>
+      {(!reportData || !reportData.length) && (
+        <EmptyResources title="Empty Report" content="There is no report " />
       )}
-    </div>
-  );
-};
-
-const CategoryColumn: React.FC<{
-  category: string;
-  reports: ReportDocumentType[];
-}> = ({ category, reports }) => {
-  return (
-    <div>
-      <Label className="text-xl">{category}</Label>
-      {reports.map((report, index) => (
-        <ReportCard key={index} report={report} />
-      ))}
-    </div>
-  );
-};
-
-const ReportCard: React.FC<{ report: ReportDocumentType }> = ({ report }) => {
-  const navigate = useNavigate();
-
-  return (
-    <Card
-      className={`p-4 cursor-pointer`}
-      onClick={() => navigate(`./${report.id}`)}
-    >
-      <CardHeader>
-        <CardTitle>{report.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>Type report: {report.type_report}</p>
-      </CardContent>
-    </Card>
+    </SettingCard>
   );
 };
 

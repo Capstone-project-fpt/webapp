@@ -26,10 +26,10 @@ import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "../components/comment-composer";
+import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
 import TabGrade from "./tab-grade";
 
 interface DeleteDialogProps {
@@ -221,6 +221,7 @@ const ReportDetail: React.FC = () => {
   }>();
   const dispatch = useDispatch();
   const { currentGroup } = useSelector((state: RootState) => state.resource);
+  const [isOpenModalUpdateReport, setIsOpenModalUpdateReport] = useState(false);
 
   const { data, isError, isLoading } = useGetCapstoneGroupReportDocumentQuery({
     capstone_group_id: Number(groupId),
@@ -248,16 +249,18 @@ const ReportDetail: React.FC = () => {
       report_id: parseInt(reportId!),
     });
 
-
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: currentGroup?.name_group || "Group " + groupId, link: `/groups/${groupId}` },
+        {
+          title: currentGroup?.name_group || "Group " + groupId,
+          link: `/groups/${groupId}`,
+        },
         { title: "Reports", link: `/groups/${groupId}/reports` },
         {
-          title: reportData?.name,
+          title: reportData?.name || "Report " + reportId,
           link: `/groups/${groupId}/reports/${reportId}`,
         },
       ])
@@ -281,25 +284,47 @@ const ReportDetail: React.FC = () => {
   return (
     <div>
       {reportData && (
-        <div>
-          <div className="text-xl mb-4">{reportData.name}</div>
-          <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
-            <span>Status</span>
-            <div>
-              <Badge variant="outline" className="capitalize">
-                {reportData.mentor_review_status}
-              </Badge>
+        <div className="flex justify-between">
+          <div>
+            <div className="text-xl mb-4">{reportData.name}</div>
+            <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
+              <span>Status</span>
+              <div>
+                <Badge variant="outline" className="capitalize">
+                  {reportData.mentor_review_status}
+                </Badge>
+              </div>
+              <span>Submit date</span>
+              <DateDisplay
+                date={new Date(reportData?.created_at)}
+                showTime={true}
+              />
+              <span>Update date</span>
+              <DateDisplay
+                date={new Date(reportData.updated_at)}
+                showTime={true}
+              />
             </div>
-            <span>Submit date</span>
-            <DateDisplay
-              date={new Date(reportData?.created_at)}
-              showTime={true}
+          </div>
+          <div>
+            <ActionCell
+              items={[
+                {
+                  item: "Update Report",
+                  onClick: () => {
+                    setIsOpenModalUpdateReport(true);
+                  },
+                },
+              ]}
             />
-            <span>Update date</span>
-            <DateDisplay
-              date={new Date(reportData.updated_at)}
-              showTime={true}
-            />
+            {isOpenModalUpdateReport && (
+              <CreateUpdateReportDocumentDialog
+                onOpenChange={setIsOpenModalUpdateReport}
+                open={isOpenModalUpdateReport}
+                key={reportId}
+                reportDocument={reportData}
+              />
+            )}
           </div>
         </div>
       )}
@@ -308,7 +333,6 @@ const ReportDetail: React.FC = () => {
       <div className="my-6">
         <div className="flex items-center gap-2 mb-2">
           <h2 className="">Attachments</h2>
-          <FaRegEdit />
         </div>
         <div className="flex gap-4 flex-wrap">
           {reportData?.file_ids.map((file, index) => (
