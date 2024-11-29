@@ -37,30 +37,48 @@ const Actions: React.FC<{
     useLazyGetMentorAndListMembersGroupQuery();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentUser = useSelector((state: RootState) => state.auth.user)!;
 
   const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
-    if (currentUser?.common_info.user_type === UserTypes.STUDENT) {
+    if (
+      [UserTypes.STUDENT, UserTypes.TEACHER].includes(
+        currentUser.common_info.user_type
+      )
+    ) {
       const {
-        data: { members },
+        data: { members, mentor },
       } = await triggerGetMentorAndListMembersGroup({
         capstone_group_id,
       }).unwrap();
 
-      if (
-        !members
-          .map((m) => m.id)
-          .includes(currentUser.extra_info.student!.student_id)
-      ) {
-        toast({
-          title: "View Detail Capstone Group",
-          description: "You are not a member of this capstone group",
-          variant: "destructive",
-        });
+      if (currentUser.common_info.user_type === UserTypes.STUDENT) {
+        if (
+          !members
+            .map((m) => m.id)
+            .includes(currentUser.extra_info.student!.student_id)
+        ) {
+          toast({
+            duration: 3000,
+            title: "View Detail Capstone Group",
+            description: "You are not a member of this capstone group",
+            variant: "destructive",
+          });
+          return;
+        }
       } else {
-        navigate("/groups/" + capstone_group_id);
+        if (currentUser.extra_info.teacher!.teacher_id !== mentor?.id) {
+          toast({
+            duration: 3000,
+            title: "View Detail Capstone Group",
+            description: "You are not a mentor of this capstone group",
+            variant: "destructive",
+          });
+          return;
+        }
       }
     }
+
+    navigate("/groups/" + capstone_group_id);
   };
 
   return (

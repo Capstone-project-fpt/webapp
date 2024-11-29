@@ -9,7 +9,7 @@ export const signInSchema: yub.ObjectSchema<SignInType> = yub.object({
   password: yub
     .string()
     .required("Password field is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(6, "Password must be at least 6 characters"),
 });
 
 export const forgotPasswordSchema: yub.ObjectSchema<ForgotPasswordType> = yub.object({
