@@ -49,7 +49,9 @@ const SCHEDULE_REVIEWS = [
   { title: "Review3", description: "Review lần 3", type: "third_review" },
 ];
 
-const CreateScheduleDialog: React.FC = () => {
+const CreateScheduleDialog: React.FC<{ refetchSchedules: () => void }> = ({
+  refetchSchedules,
+}) => {
   const [createScheduleReview] = useCreateScheduleMutation();
   const { toast } = useToast();
   const currentSemester = useSelector(
@@ -113,13 +115,12 @@ const CreateScheduleDialog: React.FC = () => {
 
     try {
       const response = await createScheduleReview(values).unwrap();
-      if (response.data) {
-        toast({
-          title: "Create Schedule",
-          description: response.data || "Create schedule successfully",
-        });
-        setIsOpened(false);
-      }
+      toast({
+        title: "Create Schedule",
+        description: response.data || "Create schedule successfully",
+      });
+      setIsOpened(false);
+      refetchSchedules();
     } catch (error) {
       toast({
         title: "Create Schedule",
