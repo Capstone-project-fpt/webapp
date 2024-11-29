@@ -1,7 +1,7 @@
 import { LoadingTableLottie } from "@/components";
 import { DataTable } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
-import { useGetUsersQuery } from "@/store/api/v1/endpoints/admin";
+import { useGetUsersQuery } from "@/store/api/v1/endpoints/user";
 import { StudentType, UserTypes } from "@/types/accounts";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
