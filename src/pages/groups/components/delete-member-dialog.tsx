@@ -1,6 +1,7 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useUpdateMembersMutation } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
 import React, { useEffect } from "react";
 
 const DeleteMemberDialog: React.FC<{
@@ -11,7 +12,8 @@ const DeleteMemberDialog: React.FC<{
   onDelete: () => void;
 }> = ({ groupId, open, onOpenChange, memberId, onDelete }) => {
   const { toast } = useToast();
-  const [updateMembersMutation, { isSuccess, isError, isLoading }] = useUpdateMembersMutation();
+  const [updateMembersMutation, { isSuccess, isError, isLoading }] =
+    useUpdateMembersMutation();
 
   const handleDelete = async () => {
     try {
@@ -22,19 +24,21 @@ const DeleteMemberDialog: React.FC<{
 
       if (isSuccess) {
         toast({
-          duration: 1000,
+          duration: 3000,
           title: "Member Removed",
           description: "The member was successfully removed from the group.",
         });
         onDelete();
         onOpenChange(false);
       }
-    } catch {
+    } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Error Removing Member",
-        description: "An error occurred while removing the member. Please try again.",
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
   };
@@ -45,7 +49,8 @@ const DeleteMemberDialog: React.FC<{
         duration: 1000,
         variant: "destructive",
         title: "Error Removing Member",
-        description: "An error occurred while removing the member. Please try again.",
+        description:
+          "An error occurred while removing the member. Please try again.",
       });
     }
   }, [isError, toast]);
