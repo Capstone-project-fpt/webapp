@@ -94,6 +94,7 @@ export type ActionItem =
       onClick: (e: React.MouseEvent) => void | Promise<void>;
       danger?: boolean;
       isDisable?: boolean;
+      isHide?: boolean;
     };
 
 export function ActionCell(props: {
@@ -119,7 +120,7 @@ export function ActionCell(props: {
         {props.items?.map((item, index) =>
           item === "-" ? (
             <DropdownMenuSeparator key={index} />
-          ) : (
+          ) : item.isHide ? null : (
             <DropdownMenuItem
               key={index}
               onClick={item.onClick}
