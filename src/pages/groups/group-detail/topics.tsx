@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
+  useGetMembersQuery,
   useGetTopicsQuery,
   useSetGroupTopicMutation,
 } from "@/store/api/v1/endpoints/groups";
@@ -28,18 +29,27 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
 import ReviewStatus from "../components/topic-review-status";
+import { UserTypes } from "@/types/accounts";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const currentGroup = useSelector(
     (state: RootState) => state.resource.currentGroup
   );
+  const user = useSelector((state: RootState) => state.auth.user);
   const { toast } = useToast();
 
   const navigate = useNavigate();
   const { data: topicsData, isLoading } = useGetTopicsQuery({
     group_id: parseInt(groupId!),
   });
+  const { data: membersData } = useGetMembersQuery(
+    {
+      group_id: parseInt(groupId!),
+    },
+    { skip: !groupId }
+  );
+
   const [setGroupTopicMutation] = useSetGroupTopicMutation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [topics, setTopics] = useState<TopicGroup[]>([]);
@@ -182,6 +192,9 @@ const Topics: React.FC = () => {
                               onClick: () => {
                                 setGroupTopic(topic.id);
                               },
+                              isHide: !membersData?.data.members.find(
+                                (c) => c.user_id === user?.common_info.id
+                              ),
                             },
                           {
                             item: "View detail",
