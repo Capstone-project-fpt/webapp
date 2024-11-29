@@ -12,7 +12,7 @@ const DeleteMemberDialog: React.FC<{
   onDelete: () => void;
 }> = ({ groupId, open, onOpenChange, memberId, onDelete }) => {
   const { toast } = useToast();
-  const [updateMembersMutation, { isSuccess, isError, isLoading }] =
+  const [updateMembersMutation, { isSuccess, isLoading }] =
     useUpdateMembersMutation();
 
   const handleDelete = async () => {
@@ -20,7 +20,7 @@ const DeleteMemberDialog: React.FC<{
       await updateMembersMutation({
         group_id: groupId,
         student_ids: [memberId],
-      });
+      }).unwrap();
 
       if (isSuccess) {
         toast({
@@ -42,18 +42,6 @@ const DeleteMemberDialog: React.FC<{
       });
     }
   };
-
-  useEffect(() => {
-    if (isError) {
-      toast({
-        duration: 1000,
-        variant: "destructive",
-        title: "Error Removing Member",
-        description:
-          "An error occurred while removing the member. Please try again.",
-      });
-    }
-  }, [isError, toast]);
 
   return (
     <ActionDialog
