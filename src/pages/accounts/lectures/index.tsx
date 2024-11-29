@@ -13,16 +13,19 @@ import { useEffect, useState } from "react";
 import { FaWpforms } from "react-icons/fa";
 import { GoPlus } from "react-icons/go";
 import { LuFileSpreadsheet } from "react-icons/lu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import CreateUpdateDialog from "./components/create-update-dialog";
 import { LecturesTable } from "./components/table";
 import UploadSheetDialog from "./components/upload-sheet-dialog";
 import { Input } from "@/components/ui/input";
+import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
 
 const Lectures = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const user = useSelector((state: RootState) => state.auth).user!;
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -53,29 +56,31 @@ const Lectures = () => {
             className="w-48"
           />
         </div>
-        <div className="flex items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-1">
-                <GoPlus className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Create Lecturers</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup onValueChange={openModalCreateLecture}>
-                <DropdownMenuRadioItem value="form">
-                  <FaWpforms className="mr-1" />
-                  Form
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="sheet">
-                  <LuFileSpreadsheet className="mr-1" />
-                  Sheets
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {user.common_info.user_type === UserTypes.ADMIN && (
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-1">
+                  <GoPlus className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Create Lecturers</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup onValueChange={openModalCreateLecture}>
+                  <DropdownMenuRadioItem value="form">
+                    <FaWpforms className="mr-1" />
+                    Form
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="sheet">
+                    <LuFileSpreadsheet className="mr-1" />
+                    Sheets
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
 
         {modalType === "form" ? (
           <CreateUpdateDialog
