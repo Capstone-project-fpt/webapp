@@ -25,11 +25,14 @@ import {
 import { createReportDocumentSchema } from "@/services/schemas/report-document";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { FileUploader } from "@/components/common/file-upload";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGenerateMultiplePresignUrlsMutation } from "@/store/api/v1/endpoints/upload";
 import { generateKeyS3 } from "@/utils/generate-key-s3";
 import { PRE_PATH_S3 } from "@/constant";
-import { useCreateReportDocumentMutation } from "@/store/api/v1/endpoints/groups";
+import {
+  useCreateReportDocumentMutation,
+  useUpdateReportDocumentMutation,
+} from "@/store/api/v1/endpoints/groups";
 import { ResponseErrorType } from "@/types";
 import { useParams } from "react-router";
 
@@ -45,49 +48,18 @@ const CreateUpdateReportDocumentDialog: React.FC<
   const { groupId } = useParams<{ groupId: string }>();
   const { toast } = useToast();
   const [generatePresignUrls] = useGenerateMultiplePresignUrlsMutation();
-  const [createReportDocument, createReportDocumentData] =
-    useCreateReportDocumentMutation();
+  const [createReportDocument] = useCreateReportDocumentMutation();
+  const [updateReportDocument] = useUpdateReportDocumentMutation();
+
   const [files, setFiles] = useState<File[]>([]);
 
   const initialValues = {
-    files: [],
-    name: "",
+    files: reportDocument ? reportDocument.file_ids : [],
+    name: reportDocument ? reportDocument.name : "",
     type_report: ReportDocumentCategoryType.FIFTH_REPORT,
   };
 
   const isCreateForm = !reportDocument;
-
-  useEffect(() => {
-    if (createReportDocumentData.isSuccess) {
-      toast({
-        duration: 1000,
-        variant: "default",
-        title: isCreateForm
-          ? "Create Report Document"
-          : "Update Report Document",
-        description: "Submit Report Document Successfully.",
-      });
-      onOpenChange(false);
-    }
-
-    if (createReportDocumentData.error) {
-      const { data } = createReportDocumentData.error
-        ? (createReportDocumentData.error as ResponseErrorType)
-        : { data: null };
-      const messageError =
-        data?.error ||
-        "Something went wrong, please try again. If the problem persists, please contact the administrator.";
-
-      toast({
-        duration: 1000,
-        variant: "destructive",
-        title: isCreateForm
-          ? "Create Report Document"
-          : "Update Report Document",
-        description: messageError,
-      });
-    }
-  }, [createReportDocumentData, onOpenChange, toast, isCreateForm]);
 
   const REPORT_DOCUMENT_TYPE = [
     { label: "First Report", value: ReportDocumentCategoryType.FIRST_REPORT },
@@ -127,7 +99,14 @@ const CreateUpdateReportDocumentDialog: React.FC<
           type_report,
           file_ids: paths,
           capstone_group_id: Number(groupId),
-        });
+        }).unwrap();
+      } else {
+        await updateReportDocument({
+          name,
+          file_ids: files.length > 0 ? paths : reportDocument!.file_ids,
+          capstone_group_id: Number(groupId),
+          id: reportDocument!.id,
+        }).unwrap();
       }
     } catch (error) {
       toast({
@@ -212,37 +191,39 @@ const CreateUpdateReportDocumentDialog: React.FC<
                 />
               </div>
 
-              <div className=" flex flex-col gap-2 ">
-                <Label htmlFor="title">Report Document Type</Label>
-                <Select
-                  name="title"
-                  value={values.type_report}
-                  onValueChange={(value) => {
-                    const selectedReview = REPORT_DOCUMENT_TYPE.find(
-                      (item) => item.value === value
-                    );
-                    if (selectedReview) {
-                      setFieldValue("type_report", selectedReview.value);
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select review title" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {REPORT_DOCUMENT_TYPE.map((item, index) => (
-                      <SelectItem key={index} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <ErrorMessage
-                  name="title"
-                  component={"div"}
-                  className=" text-sm text-danger "
-                />
-              </div>
+              {!reportDocument && (
+                <div className=" flex flex-col gap-2 ">
+                  <Label htmlFor="title">Report Document Type</Label>
+                  <Select
+                    name="title"
+                    value={values.type_report}
+                    onValueChange={(value) => {
+                      const selectedReview = REPORT_DOCUMENT_TYPE.find(
+                        (item) => item.value === value
+                      );
+                      if (selectedReview) {
+                        setFieldValue("type_report", selectedReview.value);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select review title" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REPORT_DOCUMENT_TYPE.map((item, index) => (
+                        <SelectItem key={index} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <ErrorMessage
+                    name="title"
+                    component={"div"}
+                    className=" text-sm text-danger "
+                  />
+                </div>
+              )}
 
               <div className="flex flex-col gap-2 ">
                 <Label htmlFor="title">Report Document Files</Label>
@@ -270,7 +251,7 @@ const CreateUpdateReportDocumentDialog: React.FC<
                   {isSubmitting && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Create
+                  {reportDocument ? "Update Report" : "Create Report"}
                 </Button>
               </DialogFooter>
             </Form>

@@ -21,6 +21,7 @@ import { api } from "..";
 import {
   CreateReportDocumentBody,
   ReportDocumentType,
+  UpdateReportDocumentBody,
 } from "@/types/report-document";
 
 const groupsApi = api.injectEndpoints({
@@ -338,6 +339,21 @@ const groupsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Group"],
     }),
+    updateReportDocument: builder.mutation<
+      ResponseType<string>,
+      UpdateReportDocumentBody
+    >({
+      query: (data) => ({
+        url: `/capstone-groups/${data.capstone_group_id}/report-documents/`,
+        method: "PUT",
+        body: {
+          file_ids: data.file_ids,
+          name: data.name,
+          id: data.id,
+        },
+      }),
+      invalidatesTags: ["Group"],
+    }),
     getStudentReportDocuments: builder.query<
       ResponseType<StudentReportDocumentScore[]>,
       { capstone_group_id: number; report_id: number }
@@ -402,8 +418,8 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/report-documents/${report_id}/comments/`,
         method: "DELETE",
         body: {
-          id: comment_id
-        }
+          id: comment_id,
+        },
       }),
     }),
     //#endregion
@@ -453,6 +469,7 @@ export const {
   useGetCapstoneGroupReportDocumentQuery,
   useLazyGetCapstoneGroupReportDocumentsQuery,
   useCreateReportDocumentMutation,
+  useUpdateReportDocumentMutation,
   useGetStudentReportDocumentsQuery,
 
   useGetReportCommentsQuery,
