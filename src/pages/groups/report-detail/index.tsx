@@ -248,12 +248,13 @@ const ReportDetail: React.FC = () => {
       report_id: parseInt(reportId!),
     });
 
+
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: currentGroup?.name_group, link: `/groups/${groupId}` },
+        { title: currentGroup?.name_group || "Group " + groupId, link: `/groups/${groupId}` },
         { title: "Reports", link: `/groups/${groupId}/reports` },
         {
           title: reportData?.name,
