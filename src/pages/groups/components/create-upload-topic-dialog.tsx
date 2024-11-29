@@ -26,6 +26,7 @@ interface UploadTopicDialogProps {
   onOpenChange: (open: boolean) => void;
   groupId: string;
   topicId?: string;
+  refetchTopics?: () => void;
 }
 
 const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
@@ -33,9 +34,10 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   onOpenChange,
   groupId,
   topicId,
+  refetchTopics,
 }) => {
   const [createTopic, createTopicData] = useCreateTopicMutation();
-  const [updateTopic, updateTopicData] = useUpdateTopicMutation();
+  const [updateTopic] = useUpdateTopicMutation();
   const [generatePresignUrl] = useGeneratePresignUrlMutation();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
@@ -48,6 +50,7 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
         title: topicId ? "Update Topic" : "Submit Topic",
         description: "Submit Topic Successfully.",
       });
+      refetchTopics?.();
       onOpenChange(false);
     }
 

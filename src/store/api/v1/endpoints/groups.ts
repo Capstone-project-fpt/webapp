@@ -106,6 +106,7 @@ const groupsApi = api.injectEndpoints({
       query: ({ group_id, topic_id }) => ({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
       }),
+      providesTags: ["Topic"],
     }),
     updateTopic: builder.mutation<
       void,
@@ -121,6 +122,7 @@ const groupsApi = api.injectEndpoints({
         method: "PUT",
         body: { document_path, topic },
       }),
+      invalidatesTags: ["Topic"],
     }),
     deleteTopic: builder.mutation<void, { group_id: number; topic_id: number }>(
       {
@@ -128,6 +130,7 @@ const groupsApi = api.injectEndpoints({
           url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
           method: "DELETE",
         }),
+        invalidatesTags: ["Topic"],
       }
     ),
     setGroupTopic: builder.mutation<
@@ -138,6 +141,7 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
         method: "POST",
       }),
+      invalidatesTags: ["Topic"],
     }),
     reviewTopic: builder.mutation<
       ResponseType<string>,
@@ -148,6 +152,7 @@ const groupsApi = api.injectEndpoints({
         method: "PUT",
         body: { status_review },
       }),
+      invalidatesTags: ["Topic"],
     }),
     getTopicFeedbacks: builder.query<
       ResponseType<ListPaginationType<TopicGroupFeedback>>,
@@ -157,6 +162,7 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/`,
         params: { limit, page },
       }),
+      providesTags: ["Topic"],
     }),
     createTopicFeedback: builder.mutation<
       ResponseType<string>,
@@ -167,6 +173,7 @@ const groupsApi = api.injectEndpoints({
         method: "POST",
         body: { feedback },
       }),
+      invalidatesTags: ["Topic"],
     }),
     deleteTopicFeedback: builder.mutation<
       ResponseType<string>,
@@ -176,6 +183,7 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}/feedbacks/${feedback_id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Topic"],
     }),
     //#endregion
     //#region Members
