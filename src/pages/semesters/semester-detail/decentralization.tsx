@@ -1,5 +1,6 @@
 import { LoadingTableLottie } from "@/components";
 import EmptyResources from "@/components/common/empty-resource";
+import SubMajor from "@/components/common/major";
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
@@ -65,17 +66,17 @@ const DeleteTeacherDialog: React.FC<{
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Remove Lecturer from Evaluation topic"
+      title="Delete lecturer from evaluation topic"
       danger
       cancelButton
       okButton={{
-        label: "Confirm Removal",
+        label: "Delete",
         onClick: handleDelete,
         isLoading,
       }}
-      confirmText="This action cannot be undone. The selected lecturer will be removed from the evaluation topic."
+      confirmText="This action cannot be undone. The selected lecturer will be deleted from the evaluation topic."
     >
-      {`Are you sure you want to remove this lecturer?`}
+      {`Are you sure you want to deleted this lecturer?`}
     </ActionDialog>
   );
 };
@@ -98,18 +99,20 @@ const AddTeacherDialog: React.FC<{
           teacher_id: selectedLecture.value.extra_info.teacher.teacher_id,
         }).unwrap();
         toast({
-          title: "Lecturer added",
-          description: assignData.data || "Lecturer added successfully",
+          title: "Assign lecturer to verification topic",
+          description:
+            assignData.data ||
+            "Assign lecturer to verification topic successfully",
         });
         onOpenChange(false);
       } catch (error) {
         toast({
           duration: 1000,
           variant: "destructive",
-          title: "Error assign lecturer to verification topic",
+          title: "Assign lecturer to verification topic",
           description:
             (error as ResponseErrorType)?.data?.error ||
-            "Something went wrong, please try again. If the problem persists, please contact the administrator",
+            "Assign lecturer to verification topic failed. Please try again, if the problem persists, please contact the administrator",
         });
       }
     }
@@ -119,10 +122,10 @@ const AddTeacherDialog: React.FC<{
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Lecturer to verification topic"
+      title="Assign lecturer to verification topic"
       cancelButton
       okButton={{
-        label: "Confirm Addition",
+        label: "Assign",
         onClick: handleAdd,
         isLoading,
       }}
@@ -217,7 +220,7 @@ const Decentralization: React.FC = () => {
                   </TableCell>
                   <TableCell>{member.email}</TableCell>
                   <TableCell>{member.phone_number}</TableCell>
-                  <TableCell>{/* <SubMajor id={member} /> */}</TableCell>
+                  <TableCell>{<SubMajor id={member.sub_major_id} />}</TableCell>
                   <TableCell>
                     <DeleteTeacherDialog
                       open={isDeleteModalOpen && isAddModalOpen === member.id}
