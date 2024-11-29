@@ -8,7 +8,7 @@ import { OptionType, ResponseErrorType } from "@/types";
 import { UpdateEvaluationGroup } from "@/types/evaluation";
 import { GroupType } from "@/types/group";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SelectGroupStudent from "../components/select-student-group";
 import { ActionDialog } from "@/components/custom/action-dialog";
 import {
@@ -175,6 +175,7 @@ const GroupTable: React.FC<{
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [groupIdDelete, setGroupIdDelete] = useState<number | null>(null);
 
+  const navigate = useNavigate();
   const openDeleteDialog = (groupId: number) => {
     setGroupIdDelete(groupId);
     setIsDeleteModalOpen(true);
@@ -210,6 +211,12 @@ const GroupTable: React.FC<{
               />
               <ActionCell
                 items={[
+                  {
+                    item: "View group",
+                    onClick: () => {
+                      navigate(`/groups/${group.id}`);
+                    },
+                  },
                   {
                     item: "Delete",
                     danger: true,

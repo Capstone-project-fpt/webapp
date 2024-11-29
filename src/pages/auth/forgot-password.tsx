@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 import { useTheme } from "@/services/providers/theme-provider";
 import { forgotPasswordSchema } from "@/services/schemas";
 import { useForgotPasswordMutation } from "@/store/api/v1/endpoints/auth";
@@ -8,10 +9,9 @@ import { ForgotPasswordType } from "@/types";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
 import React, { useEffect } from "react";
-import MobileLogo from "./components/mobile-logo";
-import Logo from "./components/logo";
 import { Link } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
+import Logo from "./components/logo";
+import MobileLogo from "./components/mobile-logo";
 
 const ForgotPassword: React.FC = () => {
   const { theme } = useTheme();

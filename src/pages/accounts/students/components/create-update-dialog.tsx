@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -16,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { studentSchema } from "@/services/schemas/accounts";
 import {
   useCreateStudentMutation,
   useUpdateStudentMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { UpdateStudentPayload, StudentType } from "@/types/accounts";
+import { StudentType, UpdateStudentPayload } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
@@ -52,7 +45,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     phone_number: student?.phone_number || "",
     sub_major_id: student?.sub_major_id || 1,
   };
-  
+
   const handleCreateForm = async (values: InitialValuesType) => {
     if (student) {
       await updateStudent(values as UpdateStudentPayload);
@@ -69,13 +62,11 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
       await createStudent(newStudent);
     }
   };
-  
 
   useEffect(() => {
     if (createStudentData.isSuccess || updateStudentData.isSuccess) {
       toast({
         duration: 1000,
-        variant: "default",
         title: student ? "Update Student" : "Create Student",
         description: student
           ? "Update Student Successfully"
@@ -99,14 +90,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
         description: messageError,
       });
     }
-  }, [
-    createStudentData.isSuccess,
-    updateStudentData.isSuccess,
-    createStudentData.isError,
-    updateStudentData.isError,
-    onOpenChange,
-    student,
-  ]);
+  }, [createStudentData, updateStudentData, onOpenChange, student]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -122,7 +106,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={studentSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
+          {({ values, handleBlur, handleChange, isSubmitting }) => (
             <Form className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="code">Code</Label>

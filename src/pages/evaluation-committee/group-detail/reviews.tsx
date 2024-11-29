@@ -103,6 +103,7 @@ const Reviews = () => {
     data: scheduleReviewsData,
     isLoading,
     isError,
+    refetch: refetchSchedules,
   } = useGetSchedulesQuery(
     {
       evaluation_committee_id: Number(evaluationId),
@@ -131,7 +132,7 @@ const Reviews = () => {
     <div className="flex flex-col gap-4">
       <div className="flex justify-end mb-2">
         {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER  && (
-          <CreateScheduleDialog />
+          <CreateScheduleDialog refetchSchedules={refetchSchedules} />
         )}
       </div>
       <ReviewsTable

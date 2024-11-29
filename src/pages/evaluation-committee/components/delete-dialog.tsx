@@ -1,5 +1,5 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useDeleteEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
 import { EvaluationType } from "@/types/evaluation";
 import React, { useEffect } from "react";
@@ -10,7 +10,8 @@ const DeleteDialog: React.FC<{
   onOpenChange: (open: boolean) => void;
 }> = ({ group, open, onOpenChange }) => {
   const { toast } = useToast();
-  const [deleteEvaluationCommitteeMutation, data] = useDeleteEvaluationMutation();
+  const [deleteEvaluationCommitteeMutation, data] =
+    useDeleteEvaluationMutation();
 
   const handleDelete = async () => {
     if (group && group.id) {
