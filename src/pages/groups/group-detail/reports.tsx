@@ -45,7 +45,7 @@ const Reports: React.FC = () => {
   }
 
   if (isError) {
-    // return <ErrorBoundaryComponent />;
+    return <ErrorBoundaryComponent />;
   }
 
   const handleOpenCreateUpdateReportDocumentDialog = () => {
@@ -55,9 +55,8 @@ const Reports: React.FC = () => {
     ) {
       toast({
         title: "Submit Report",
-        description: "Only student can submit report",
+        description: "Only member in the group can submit report",
         variant: "destructive",
-        duration: 3000, // 5 seconds
       });
 
       return;
@@ -135,9 +134,11 @@ const CategoryColumn: React.FC<{
   return (
     <div>
       <Label className="text-xl">{category}</Label>
-      {reports.map((report, index) => (
-        <ReportCard key={index} report={report} />
-      ))}
+      <div className="flex flex-col gap-2">
+        {reports.map((report, index) => (
+          <ReportCard key={index} report={report} />
+        ))}
+      </div>
     </div>
   );
 };
@@ -146,17 +147,13 @@ const ReportCard: React.FC<{ report: ReportDocumentType }> = ({ report }) => {
   const navigate = useNavigate();
 
   return (
-    <Card
-      className={`p-4 cursor-pointer`}
+    <div
+      className="p-4 w-full border rounded-lg cursor-pointer"
       onClick={() => navigate(`./${report.id}`)}
     >
-      <CardHeader>
-        <CardTitle>{report.name}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>Type report: {report.type_report}</p>
-      </CardContent>
-    </Card>
+      <Label className="text-xl">{report.name}</Label>
+      <p>Type report: {report.type_report}</p>
+    </div>
   );
 };
 
