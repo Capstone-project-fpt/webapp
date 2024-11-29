@@ -30,7 +30,7 @@ const YourGroups = () => {
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
-        { title: "Your Groups", link: "/your-groups" },
+        { title: "Your Groups", link: "/me" },
       ])
     );
   }, [dispatch]);

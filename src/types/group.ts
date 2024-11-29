@@ -1,4 +1,4 @@
-import { StudentDetailType, UserType } from "./accounts";
+import { StudentDetailType } from "./accounts";
 import { PaginationType } from "./utils";
 
 export enum GroupStatus {
@@ -8,6 +8,7 @@ export enum GroupStatus {
 
 export interface QueryGroupsParams extends PaginationType {
   semester_id?: number;
+  status?: GroupStatus;
 }
 
 export interface GroupType {

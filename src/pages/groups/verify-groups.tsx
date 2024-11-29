@@ -10,6 +10,7 @@ import {
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
@@ -18,7 +19,7 @@ import {
 } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { UserTypes } from "@/types/accounts";
-import { GroupType } from "@/types/group";
+import { GroupStatus, GroupType } from "@/types/group";
 import {
   ColumnDef,
   PaginationState,
@@ -133,13 +134,13 @@ const columns = (): ColumnDef<GroupType>[] => [
   },
 ];
 
-const Groups: React.FC = () => {
+const VerifyGroups: React.FC = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
-        { title: "Groups", link: "/groups" },
+        { title: "Verify Groups", link: "/verify" },
       ])
     );
   }, [dispatch]);
@@ -162,6 +163,7 @@ const Groups: React.FC = () => {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
     semester_id: Number(currentSemester?.id),
+    status: GroupStatus.ReviewingTopic,
   });
 
   const tableData = useMemo(() => {
@@ -239,4 +241,4 @@ const Groups: React.FC = () => {
   );
 };
 
-export default Groups;
+export default VerifyGroups;

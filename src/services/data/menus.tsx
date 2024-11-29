@@ -44,7 +44,11 @@ const menus: MenuItem[] = [
       },
       {
         title: "Your groups",
-        link: "/groups/your-groups",
+        link: "/groups/me",
+      },
+      {
+        title: "Verify groups",
+        link: "/groups/verify",
       },
     ],
   },

@@ -30,7 +30,7 @@ const groupsApi = api.injectEndpoints({
       ResponseType<ListPaginationType<GroupType>>,
       QueryGroupsParams
     >({
-      query: ({ limit = 10, page = 1, semester_id }) => {
+      query: ({ limit = 10, page = 1, semester_id, status }) => {
         const params: QueryGroupsParams = {
           limit,
           page,
@@ -38,6 +38,10 @@ const groupsApi = api.injectEndpoints({
 
         if (semester_id) {
           params.semester_id = semester_id;
+        }
+
+        if (status) {
+          params.status = status;
         }
 
         return {
