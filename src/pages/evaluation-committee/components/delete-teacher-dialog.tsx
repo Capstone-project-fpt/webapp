@@ -1,5 +1,5 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
 import { ResponseErrorType } from "@/types";
 import { UpdateEvaluationGroup } from "@/types/evaluation";
@@ -21,7 +21,8 @@ const DeleteTeacherDialog: React.FC<{
       if (group.teacher_ids.length <= 2) {
         toast({
           duration: 2000,
-          title: "Can not remove",
+          variant: "destructive",
+          title: "Delete lecturer from evaluation committee group",
           description: "The evaluation committee must have at least 2 members",
         });
         return;
@@ -30,6 +31,7 @@ const DeleteTeacherDialog: React.FC<{
       const updatedTeacherIds = group.teacher_ids.filter(
         (id) => id !== teacherId
       );
+
       const res = await updateEvaluationCommitteeMutation({
         id: group.id,
         name: group.name,
@@ -39,7 +41,7 @@ const DeleteTeacherDialog: React.FC<{
 
       toast({
         duration: 1000,
-        title: "Lecturer removed",
+        title: "Delete lecturer from evaluation committee group",
         description:
           res.data ||
           "Teacher removed from evaluation committee group successfully.",
