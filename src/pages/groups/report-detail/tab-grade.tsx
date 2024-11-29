@@ -79,7 +79,7 @@ const TabGrade: React.FC<TabGradePros> = ({
     return <ErrorBoundaryComponent />;
   }
 
-  const isDisableButtonUpdateScore =
+  const isHideButtonUpdateScore =
     user.extra_info.teacher?.teacher_id !== currentGroup?.mentor_id;
 
   return (
@@ -104,14 +104,15 @@ const TabGrade: React.FC<TabGradePros> = ({
             title="No student score"
             content="Mentor after review need to mark score for each student for this report."
           >
-            <Button
-              variant="outline"
-              className="ml-1 w-[100px]"
-              onClick={() => setIsOpenModel(true)}
-              disabled={isDisableButtonUpdateScore}
-            >
-              Update Score
-            </Button>
+            {!isHideButtonUpdateScore && (
+              <Button
+                variant="outline"
+                className="ml-1 w-[100px]"
+                onClick={() => setIsOpenModel(true)}
+              >
+                Update Score
+              </Button>
+            )}
           </EmptyResources>
 
           {isOpenModel && (

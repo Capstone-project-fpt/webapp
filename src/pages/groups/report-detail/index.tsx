@@ -31,6 +31,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "../components/comment-composer";
 import TabGrade from "./tab-grade";
+import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
 
 interface DeleteDialogProps {
   comment: CommentType;
@@ -221,6 +222,7 @@ const ReportDetail: React.FC = () => {
   }>();
   const dispatch = useDispatch();
   const { currentGroup } = useSelector((state: RootState) => state.resource);
+  const [isOpenModalUpdateReport, setIsOpenModalUpdateReport] = useState(false);
 
   const { data, isError, isLoading } = useGetCapstoneGroupReportDocumentQuery({
     capstone_group_id: Number(groupId),
@@ -281,25 +283,40 @@ const ReportDetail: React.FC = () => {
   return (
     <div>
       {reportData && (
-        <div>
-          <div className="text-xl mb-4">{reportData.name}</div>
-          <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
-            <span>Status</span>
-            <div>
-              <Badge variant="outline" className="capitalize">
-                {reportData.mentor_review_status}
-              </Badge>
+        <div className="flex justify-between">
+          <div>
+            <div className="text-xl mb-4">{reportData.name}</div>
+            <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
+              <span>Status</span>
+              <div>
+                <Badge variant="outline" className="capitalize">
+                  {reportData.mentor_review_status}
+                </Badge>
+              </div>
+              <span>Submit date</span>
+              <DateDisplay
+                date={new Date(reportData?.created_at)}
+                showTime={true}
+              />
+              <span>Update date</span>
+              <DateDisplay
+                date={new Date(reportData.updated_at)}
+                showTime={true}
+              />
             </div>
-            <span>Submit date</span>
-            <DateDisplay
-              date={new Date(reportData?.created_at)}
-              showTime={true}
-            />
-            <span>Update date</span>
-            <DateDisplay
-              date={new Date(reportData.updated_at)}
-              showTime={true}
-            />
+          </div>
+          <div>
+            <Button onClick={() => setIsOpenModalUpdateReport(true)}>
+              Update Report
+            </Button>
+            {isOpenModalUpdateReport && (
+              <CreateUpdateReportDocumentDialog
+                onOpenChange={setIsOpenModalUpdateReport}
+                open={isOpenModalUpdateReport}
+                key={reportId}
+                reportDocument={reportData}
+              />
+            )}
           </div>
         </div>
       )}
