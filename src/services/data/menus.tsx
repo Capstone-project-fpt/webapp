@@ -37,7 +37,16 @@ const menus: MenuItem[] = [
   {
     icon: <HiOutlineUserGroup size={18} strokeWidth={2} />,
     title: "Group",
-    link: "/groups",
+    children: [
+      {
+        title: "List",
+        link: "/groups",
+      },
+      {
+        title: "Your groups",
+        link: "/groups/your-groups",
+      },
+    ],
   },
   {
     icon: <LiaObjectUngroupSolid size={18} />,
