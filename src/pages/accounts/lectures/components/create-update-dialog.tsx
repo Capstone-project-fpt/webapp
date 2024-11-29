@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -16,13 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { lectureSchema } from "@/services/schemas/accounts";
 import {
   useCreateLectureMutation,
   useUpdateLectureMutation,
 } from "@/store/api/v1/endpoints/admin";
-import { UpdateLecturePayload, LectureType } from "@/types/accounts";
+import { LectureType, UpdateLecturePayload } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useEffect } from "react";
@@ -72,7 +65,6 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
     if (createLectureData.isSuccess || updateLectureData.isSuccess) {
       toast({
         duration: 1000,
-        variant: "default",
         title: lecture ? "Update Lecture" : "Create Lecture",
         description: lecture
           ? "Update Lecture Successfully"

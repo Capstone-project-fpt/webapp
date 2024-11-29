@@ -1,7 +1,6 @@
 import { InputPassword, PageNotFoundError } from "@/components";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
 import { isTokenExpired } from "@/lib/utils";
 import { useTheme } from "@/services/providers/theme-provider";
 import { resetPasswordSchema } from "@/services/schemas";
@@ -13,6 +12,7 @@ import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "./components/logo";
 import MobileLogo from "./components/mobile-logo";
+import { toast } from "@/hooks/use-toast";
 
 const ResetPassword: React.FC = () => {
   const { theme } = useTheme();

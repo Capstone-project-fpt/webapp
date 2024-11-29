@@ -1,5 +1,5 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useDeleteSemestersMutation } from "@/store/api/v1/endpoints/semesters";
 import { SemesterType } from "@/types/semester";
 import React from "react";

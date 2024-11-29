@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useImportLecturesMutation } from "@/store/api/v1/endpoints/admin";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";

@@ -1,9 +1,9 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
 import { UpdateEvaluationGroup } from "@/types/evaluation";
 import React, { useEffect, useState } from "react";
-import {Member, OptionType } from "../type";
+import { Member, OptionType } from "../type";
 import SelectLecture from "./select-lecture";
 
 const AddTeacherDialog: React.FC<{
@@ -14,8 +14,11 @@ const AddTeacherDialog: React.FC<{
 }> = ({ group, open, onOpenChange, onAdd }) => {
   const { toast } = useToast();
   const [members, setMembers] = useState<Member[]>([]);
-  const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] = useUpdateEvaluationMutation();
-  const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(null);
+  const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] =
+    useUpdateEvaluationMutation();
+  const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(
+    null
+  );
 
   const handleAdd = async () => {
     if (!selectedLecture || !selectedLecture.value.extra_info.teacher) {
@@ -27,7 +30,10 @@ const AddTeacherDialog: React.FC<{
       return;
     }
 
-    const updatedTeacherIds = [...group.teacher_ids, selectedLecture.value.extra_info.teacher.teacher_id];
+    const updatedTeacherIds = [
+      ...group.teacher_ids,
+      selectedLecture.value.extra_info.teacher.teacher_id,
+    ];
     await updateEvaluationCommitteeMutation({
       id: group.id,
       name: group.name,
@@ -41,7 +47,8 @@ const AddTeacherDialog: React.FC<{
       toast({
         duration: 1000,
         title: "Lecturer Added",
-        description: "Lecturer successfully added to the evaluation committee group.",
+        description:
+          "Lecturer successfully added to the evaluation committee group.",
       });
       setSelectedLecture(null);
       onAdd();
@@ -53,7 +60,8 @@ const AddTeacherDialog: React.FC<{
         duration: 1000,
         variant: "destructive",
         title: "Error Adding Lecturer",
-        description: "An error occurred while adding the lecturer. Please try again.",
+        description:
+          "An error occurred while adding the lecturer. Please try again.",
       });
     }
   }, [isSuccess, isError, onOpenChange, onAdd, toast]);
