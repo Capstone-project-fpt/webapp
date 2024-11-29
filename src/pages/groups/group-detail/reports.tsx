@@ -21,6 +21,7 @@ import { FiFilePlus } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
+import { Badge } from "@/components/ui/badge";
 
 const Reports: React.FC = () => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -73,7 +74,7 @@ const Reports: React.FC = () => {
 
   return (
     <SettingCard
-      title="Reviews"
+      title="Reports"
       actions={
         <Button
           onClick={() => {
@@ -106,7 +107,11 @@ const Reports: React.FC = () => {
                 <TableRow>
                   <TableCell>{report.name}</TableCell>
                   <TableCell>{report.type_report}</TableCell>
-                  <TableCell>{report.mentor_review_status}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="capitalize">
+                      {report.mentor_review_status}
+                    </Badge>
+                  </TableCell>
                   <ActionCell
                     items={[
                       {
@@ -128,6 +133,6 @@ const Reports: React.FC = () => {
       )}
     </SettingCard>
   );
-}
+};
 
 export default Reports;

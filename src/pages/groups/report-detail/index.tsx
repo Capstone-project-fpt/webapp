@@ -26,12 +26,11 @@ import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "../components/comment-composer";
-import TabGrade from "./tab-grade";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
+import TabGrade from "./tab-grade";
 
 interface DeleteDialogProps {
   comment: CommentType;
@@ -308,9 +307,16 @@ const ReportDetail: React.FC = () => {
             </div>
           </div>
           <div>
-            <Button onClick={() => setIsOpenModalUpdateReport(true)}>
-              Update Report
-            </Button>
+            <ActionCell
+              items={[
+                {
+                  item: "Update Report",
+                  onClick: () => {
+                    setIsOpenModalUpdateReport(true);
+                  },
+                },
+              ]}
+            />
             {isOpenModalUpdateReport && (
               <CreateUpdateReportDocumentDialog
                 onOpenChange={setIsOpenModalUpdateReport}
@@ -327,7 +333,6 @@ const ReportDetail: React.FC = () => {
       <div className="my-6">
         <div className="flex items-center gap-2 mb-2">
           <h2 className="">Attachments</h2>
-          <FaRegEdit />
         </div>
         <div className="flex gap-4 flex-wrap">
           {reportData?.file_ids.map((file, index) => (

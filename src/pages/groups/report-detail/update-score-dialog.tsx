@@ -1,24 +1,33 @@
-import React, { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { useMentorUpdateStudentScoreForReportDocumentMutation } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
 import { GroupMember, UpdateListStudentScore } from "@/types/group";
 import {
   ReportDocumentCategoryType,
   ReportDocumentType,
 } from "@/types/report-document";
-import { useParams } from "react-router";
 import { isNil } from "lodash";
-import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { useMentorUpdateStudentScoreForReportDocumentMutation } from "@/store/api/v1/endpoints/groups";
-import { ResponseErrorType } from "@/types";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import React, { useState } from "react";
+import { useParams } from "react-router";
 
 interface UpdateScoreDialogProps {
   open: boolean;
@@ -69,7 +78,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
         duration: 1000,
         variant: "destructive",
         title: "Update student score",
-        description: "score need to be in range from 0 to 10",
+        description: "Score need to be in range from 0 to 10",
       });
       return;
     }
@@ -109,24 +118,34 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
         <div className="mt-4">
-          <table className="w-full border-collapse border border-gray-200">
-            <thead>
-              <tr>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Name
-                </th>
-                <th className="border border-gray-300 px-4 py-2 text-left">
-                  Score
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table className="w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Score</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {members.map((member) => (
-                <tr key={member.id}>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {member.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                <TableRow key={member.id}>
+                  <TableCell>
+                    <div className="flex items-center space-x-2">
+                      <Avatar>
+                        <AvatarImage
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            member.name
+                          )}&size=32`}
+                          alt={member.name}
+                        />
+                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p>{member.name}</p>
+                        <p className="text-sm text-gray-500">{member.email}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
                     <Input
                       type="number"
                       className="w-full border rounded px-2 py-1"
@@ -141,11 +160,11 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
                       min={0}
                       max={10}
                     />
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         {report.type_report === ReportDocumentCategoryType.SEVENTH_REPORT && (
           <div>
