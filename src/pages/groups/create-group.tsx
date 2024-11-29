@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SelectStudent from "./components/select-student";
 import { Member, MemberRole, OptionType } from "./type";
+import { UserTypes } from "@/types/accounts";
 
 const CreateGroup: React.FC = () => {
   const { toast } = useToast();
@@ -79,8 +80,12 @@ const CreateGroup: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setFormValid(groupName.trim() === "" || members.length < 4);
-  }, [groupName, members]);
+    const numberMembersValid =
+      user && user.common_info.user_type === UserTypes.ADMIN ? 3 : 4;
+    setFormValid(
+      groupName.trim() === "" || members.length < numberMembersValid
+    );
+  }, [groupName, members, user]);
 
   useEffect(() => {
     if (selectStudent) {
@@ -232,7 +237,8 @@ const CreateGroup: React.FC = () => {
         </div>
       </div>
 
-      {members.length < 5 && (
+      {members.length <
+        (user && user.common_info.user_type === UserTypes.ADMIN ? 6 : 5) && (
         <div className="space-y-2">
           <Label htmlFor="newMemberName">Add member</Label>
           <SelectStudent
