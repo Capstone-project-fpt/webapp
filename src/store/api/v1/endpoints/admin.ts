@@ -5,8 +5,29 @@ import {
   UpdateLecturePayload,
   UserType,
 } from "@/types/accounts";
-import { api } from "..";
+import { api, apiMultipart } from "..";
 import { ResponseType } from "@/types";
+
+const adminImportEndpoint = apiMultipart.injectEndpoints({
+  endpoints: (builder) => ({
+    importStudents: builder.mutation({
+      query: (body: FormData) => ({
+        url: "admin/students/import-data",
+        method: "POST",
+        body,
+        formData: true,
+      }),
+    }),
+    importLectures: builder.mutation({
+      query: (body: FormData) => ({
+        url: "admin/teachers/import-data",
+        method: "POST",
+        body,
+        formData: true,
+      }),
+    }),
+  }),
+});
 
 const adminEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,14 +43,6 @@ const adminEndPoint = api.injectEndpoints({
     createStudent: builder.mutation({
       query: (body: StudentType) => ({
         url: "admin/students/create-account",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Account"],
-    }),
-    importStudents: builder.mutation({
-      query: (body: FormData) => ({
-        url: "admin/students/import-data",
         method: "POST",
         body,
       }),
@@ -59,14 +72,6 @@ const adminEndPoint = api.injectEndpoints({
     createLecture: builder.mutation({
       query: (body: LectureType) => ({
         url: "admin/teachers/create-account",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Account"],
-    }),
-    importLectures: builder.mutation({
-      query: (body: FormData) => ({
-        url: "admin/teachers/import-data",
         method: "POST",
         body,
       }),
@@ -128,15 +133,16 @@ const adminEndPoint = api.injectEndpoints({
 
 export const {
   useCreateStudentMutation,
-  useImportStudentsMutation,
   useUpdateStudentMutation,
   useDeleteUserMutation,
 
   useCreateLectureMutation,
-  useImportLecturesMutation,
   useUpdateLectureMutation,
 
   useGetTopicVerifiersQuery,
   useAssignTopicVerifierMutation,
   useRemoveTopicVerifierMutation,
 } = adminEndPoint;
+
+export const { useImportStudentsMutation, useImportLecturesMutation } =
+  adminImportEndpoint;

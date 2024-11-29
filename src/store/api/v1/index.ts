@@ -32,3 +32,32 @@ export const api = createApi({
   ],
   endpoints: () => ({}),
 });
+
+export const apiMultipart = createApi({
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_APP_API_URL + "/" + API_VERSION,
+    prepareHeaders: (headers, { getState }) => {
+      const authState = getState().auth;
+      const authToken = token(authState);
+      if (authToken) {
+        headers.set("authorization", `Bearer ${authToken}`);
+      }
+
+      return headers;
+    },
+  }),
+  tagTypes: [
+    "Category",
+    "Product",
+    "User",
+    "Topic",
+    "Account",
+    "Group",
+    "Semester",
+    "EvaluationCommittee",
+    "Schedule",
+    "Upload",
+  ],
+  endpoints: () => ({}),
+});
