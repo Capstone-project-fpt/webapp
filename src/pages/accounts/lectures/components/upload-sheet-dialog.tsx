@@ -77,7 +77,7 @@ const UploadSheetDialog: React.FC<UploadSheetDialogProps> = ({
           </DialogDescription>
           <DialogDescription>
             <a
-              href="" //TODO: Add the link file
+              href={`${import.meta.env.VITE_APP_S3_BUCKET_URL}/admin/teacher-template.xlsx`}
               download
               className="text-accent underline flex items-center"
             >
