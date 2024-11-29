@@ -80,7 +80,7 @@ const TabGrade: React.FC<TabGradePros> = ({
   }
 
   const isDisableButtonUpdateScore =
-    user.extra_info.teacher?.id !== currentGroup?.mentor_id;
+    user.extra_info.teacher?.teacher_id !== currentGroup?.mentor_id;
 
   return (
     <TabsContent value="grade">
