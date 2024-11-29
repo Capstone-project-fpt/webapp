@@ -29,7 +29,6 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
 import ReviewStatus from "../components/topic-review-status";
-import { UserTypes } from "@/types/accounts";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -40,7 +39,11 @@ const Topics: React.FC = () => {
   const { toast } = useToast();
 
   const navigate = useNavigate();
-  const { data: topicsData, isLoading } = useGetTopicsQuery({
+  const {
+    data: topicsData,
+    isLoading,
+    refetch: refetchTopics,
+  } = useGetTopicsQuery({
     group_id: parseInt(groupId!),
   });
   const { data: membersData } = useGetMembersQuery(
@@ -60,6 +63,10 @@ const Topics: React.FC = () => {
       setTopics(items);
     }
   }, [topicsData]);
+
+  const handleRefetchTopics = () => {
+    refetchTopics();
+  };
 
   const setGroupTopic = async (topicId: number) => {
     try {
@@ -91,6 +98,7 @@ const Topics: React.FC = () => {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         groupId={groupId!}
+        refetchTopics={handleRefetchTopics}
       />
 
       <SettingCard title="Group's Topic">
