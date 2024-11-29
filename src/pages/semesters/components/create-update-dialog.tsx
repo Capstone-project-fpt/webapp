@@ -48,10 +48,13 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
     start_time: Date;
     end_time: Date;
   }) => {
-    const { name, start_time, end_time } = values;
+    const { name } = values;
+    let { start_time, end_time } = values;
+
+    start_time = new Date(start_time);
+    end_time = new Date(end_time);
 
     if (start_time.getTime() > end_time.getTime()) {
-      console.log("gon in here");
       toast({
         title: "Create semester",
         description: "Start time must be before end time",
@@ -66,7 +69,7 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
         start_time: start_time.toISOString(),
         end_time: end_time.toISOString(),
       };
-      
+
       if (semester) {
         await updateSemester({
           id: semester.id,
@@ -137,7 +140,7 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
               <div className="flex flex-col gap-2">
                 <Label htmlFor="start_time">Start Date</Label>
                 <DateSemesterPicker
-                  date={values.start_time}
+                  date={new Date(values.start_time)}
                   onDateChange={(e) =>
                     setFieldValue(
                       "start_time",
@@ -154,7 +157,7 @@ const CreateUpdateDialog: React.FC<CreateUpdateDialogProps> = ({
               <div className="flex flex-col gap-2">
                 <Label htmlFor="end_time">End Date</Label>
                 <DateSemesterPicker
-                  date={values.end_time}
+                  date={new Date(values.end_time)}
                   onDateChange={(e) =>
                     setFieldValue(
                       "end_time",
