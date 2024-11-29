@@ -87,9 +87,6 @@ const Topics: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      <div>
-        <Button onClick={() => setIsModalOpen(true)}>Create Topic</Button>
-      </div>
       <UploadTopicDialog
         open={isModalOpen}
         onOpenChange={setIsModalOpen}

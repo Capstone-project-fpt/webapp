@@ -1,3 +1,5 @@
+import EmptyResources from "@/components/common/empty-resource";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -8,8 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useGetCapstoneGroupReportDocumentsQuery } from "@/store/api/v1/endpoints/groups";
+import { ReportDocumentType } from "@/types/report-document";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface SelectReportsDialogProps {
   open: boolean;
@@ -19,6 +24,28 @@ interface SelectReportsDialogProps {
   isLoading?: boolean;
 }
 
+const ReportItem: React.FC<{
+  report: ReportDocumentType;
+  isSelected: boolean;
+  onChange: () => void;
+}> = ({ report, isSelected, onChange }) => (
+  <div className="flex items-center p-4 border rounded-md">
+    <Checkbox
+      id={`report-${report.id}`}
+      checked={isSelected}
+      onCheckedChange={onChange}
+      className="mr-2"
+    />
+    <label htmlFor={`report-${report.id}`}>
+      {report.name} ({report.file_ids.length}{" "}
+      {report.file_ids.length > 1 ? "files" : "file"})
+      <Badge variant="secondary" className="ml-2">
+        {report.type_report}
+      </Badge>
+    </label>
+  </div>
+);
+
 const SelectReportsDialog: React.FC<SelectReportsDialogProps> = ({
   open,
   onOpenChange,
@@ -26,37 +53,27 @@ const SelectReportsDialog: React.FC<SelectReportsDialogProps> = ({
   groupId,
   isLoading,
 }) => {
-  console.log(
-    "TODO: [src/pages/groups/components/select-reports.tsx] Fetch reports from API",
-    groupId
-  );
+  const { data: groupReports } = useGetCapstoneGroupReportDocumentsQuery({
+    capstone_group_id: Number(groupId),
+  });
 
-  const reports = [
-    {
-      id: 1,
-      name: "Report 1",
-      file: "report1.pdf",
-    },
-    {
-      id: 2,
-      name: "Report 2",
-      file: "report2.pdf",
-    },
-    {
-      id: 3,
-      name: "Report 3",
-      file: "report3.pdf",
-    },
-  ];
+  const reports = groupReports?.data || [];
+  const [selectedReportIds, setSelectedReportIds] = useState<number[]>([]);
 
-  const [selectReports, setSelectReports] = useState<string[]>([]);
-
-  const handleCheckboxChange = (file: string) => {
-    setSelectReports((prevSelectedReports) =>
-      prevSelectedReports.includes(file)
-        ? prevSelectedReports.filter((report) => report !== file)
-        : [...prevSelectedReports, file]
+  const handleCheckboxChange = (id: number) => {
+    setSelectedReportIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((reportId) => reportId !== id)
+        : [...prev, id]
     );
+  };
+
+  const handleSelectReports = () => {
+    const file_ids: string[] = selectedReportIds.flatMap((id) => {
+      const report = reports.find((report) => report.id === id);
+      return report ? report.file_ids : [];
+    });
+    onSelectReports(file_ids);
   };
 
   return (
@@ -67,28 +84,33 @@ const SelectReportsDialog: React.FC<SelectReportsDialogProps> = ({
           <DialogDescription>Select reports to submit.</DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4">
-          {reports.map((report) => (
-            <div
-              key={report.id}
-              className="flex items-center p-4 border rounded-md"
-            >
-              <Checkbox
-                id={`report-${report.id}`}
-                checked={selectReports.includes(report.file)}
-                onCheckedChange={() => handleCheckboxChange(report.file)}
-                className="mr-2"
+          {reports.length ? (
+            reports.map((report) => (
+              <ReportItem
+                key={report.id}
+                report={report}
+                isSelected={selectedReportIds.includes(report.id)}
+                onChange={() => handleCheckboxChange(report.id)}
               />
-              <label htmlFor={`report-${report.id}`}>{report.name}</label>
-            </div>
-          ))}
+            ))
+          ) : (
+            <EmptyResources
+              title="No reports"
+              content="Your group has no reports yet. Please submit a report."
+            >
+              <Link to={`/groups/${groupId}/reports`}>
+                <Button>Go to Submit Report</Button>
+              </Link>
+            </EmptyResources>
+          )}
         </div>
         <DialogFooter>
           <Button variant={"secondary"} onClick={() => onOpenChange(false)}>
             Close
           </Button>
           <Button
-            disabled={selectReports.length === 0 || isLoading}
-            onClick={() => onSelectReports(selectReports)}
+            // disabled={selectedReportIds.length === 0 || isLoading}
+            onClick={handleSelectReports}
           >
             {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
             Select

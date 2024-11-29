@@ -23,7 +23,7 @@ import { GroupReview } from "@/types/group";
 import { ScheduleType } from "@/types/schedule";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
-import { FileIcon } from "lucide-react";
+import { AlertCircle, FileIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import { useParams } from "react-router";
 import CommentComposer from "./components/comment-composer";
 import SelectReportsDialog from "./components/select-reports";
 import { ReviewStatusBadge } from "@/components/common/status-badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ReviewHeaderProps {
   review: GroupReview;
@@ -77,6 +78,7 @@ const ReviewHeader: React.FC<ReviewHeaderProps> = ({
           href={reviewSchedule.link_meeting}
           target="_blank"
           rel="noopener noreferrer"
+          className="text-accent underline"
         >
           {reviewSchedule.link_meeting}
         </a>
@@ -149,7 +151,7 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
         />
       </div>
       <div className="flex gap-4">
-        {review.report_files.map((report, index) => (
+        {(review.report_files || []).map((report, index) => (
           <div
             key={index}
             className="flex items-center border px-5 py-3 rounded-lg max-w-lg"
@@ -168,6 +170,16 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
             </Button>
           </div>
         ))}
+
+        {(review.report_files || [])?.length === 0 && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No review's reports</AlertTitle>
+            <AlertDescription>
+              Your review has not submitted any reports yet. Please submit the reports.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
@@ -321,17 +333,17 @@ const ReportDetail: React.FC = () => {
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
         {
-          title: `${currentGroup?.name_group || "Group " + groupId}`,
+          title: `${currentGroup?.name_group || "Group"}`,
           link: `/groups/${groupId}`,
         },
         { title: "Reviews", link: `/groups/${groupId}/reviews` },
         {
-          title: `${"Review " + reviewId}`,
+          title: `${reviewSchedule?.title || "Review"}`,
           link: `/groups/${groupId}/reviews/${reviewId}`, //TODO: Replace Report Name with actual report name
         },
       ])
     );
-  }, [dispatch, groupId, reviewId, currentGroup]);
+  }, [dispatch, groupId, reviewId, currentGroup, reviewSchedule]);
 
   if (isLoading || isLoadingSchedule) {
     return (
