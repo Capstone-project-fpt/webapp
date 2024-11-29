@@ -1,16 +1,15 @@
-import { GetUsersResponse, LectureType, StudentType, UsersPaginationType, UpdateStudentPayload, UpdateLecturePayload, UserTypes, UserType } from "@/types/accounts";
+import {
+  LectureType,
+  StudentType,
+  UpdateStudentPayload,
+  UpdateLecturePayload,
+  UserType,
+} from "@/types/accounts";
 import { api } from "..";
 import { ResponseType } from "@/types";
 
 const adminEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
-    getUsers: builder.query<GetUsersResponse, UsersPaginationType>({
-      query: ({ limit = 10, page = 1, order_by = 'DESC', user_types, email }) => ({
-        url: 'admin/users/',
-        params: { limit, page, order_by, user_types, email },
-      }),
-      providesTags: ["Account"],
-    }),
     deleteUser: builder.mutation({
       query: ({ id }: { id: number }) => ({
         url: `admin/users/${id}`,
@@ -92,13 +91,19 @@ const adminEndPoint = api.injectEndpoints({
     }),
     // #endregion
     // #region Verifier Topic
-    getTopicVerifiers: builder.query<ResponseType<UserType[]>, { semester_id: number }>({
+    getTopicVerifiers: builder.query<
+      ResponseType<UserType[]>,
+      { semester_id: number }
+    >({
       query: ({ semester_id }) => ({
         url: `admin/verifiers-topic/semesters/${semester_id}`,
       }),
       providesTags: ["Account"],
     }),
-    assignTopicVerifier: builder.mutation<ResponseType<string>, { semester_id: number; teacher_id: number }>({
+    assignTopicVerifier: builder.mutation<
+      ResponseType<string>,
+      { semester_id: number; teacher_id: number }
+    >({
       query: ({ semester_id, teacher_id }) => ({
         url: `admin/verifiers-topic/`,
         method: "POST",
@@ -106,7 +111,10 @@ const adminEndPoint = api.injectEndpoints({
       }),
       invalidatesTags: ["Account"],
     }),
-    removeTopicVerifier: builder.mutation<ResponseType<string>, { semester_id: number, teacher_id: number; }>({
+    removeTopicVerifier: builder.mutation<
+      ResponseType<string>,
+      { semester_id: number; teacher_id: number }
+    >({
       query: ({ semester_id, teacher_id }) => ({
         url: `admin/verifiers-topic/`,
         method: "DELETE",
@@ -115,13 +123,10 @@ const adminEndPoint = api.injectEndpoints({
       invalidatesTags: ["Account"],
     }),
     // #endregion
-  })
+  }),
 });
 
 export const {
-  useGetUsersQuery,
-  useLazyGetUsersQuery,
-
   useCreateStudentMutation,
   useImportStudentsMutation,
   useUpdateStudentMutation,

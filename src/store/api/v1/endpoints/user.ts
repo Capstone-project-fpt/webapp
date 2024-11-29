@@ -9,7 +9,7 @@ const userApi = api.injectEndpoints({
     }),
     getUsersByUser: builder.query<GetUsersResponse, UsersPaginationType>({
       query: ({ limit = 10, page = 1, user_types, email }) => ({
-        url: '/users/',
+        url: "/users/",
         params: { limit, page, user_types, email },
       }),
       providesTags: ["User"],
@@ -21,7 +21,26 @@ const userApi = api.injectEndpoints({
       }),
       providesTags: ["User"],
     }),
+    getUsers: builder.query<GetUsersResponse, UsersPaginationType>({
+      query: ({
+        limit = 10,
+        page = 1,
+        order_by = "DESC",
+        user_types,
+        email,
+      }) => ({
+        url: "users/",
+        params: { limit, page, order_by, user_types, email },
+      }),
+      providesTags: ["User", "Account"],
+    }),
   }),
 });
 
-export const { useGetMeQuery, useGetUserQuery, useLazyGetUsersByUserQuery, useLazyGetMeQuery } = userApi;
+export const {
+  useGetMeQuery,
+  useGetUserQuery,
+  useLazyGetUsersByUserQuery,
+  useLazyGetMeQuery,
+  useGetUsersQuery,
+} = userApi;
