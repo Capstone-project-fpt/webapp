@@ -14,13 +14,11 @@ const majorEndPoint = api.injectEndpoints({
   endpoints: (builder) => ({
     getSubMajors: builder.query<ResponseType<SubMajorData>, PaginationType>({
       query: ({ limit = 100, page = 1 }) => ({
-        url: '/sub-majors/',
+        url: "/sub-majors/",
         params: { limit, page },
       }),
     }),
   }),
 });
 
-export const {
-  useGetSubMajorsQuery
-} = majorEndPoint;
+export const { useGetSubMajorsQuery } = majorEndPoint;

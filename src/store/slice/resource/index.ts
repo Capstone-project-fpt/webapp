@@ -31,5 +31,6 @@ export const resourceSlice = createSlice({
   },
 });
 
-export const { setSubMajors, setCurrentGroup, setCurrentSemester } = resourceSlice.actions;
+export const { setSubMajors, setCurrentGroup, setCurrentSemester } =
+  resourceSlice.actions;
 export default resourceSlice.reducer;

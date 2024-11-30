@@ -9,7 +9,7 @@ export interface InitialStateType {
 
 const initialState: InitialStateType = {
   token: "",
-  user: null
+  user: null,
 };
 
 export const authSlice = createSlice({
@@ -28,7 +28,7 @@ export const authSlice = createSlice({
     },
     setUserInfo: (state: InitialStateType, action) => {
       state.user = action.payload;
-    }
+    },
   },
 });
 

@@ -4,14 +4,15 @@ import dayjs from "dayjs";
 
 export const getDateTime = (date: Date) => {
   if (date) {
-    const format = "YYYY-MM-DD HH:mm"
-    return dayjs(date).format(format)
+    const format = "YYYY-MM-DD HH:mm";
+    return dayjs(date).format(format);
   }
   return "";
-}
+};
 
-
-export const parseSchedulesToCalendarEvents = (schedules: ScheduleType[]): CalendarConfig["events"] => {
+export const parseSchedulesToCalendarEvents = (
+  schedules: ScheduleType[],
+): CalendarConfig["events"] => {
   const groupSchedules = (schedules || []).map((item) => ({
     id: item.id,
     title: item.title,
@@ -22,15 +23,21 @@ export const parseSchedulesToCalendarEvents = (schedules: ScheduleType[]): Calen
     location: item.link_meeting,
   }));
   return groupSchedules;
-}
+};
 
-export const getDuration = ({ startTime, endTime }: { startTime: Date, endTime: Date }) => {
+export const getDuration = ({
+  startTime,
+  endTime,
+}: {
+  startTime: Date;
+  endTime: Date;
+}) => {
   if (startTime && endTime) {
-    const duration = dayjs(endTime).diff(dayjs(startTime), 'minute');
+    const duration = dayjs(endTime).diff(dayjs(startTime), "minute");
     return `${duration} minutes`;
   }
   return "";
-}
+};
 
 export const getStatus = (schedule: ScheduleType): ScheduleStatus => {
   const now = new Date();

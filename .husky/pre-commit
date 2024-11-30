@@ -1,0 +1,7 @@
+echo "Checking your type....🤡 🐶"
+yarn typecheck
+
+echo "Linting....👻"
+yarn lint-staged
+
+exit 0

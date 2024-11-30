@@ -8,7 +8,7 @@ export const studentSchema: yub.ObjectSchema<StudentType> = yub.object({
     .string()
     .matches(
       /^(DE|DA|DS)\d{6}$/,
-      "Code must start with DE, DA, or DS followed by 6 digits"
+      "Code must start with DE, DA, or DS followed by 6 digits",
     )
     .required("Code field is required"),
   email: yub

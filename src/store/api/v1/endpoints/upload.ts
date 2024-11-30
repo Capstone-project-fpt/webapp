@@ -11,7 +11,7 @@ const uploadApi = api.injectEndpoints({
           body: data,
         }),
         invalidatesTags: ["Upload"],
-      }
+      },
     ),
     generateMultiplePresignUrls: builder.mutation<
       ResponseType<string[]>,
@@ -27,5 +27,7 @@ const uploadApi = api.injectEndpoints({
   }),
 });
 
-export const { useGeneratePresignUrlMutation, useGenerateMultiplePresignUrlsMutation } =
-  uploadApi;
+export const {
+  useGeneratePresignUrlMutation,
+  useGenerateMultiplePresignUrlsMutation,
+} = uploadApi;
