@@ -12,7 +12,7 @@ const Logo: React.FC = () => {
       <div className="text-light text-center mt-8">
         <div className="lg:text-xl">FCPMS</div>
         <div className="lg:text-sm text-xs text-slate-500 mt-4">
-          -- By FPT --
+          -- By FPT Minh Bear --
         </div>
       </div>
     </div>
