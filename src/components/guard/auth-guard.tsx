@@ -22,7 +22,7 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
   const { toast } = useToast();
 
   // Checking Authentication
-  const checkAuth = () => {
+  const checkAuth = React.useCallback(() => {
     const storeToken = getCookie("token");
     const isExpired = storeToken && isTokenExpired(storeToken);
     if (!storeToken || isExpired || error) {
@@ -45,11 +45,11 @@ const AuthGuardComponent: React.FC<ChildrenType> = ({ children }) => {
         navigate("/");
       }
     }
-  };
+  }, [location, navigate, dispatch, error, toast]);
 
   useEffect(() => {
     checkAuth();
-  }, [token]);
+  }, [checkAuth, token]);
 
   useEffect(() => {
     if (!fetched && !isLoading) {

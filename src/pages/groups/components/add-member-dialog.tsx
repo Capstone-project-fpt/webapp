@@ -17,8 +17,7 @@ const AddMemberDialog: React.FC<{
   const [selectedStudent, setSelectedStudent] = useState<OptionType | null>(
     null
   );
-  const [updateMembersMutation, { isSuccess, isError, isLoading }] =
-    useUpdateMembersMutation();
+  const [updateMembersMutation, { isLoading }] = useUpdateMembersMutation();
 
   const handleAddMember = async () => {
     if (!selectedStudent || !selectedStudent.value.extra_info.student) {

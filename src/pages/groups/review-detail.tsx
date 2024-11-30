@@ -34,14 +34,10 @@ import { ReviewStatusBadge } from "@/components/common/status-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ReviewHeaderProps {
-  review: GroupReview;
   reviewSchedule: ScheduleType;
 }
 
-const ReviewHeader: React.FC<ReviewHeaderProps> = ({
-  review,
-  reviewSchedule,
-}) => {
+const ReviewHeader: React.FC<ReviewHeaderProps> = ({ reviewSchedule }) => {
   return (
     <div>
       <div className=" mb-4">
@@ -176,7 +172,8 @@ const DocumentSection: React.FC<DocumentSectionProps> = ({
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>No review's reports</AlertTitle>
             <AlertDescription>
-              Your review has not submitted any reports yet. Please submit the reports.
+              Your review has not submitted any reports yet. Please submit the
+              reports.
             </AlertDescription>
           </Alert>
         )}
@@ -365,7 +362,7 @@ const ReportDetail: React.FC = () => {
 
   return (
     <div>
-      <ReviewHeader review={review} reviewSchedule={reviewSchedule} />
+      <ReviewHeader reviewSchedule={reviewSchedule} />
 
       <DocumentSection
         review={review}

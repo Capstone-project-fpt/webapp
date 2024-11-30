@@ -1,12 +1,12 @@
-import { UserTypes } from "@/types/accounts";
-import React from "react";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { Member, OptionType } from "../type";
-import { ActionMeta, SingleValue } from "react-select";
-import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetListTeachersHaveEvaluationComitteeGroupQuery } from "@/store/api/v1/endpoints/evaluations";
+import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
+import { UserTypes } from "@/types/accounts";
+import React from "react";
+import { useSelector } from "react-redux";
+import { ActionMeta, SingleValue } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { Member, OptionType } from "../type";
 
 const defaultAdditional = { page: 1 };
 
@@ -29,14 +29,11 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
-  const {
-    data: listTeacherHaveEvaluationCommitteeGroup,
-    error,
-    isLoading,
-  } = useGetListTeachersHaveEvaluationComitteeGroupQuery(
-    { semester_id: currentSemester?.id || 0 },
-    { skip: !currentSemester }
-  );
+  const { data: listTeacherHaveEvaluationCommitteeGroup } =
+    useGetListTeachersHaveEvaluationComitteeGroupQuery(
+      { semester_id: currentSemester?.id || 0 },
+      { skip: !currentSemester }
+    );
   const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (

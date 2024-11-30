@@ -1,5 +1,4 @@
-import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Tooltip, LabelList } from "recharts";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Card,
   CardContent,
@@ -10,10 +9,23 @@ import {
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
 import { useGetSemestersWithCountQuery } from "@/store/api/v1/endpoints/semesters";
+import { TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 export function ReportChart() {
-  const { data: countData, error, isLoading } = useGetSemestersWithCountQuery({
+  const {
+    data: countData,
+    error,
+    isLoading,
+  } = useGetSemestersWithCountQuery({
     limit: 10,
     page: 1,
   });
@@ -30,13 +42,13 @@ export function ReportChart() {
 
   useEffect(() => {
     if (countData) {
-      const filteredData = filterLast5Years(countData.data.items); 
+      const filteredData = filterLast5Years(countData.data.items);
       const formattedData = filteredData.map((semester) => ({
         semester: semester.name,
         capstone: semester.total_capstone_groups,
         evaluations: semester.total_evaluation_committees,
       }));
-  
+
       setChartData(formattedData);
     }
   }, [countData]);
@@ -100,9 +112,7 @@ export function ReportChart() {
                 stroke={chartConfig.evaluations.color}
                 strokeWidth={2}
                 dot={false}
-              >
-               
-              </Line>
+              ></Line>
             </LineChart>
           </ChartContainer>
         )}

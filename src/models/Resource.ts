@@ -5,5 +5,5 @@ export interface Resource {
     id: string;
     name: string;
     type: resourceType;
-    details: {[key:string]:any};
+    details: { [key: string]: unknown };
 }

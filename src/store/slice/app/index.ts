@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { createSlice } from "@reduxjs/toolkit";
 import useLocalStorage from "@/hooks/useLocalStorage";
 

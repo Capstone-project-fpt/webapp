@@ -49,7 +49,7 @@ const PlannerMainComponent: FC<PlannerMainComponentProps> = ({ ...props }) => {
 };
 
 interface CalendarContentProps extends React.HTMLAttributes<HTMLDivElement> {}
-const CalendarContent: React.FC<CalendarContentProps> = ({ ...props }) => {
+const CalendarContent: React.FC<CalendarContentProps> = () => {
   const { viewMode, dateRange, timeLabels } = useCalendar();
   const { resources, appointments, updateAppointment } = useData();
   const scrollContainerRef = useRef<HTMLDivElement>(null);

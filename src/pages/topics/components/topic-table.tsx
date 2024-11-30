@@ -2,19 +2,21 @@ import { LoadingTableLottie } from "@/components";
 import { DataTable } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { useGetTopicReferencesQuery } from "@/store/api/v1/endpoints/topics";
+import { UserTypes } from "@/types/accounts";
 import { TopicType } from "@/types/topic";
 import { PaginationState, TableOptions } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { columns } from "./columns";
-import React from "react";
-import { UserTypes } from "@/types/accounts";
 
 interface TopicTableProps {
   currentUserType: UserTypes;
   searchKey: string;
 }
 
-export const TopicTable: React.FC<TopicTableProps> = ({ currentUserType, searchKey }) => {
+export const TopicTable: React.FC<TopicTableProps> = ({
+  currentUserType,
+  searchKey,
+}) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -40,10 +42,19 @@ export const TopicTable: React.FC<TopicTableProps> = ({ currentUserType, searchK
     if (queryData) {
       const allData = queryData.data.items;
       if (searchKey) {
-        const normalizedSearchKey = searchKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const normalizedSearchKey = searchKey
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
         const filtered = allData.filter((item) => {
-          const normalizedName = item.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const normalizedPath = item.teacher.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const normalizedName = item.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+          const normalizedPath = item.teacher.name
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
           return (
             normalizedName.includes(normalizedSearchKey) ||
             normalizedPath.includes(normalizedSearchKey)

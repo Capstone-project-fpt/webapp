@@ -1,12 +1,12 @@
-import { UserTypes } from "@/types/accounts";
-import React from "react";
-import { AsyncPaginate } from "react-select-async-paginate";
-import { Member, OptionType } from "../type";
-import { ActionMeta, SingleValue } from "react-select";
-import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
-import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { useGetListStudentsHaveCapstoneGroupQuery } from "@/store/api/v1/endpoints/groups";
+import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
+import { UserTypes } from "@/types/accounts";
+import React from "react";
+import { useSelector } from "react-redux";
+import { ActionMeta, SingleValue } from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
+import { Member, OptionType } from "../type";
 
 const defaultAdditional = { page: 1 };
 
@@ -29,14 +29,11 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );
-  const {
-    data: listStudentsHaveCapstoneGroup,
-    error,
-    isLoading,
-  } = useGetListStudentsHaveCapstoneGroupQuery(
-    { semester_id: currentSemester?.id! },
-    { skip: !currentSemester }
-  );
+  const { data: listStudentsHaveCapstoneGroup } =
+    useGetListStudentsHaveCapstoneGroupQuery(
+      { semester_id: currentSemester?.id || 0 },
+      { skip: !currentSemester }
+    );
 
   console.log(listStudentsHaveCapstoneGroup);
   const [getUsers] = useLazyGetUsersByUserQuery();

@@ -1,9 +1,7 @@
 import { LoadingTableLottie } from "@/components";
-import DateDisplay from "@/components/common/date";
 import EmptyResources from "@/components/common/empty-resource";
 import { GroupStatusBadge } from "@/components/common/status-badge";
 import { ActionCell, DateCell } from "@/components/data-table";
-import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,7 +15,7 @@ import { RootState } from "@/store";
 import { useGetCurrentGroupsSemesterQuery } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { UserTypes } from "@/types/accounts";
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { GoPlus } from "react-icons/go";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -42,7 +40,6 @@ const YourGroups = () => {
 
   const {
     data: queryData,
-    error,
     isLoading,
   } = useGetCurrentGroupsSemesterQuery(
     {

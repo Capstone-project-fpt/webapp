@@ -43,7 +43,7 @@ import { TimePicker } from "../ui/time-picker";
 const AddAppointmentDialog: React.FC = () => {
   const { addAppointment, resources } = useData();
   const [isOpened, setIsOpened] = useState(false);
-  const [isPending, startAddAppointmentTransition] = useTransition();
+  const [startAddAppointmentTransition] = useTransition();
   const form = useForm<AppointmentType>({
     resolver: zodResolver(createAppointmentSchema),
     defaultValues: {

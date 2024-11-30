@@ -110,7 +110,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           validationSchema={lectureSchema}
           onSubmit={handleCreateForm}
         >
-          {({ values, handleBlur, handleChange, setFieldValue, isSubmitting }) => (
+          {({ values, handleBlur, handleChange, isSubmitting }) => (
             <Form className=" flex flex-col gap-3 ">
               <div className="flex flex-col gap-2 ">
                 <Label htmlFor="code">Email</Label>

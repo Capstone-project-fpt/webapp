@@ -1,11 +1,11 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useUpdateEvaluationMutation } from "@/store/api/v1/endpoints/evaluations";
-import { UpdateEvaluationGroup } from "@/types/evaluation";
-import React, { useEffect, useState } from "react";
-import { Member, OptionType } from "../type";
-import SelectLecture from "./select-lecture";
 import { ResponseErrorType } from "@/types";
+import { UpdateEvaluationGroup } from "@/types/evaluation";
+import React, { useState } from "react";
+import { OptionType } from "../type";
+import SelectLecture from "./select-lecture";
 
 const AddTeacherDialog: React.FC<{
   group: UpdateEvaluationGroup;
@@ -14,8 +14,7 @@ const AddTeacherDialog: React.FC<{
   onAdd: () => void;
 }> = ({ group, open, onOpenChange, onAdd }) => {
   const { toast } = useToast();
-  const [members, setMembers] = useState<Member[]>([]);
-  const [updateEvaluationCommitteeMutation, { isSuccess, isError, isLoading }] =
+  const [updateEvaluationCommitteeMutation, { isLoading }] =
     useUpdateEvaluationMutation();
   const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(
     null
@@ -81,7 +80,7 @@ const AddTeacherDialog: React.FC<{
         <SelectLecture
           value={selectedLecture}
           onChangeValue={setSelectedLecture}
-          selectedMembers={members}
+          selectedMembers={[]}
           // existingGroupMembers={group.teacher_ids}
         />
       </div>

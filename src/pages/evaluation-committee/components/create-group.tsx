@@ -19,7 +19,6 @@ const CreateEvaluationGroup: React.FC = () => {
   const { toast } = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.user);
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
   );

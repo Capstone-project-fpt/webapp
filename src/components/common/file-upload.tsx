@@ -9,7 +9,7 @@ import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
 import { useControllableState } from "@/hooks/useControllableState";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -160,21 +160,11 @@ export function FileUploader(props: FileUploaderProps) {
         updatedFiles.length > 0 &&
         updatedFiles.length <= maxFileCount
       ) {
-        const target =
-          updatedFiles.length > 0 ? `${updatedFiles.length} files` : `file`;
-
-        toast.promise(onUpload(updatedFiles), {
-          loading: `Uploading ${target}...`,
-          success: () => {
-            setFiles([]);
-            return `${target} uploaded`;
-          },
-          error: `Failed to upload ${target}`,
-        });
+        onUpload(updatedFiles);
       }
     },
 
-    [files, maxFileCount, multiple, onUpload, setFiles]
+    [files, maxFileCount, multiple, onUpload, setFiles, toast]
   );
 
   function onRemove(index: number) {

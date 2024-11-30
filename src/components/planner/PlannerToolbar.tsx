@@ -13,7 +13,7 @@ const CalendarToolbar: React.FC<CalendarToolbarProps> = ({
   ...props
 }) => {
   const { setDateRange } = useCalendar();
-  const [range, setRange] = useState<DateRange>({
+  const [range] = useState<DateRange>({
     from: startOfWeek(new Date(), {
       locale: { options: { weekStartsOn: 0 } },
     }),

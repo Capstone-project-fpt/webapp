@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const useLocalStorage = () => {
   const getData = (key: string) => {
     const data = localStorage.getItem(key);

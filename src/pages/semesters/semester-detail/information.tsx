@@ -1,13 +1,12 @@
 import DateDisplay from "@/components/common/date";
 import { SettingCard } from "@/components/custom/setting";
 import { useGetSemesterQuery } from "@/store/api/v1/endpoints/semesters";
-import React from "react";
 import { useParams } from "react-router-dom";
 
 const Information = () => {
-  const { semesterId, tab } = useParams<{ semesterId: string; tab?: string }>();
+  const { semesterId } = useParams<{ semesterId: string; tab?: string }>();
 
-  const { data, error } = useGetSemesterQuery(
+  const { data } = useGetSemesterQuery(
     { id: Number(semesterId) },
     { skip: !semesterId }
   );

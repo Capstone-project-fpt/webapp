@@ -2,7 +2,7 @@ import { ActionDialog } from "@/components/custom/action-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useUpdateMembersMutation } from "@/store/api/v1/endpoints/groups";
 import { ResponseErrorType } from "@/types";
-import React, { useEffect } from "react";
+import React from "react";
 
 const DeleteMemberDialog: React.FC<{
   groupId: number;

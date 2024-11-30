@@ -79,6 +79,7 @@ export function DataTableToolbar<TData>({
                 row
                   .getAllCells()
                   .map((c) => [c.column.id, renderCellValue(c)])
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   .filter(([_, v]) => v !== undefined)
               )
             );

@@ -5,13 +5,12 @@ import { TableHead, TableHeader, TableRow } from "../ui/table";
 
 export const Timeline: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
-  ...props
 }) => {
   const { timeLabels } = useCalendar();
 
   return (
     <TableHeader>
-      <TableRow className="">
+      <TableRow className={className}>
         <TableHead></TableHead>
         {timeLabels.map((label, index) => (
           <TableHead

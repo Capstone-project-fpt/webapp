@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RootState } from "@/store";
 import { useGetSemestersWithCountQuery } from "@/store/api/v1/endpoints/semesters";
@@ -27,7 +28,7 @@ const ReportStatis: React.FC = () => {
 
     const capstoneGroups = (currentData as any)?.total_capstone_groups;
     const evaluationCommittees = (currentData as any)?.total_evaluation_committees;
- 
+
     return (
         <div className="flex flex-col md:flex-row md:justify-between gap-4">
             <Card className="flex-1">
