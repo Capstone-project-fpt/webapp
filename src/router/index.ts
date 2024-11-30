@@ -12,8 +12,6 @@ import SemesterRoutes from "./semesters";
 import TopicRoutes from "./topics";
 import EvaluationRoutes from "./evaluations";
 
-
-
 const router = createBrowserRouter([
   ...AuthRoutes,
   ...HomeRoutes,

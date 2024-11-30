@@ -4,7 +4,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 
 export interface InitialStateType {
   isSideBarOpen: boolean;
-  breadCrumbs: { title: string, link: string }[];
+  breadCrumbs: { title: string; link: string }[];
 }
 
 const { saveData, getData } = useLocalStorage();
@@ -29,6 +29,5 @@ export const app = createSlice({
   },
 });
 
-export const { toggleSideBarOpen, setBreadCrumb } =
-  app.actions;
+export const { toggleSideBarOpen, setBreadCrumb } = app.actions;
 export default app.reducer;

@@ -40,10 +40,8 @@ export interface ListPaginationType<T> {
   };
 }
 
-
 export interface OptionType<T> {
   value: T;
   label: string;
   disabled: boolean;
 }
-
