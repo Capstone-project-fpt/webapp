@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RootState } from "@/store";
 import { useGetListStudentsHaveCapstoneGroupQuery } from "@/store/api/v1/endpoints/groups";
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
@@ -40,9 +41,10 @@ const SelectStudent: React.FC<SelectStudentProps> = ({
 
   const loadPageOptions = async (
     q: string,
-    prevOptions: unknown,
-    { page }: { page: number }
+    _prevOptions: unknown,
+    additional: any
   ) => {
+    const { page } = additional;
     const limit = 10;
     try {
       const {

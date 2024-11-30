@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RootState } from "@/store";
 import { useGetListTeachersHaveEvaluationComitteeGroupQuery } from "@/store/api/v1/endpoints/evaluations";
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
@@ -36,17 +37,14 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
     );
   const [getUsers] = useLazyGetUsersByUserQuery();
 
-  const loadPageOptions = async (
-    q: string,
-    prevOptions: unknown,
-    { page }: { page: number }
-  ) => {
-    const limit = 10;
+  const loadPageOptions = async (search: string, _: any, additional: any) => {
     try {
+      const { page } = additional;
+      const limit = 10;
       const {
         data: { items, meta },
       } = await getUsers({
-        email: q,
+        email: search,
         limit,
         page,
         user_types: UserTypes.TEACHER,
@@ -72,7 +70,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch {
+    } catch (error) {
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };

@@ -49,7 +49,7 @@ const CreateGroup: React.FC = () => {
   const [groupName, setGroupName] = useState(initGroupName);
   const [formValid, setFormValid] = useState(false);
   const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
-  const [currentLeader, setCurrentLeader] = useState<Member | null>(
+  const [_, setCurrentLeader] = useState<Member | null>(
     user && user.extra_info.student
       ? {
           ...user.common_info,

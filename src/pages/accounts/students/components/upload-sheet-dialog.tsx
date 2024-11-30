@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FileUploader } from "@/components/common/file-upload";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +67,7 @@ const UploadSheetDialog: React.FC<UploadSheetDialogProps> = ({
     }
 
     if (importStudentsData.error) {
-      const data = importStudentsData.error?.data;
+      const data = (importStudentsData.error as any)?.data;
 
       if ("success_count" in data.error) {
         if (data.error.exception) {

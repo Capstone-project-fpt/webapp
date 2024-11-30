@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { RootState } from "@/store";
 import { useLazyGetGroupsQuery } from "@/store/api/v1/endpoints/groups";
 import { OptionType } from "@/types";
@@ -32,10 +33,8 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   );
   const [getGroups] = useLazyGetGroupsQuery();
 
-  const loadPageOptions = async (
-    prevOptions: unknown,
-    { page }: { page: number }
-  ) => {
+  const loadPageOptions = async (_q: string, _: any, additional: any) => {
+    const { page } = additional;
     const limit = 10;
     try {
       const {

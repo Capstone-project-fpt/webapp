@@ -60,7 +60,7 @@ const SemesterDetail: React.FC = () => {
   }, [validSemesterId, navigate, toast]);
 
   const { data, error } = useGetSemesterQuery(
-    { id: validSemesterId },
+    { id: validSemesterId! },
     { skip: !validSemesterId || isNaN(validSemesterId) }
   );
 

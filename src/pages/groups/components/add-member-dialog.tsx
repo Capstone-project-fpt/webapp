@@ -1,22 +1,35 @@
 import { ActionDialog } from "@/components/custom/action-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { useUpdateMembersMutation } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
+import { UserTypes } from "@/types/accounts";
+import { GroupMember } from "@/types/group";
 import React, { useState } from "react";
 import { Member, OptionType } from "../type";
 import SelectStudent from "./select-student";
-import { ResponseErrorType } from "@/types";
-import { useToast } from "@/hooks/use-toast";
 
 const AddMemberDialog: React.FC<{
   groupId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAddMember: () => void;
-  selectedMembers: Member[];
+  selectedMembers: GroupMember[];
 }> = ({ groupId, open, onOpenChange, onAddMember, selectedMembers }) => {
   const { toast } = useToast();
   const [selectedStudent, setSelectedStudent] = useState<OptionType | null>(
     null
   );
+  const selectedStudents: Member[] = (selectedMembers || []).map((member) => ({
+    studentId: member.id,
+    id: member.user_id,
+    name: member.name,
+    email: member.email,
+    phone_number: member.phone_number,
+    user_id: member.user_id,
+    user_type: member.user_type as UserTypes,
+    sub_major_id: member.sub_major_id,
+  }));
+
   const [updateMembersMutation, { isLoading }] = useUpdateMembersMutation();
 
   const handleAddMember = async () => {
@@ -77,7 +90,7 @@ const AddMemberDialog: React.FC<{
         <SelectStudent
           value={selectedStudent}
           onChangeValue={setSelectedStudent}
-          selectedMembers={selectedMembers}
+          selectedMembers={selectedStudents}
         />
       </div>
     </ActionDialog>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useLazyGetUsersByUserQuery } from "@/store/api/v1/endpoints/user";
 import { UserTypes } from "@/types/accounts";
 import React from "react";
@@ -25,9 +26,10 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
 
   const loadPageOptions = async (
     q: string,
-    prevOptions: unknown,
-    { page }: { page: number }
+    _: any,
+    additional: any
   ) => {
+    const { page } = additional;
     const limit = 10;
     try {
       const {
@@ -42,6 +44,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
       const options = items.map((item) => ({
         value: item,
         label: item.common_info.email,
+        disabled: false,
       }));
 
       return {

@@ -2,6 +2,8 @@ import { LectureType, StudentType } from "@/types/accounts";
 import * as yub from "yup";
 
 export const studentSchema: yub.ObjectSchema<StudentType> = yub.object({
+  id: yub.number().required("ID field is required"),
+  student_id: yub.number().required("Student ID field is required"),
   code: yub
     .string()
     .matches(
@@ -22,6 +24,8 @@ export const studentSchema: yub.ObjectSchema<StudentType> = yub.object({
 });
 
 export const lectureSchema: yub.ObjectSchema<LectureType> = yub.object({
+  id: yub.number().required("ID field is required"),
+  teacher_id: yub.number().required("Teacher ID field is required"),
   email: yub
     .string()
     .email("Email is invalid")

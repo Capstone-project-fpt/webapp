@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ActionMeta, SingleValue } from "react-select";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { OptionType, Teacher } from "../type";
@@ -25,11 +26,8 @@ const SelectTeacher: React.FC<SelectTeacherProps> = ({
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
-  const loadPageOptions = async (
-    q: string,
-    prevOptions: unknown,
-    { page }: { page: number }
-  ) => {
+  const loadPageOptions = async (q: string, _: any, additional: any) => {
+    const { page } = additional;
     const limit = 10;
     try {
       const {
