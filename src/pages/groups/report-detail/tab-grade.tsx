@@ -199,8 +199,8 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead>Score</TableHead>
-          <TableHead></TableHead>
+          <TableHead className="min-w-20">Score</TableHead>
+          <TableHead className="min-w-56">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -220,6 +220,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
               </Avatar>
               <div>
                 <p>{studentScore.student.name}</p>
+                <p className="text-sm ">{studentScore.student.email}</p>
               </div>
             </TableCell>
             <TableCell>
@@ -260,7 +261,6 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
                   items={[
                     {
                       item: "Edit",
-                      danger: true,
                       onClick: () => {
                         editScore(studentScore);
                       },

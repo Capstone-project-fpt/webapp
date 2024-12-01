@@ -339,7 +339,7 @@ const ReportDetail: React.FC = () => {
       {/* Attachments */}
       <div className="my-6">
         <div className="flex items-center gap-2 mb-2">
-          <h2 className="">Attachments</h2>
+          <h2 className="">Files</h2>
         </div>
         <div className="flex gap-4 flex-wrap">
           {reportData?.file_ids.map((file, index) => (
