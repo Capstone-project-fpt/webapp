@@ -23,7 +23,11 @@ import {
 } from "@/store/api/v1/endpoints/groups";
 import { ResponseErrorType } from "@/types";
 import { UserItem, UserTypes } from "@/types/accounts";
-import { GroupMember, StudentReportDocumentScore } from "@/types/group";
+import {
+  GroupMember,
+  GroupType,
+  StudentReportDocumentScore,
+} from "@/types/group";
 import {
   MentorReviewReportDocumentStatus,
   ReportDocumentCategoryType,
@@ -33,20 +37,22 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import UpdateScoreDialog from "./update-score-dialog";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface TabGradePros {
   members: GroupMember[];
   statusReview: MentorReviewReportDocumentStatus;
   report: ReportDocumentType | null;
+  group: GroupType;
 }
 
 const TabGrade: React.FC<TabGradePros> = ({
   members,
   statusReview,
   report,
+  group,
 }) => {
   const user = useSelector((state: RootState) => state.auth.user)!;
-  const { currentGroup } = useSelector((state: RootState) => state.resource);
 
   const { groupId, reportId } = useParams<{
     groupId: string;
@@ -58,7 +64,7 @@ const TabGrade: React.FC<TabGradePros> = ({
       capstone_group_id: Number(groupId),
       report_id: Number(reportId),
     },
-    { skip: statusReview !== MentorReviewReportDocumentStatus.Done }
+    { skip: statusReview !== MentorReviewReportDocumentStatus.Done },
   );
 
   const [isOpenModel, setIsOpenModel] = useState<boolean>(false);
@@ -80,7 +86,7 @@ const TabGrade: React.FC<TabGradePros> = ({
   }
 
   const isHideButtonUpdateScore =
-    user.extra_info.teacher?.teacher_id !== currentGroup?.mentor_id;
+    user.extra_info.teacher?.teacher_id !== group?.mentor_id;
 
   return (
     <TabsContent value="grade">
@@ -142,7 +148,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
   const { groupId } = useParams<{
     groupId: string;
   }>();
-  const [updateStudentScore] =
+  const [updateStudentScore, { isLoading: isLoadingUpdateScore }] =
     useAdminUpdateStudentScoreReportDocumentMutation();
   const [scoreEditId, setScoreEditId] = useState<number | null>(null);
   const [newScore, setNewScore] = useState<number>(0);
@@ -204,7 +210,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
               <Avatar>
                 <AvatarImage
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    studentScore.student.name
+                    studentScore.student.name,
                   )}&size=32`}
                   alt={studentScore.student.name}
                 />
@@ -233,12 +239,20 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
               {scoreEditId === studentScore.id ? (
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => handleUpdateScore(studentScore.id, newScore)}
+                    variant={"secondary"}
+                    onClick={() => setScoreEditId(null)}
+                    disabled={isLoadingUpdateScore}
                   >
-                    Save
-                  </Button>
-                  <Button onClick={() => handleCancelUpdateScore}>
                     Cancel
+                  </Button>
+                  <Button
+                    onClick={() => handleUpdateScore(studentScore.id, newScore)}
+                    disabled={isLoadingUpdateScore}
+                  >
+                    {isLoadingUpdateScore && (
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Save
                   </Button>
                 </div>
               ) : (

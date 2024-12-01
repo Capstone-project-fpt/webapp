@@ -213,7 +213,7 @@ const groupsApi = api.injectEndpoints({
       ResponseType<ListPaginationType<InvitationMentor>>,
       PaginationType & { group_id: number }
     >({
-      query: ({ limit = 10, page = 1, group_id }) => ({
+      query: ({ limit = 100, page = 1, group_id }) => ({
         url: `/capstone-groups/${group_id}/mentors/invitations`,
         params: { limit, page },
       }),

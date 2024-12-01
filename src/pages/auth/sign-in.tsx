@@ -6,17 +6,17 @@ import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/services/providers/theme-provider";
 import { signInSchema } from "@/services/schemas";
 import { useSignInMutation } from "@/store/api/v1/endpoints/auth";
+import { useLazyGetMeQuery } from "@/store/api/v1/endpoints/user";
 import { saveUserInfo, setUserInfo } from "@/store/slice/auth";
 import { SignInType } from "@/types";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
 import React, { useEffect } from "react";
+import { FaGoogle } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./components/logo";
 import MobileLogo from "./components/mobile-logo";
-import { FaGoogle } from "react-icons/fa";
-import { useLazyGetMeQuery } from "@/store/api/v1/endpoints/user";
 
 const SignIn: React.FC = () => {
   const { theme } = useTheme();
@@ -34,7 +34,7 @@ const SignIn: React.FC = () => {
 
   const handleSubmit = async (
     values: SignInType,
-    action: FormikHelpers<SignInType>
+    action: FormikHelpers<SignInType>,
   ) => {
     await signIn(values);
     signInData.isSuccess && action.resetForm();
@@ -46,7 +46,7 @@ const SignIn: React.FC = () => {
       dispatch(
         saveUserInfo({
           token: signInData?.data?.data?.access_token,
-        })
+        }),
       );
       navigate("/");
       triggerGetMe({})
@@ -61,13 +61,15 @@ const SignIn: React.FC = () => {
       toast({
         duration: 1000,
         variant: `${isSuccess ? "default" : "destructive"}`,
-        title: `${isSuccess ? "Success" : "Error"}`,
+        title: `${isSuccess ? "Sign In" : "Sign In Failed"}`,
         description: `${
-          isSuccess ? "Login Successfully." : "Authentication Failed."
+          isSuccess
+            ? "Sign In Successfully."
+            : "Your email or password is wrong. Please try again."
         }`,
       });
     }
-  }, [signInData]);
+  }, [dispatch, navigate, signInData, toast, triggerGetMe]);
 
   return (
     <div className=" w-screen h-screen flex flex-col lg:flex-row gap-5 lg:gap-0 justify-center items-center">
