@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { RootState } from "@/store";
 import {
   useCreateReportCommentMutation,
   useDeleteReportCommentMutation,
   useGetCapstoneGroupReportDocumentQuery,
+  useGetGroupQuery,
   useGetMembersQuery,
   useGetReportCommentsQuery,
 } from "@/store/api/v1/endpoints/groups";
@@ -26,7 +26,7 @@ import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
 import { FileIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "../components/comment-composer";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
@@ -220,8 +220,15 @@ const ReportDetail: React.FC = () => {
     reportId?: string;
   }>();
   const dispatch = useDispatch();
-  const { currentGroup } = useSelector((state: RootState) => state.resource);
   const [isOpenModalUpdateReport, setIsOpenModalUpdateReport] = useState(false);
+
+  const { data: groupData } = useGetGroupQuery(
+    {
+      id: Number(groupId),
+    },
+    { skip: !groupId },
+  );
+  const group = groupData?.data;
 
   const { data, isError, isLoading } = useGetCapstoneGroupReportDocumentQuery({
     capstone_group_id: Number(groupId),
@@ -232,7 +239,7 @@ const ReportDetail: React.FC = () => {
     {
       group_id: Number(groupId),
     },
-    { skip: !groupId }
+    { skip: !groupId },
   );
 
   const memberGroups = useMemo(() => {
@@ -255,7 +262,7 @@ const ReportDetail: React.FC = () => {
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
         {
-          title: currentGroup?.name_group || "Group " + groupId,
+          title: group?.name_group || "Group " + groupId,
           link: `/groups/${groupId}`,
         },
         { title: "Reports", link: `/groups/${groupId}/reports` },
@@ -263,9 +270,9 @@ const ReportDetail: React.FC = () => {
           title: reportData?.name || "Report " + reportId,
           link: `/groups/${groupId}/reports/${reportId}`,
         },
-      ])
+      ]),
     );
-  }, [dispatch, groupId, reportId, reportData, currentGroup]);
+  }, [dispatch, groupId, reportId, reportData, group]);
 
   if (isLoading) {
     return (
@@ -380,6 +387,7 @@ const ReportDetail: React.FC = () => {
           members={memberGroups}
           statusReview={reportData!.mentor_review_status}
           report={reportData}
+          group={group!}
         />
       </Tabs>
     </div>

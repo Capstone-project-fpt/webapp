@@ -25,6 +25,7 @@ import {
   ReportDocumentCategoryType,
   ReportDocumentType,
 } from "@/types/report-document";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { isNil } from "lodash";
 import React, { useState } from "react";
 import { useParams } from "react-router";
@@ -44,7 +45,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
 }) => {
   const { toast } = useToast();
   const { groupId } = useParams<{ groupId: string }>();
-  const [updateStudentScore] =
+  const [updateStudentScore, { isLoading }] =
     useMentorUpdateStudentScoreForReportDocumentMutation();
 
   const [scores, setScores] = useState<{ [key: number]: number | null }>({});
@@ -65,7 +66,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
 
     if (studentScores.some((c) => isNil(c.score))) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Update student score",
         description: "Need to fill score for all student.",
@@ -75,7 +76,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
 
     if (studentScores.some((c) => c.score! < 0 || c.score! > 10)) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Update student score",
         description: "Score need to be in range from 0 to 10",
@@ -133,7 +134,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
                       <Avatar>
                         <AvatarImage
                           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            member.name
+                            member.name,
                           )}&size=32`}
                           alt={member.name}
                         />
@@ -153,7 +154,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
                       onChange={(e) =>
                         handleScoreChange(
                           member.id,
-                          e.target.value ? Number(e.target.value) : null
+                          e.target.value ? Number(e.target.value) : null,
                         )
                       }
                       placeholder="Enter score"
@@ -180,7 +181,10 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave} disabled={isLoading}>
+            {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
+            Save
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

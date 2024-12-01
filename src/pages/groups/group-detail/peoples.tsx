@@ -1,4 +1,5 @@
 import { LoadingTableLottie } from "@/components";
+import DateDisplay from "@/components/common/date";
 import SubMajor from "@/components/common/major";
 import { SettingCard } from "@/components/custom/setting";
 import { ActionCell } from "@/components/data-table";
@@ -28,9 +29,9 @@ import {
 import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import InviteMentorDialog from "../components/invite-mentor-dialog";
-import DeleteMemberDialog from "../components/delete-member-dialog";
 import AddMemberDialog from "../components/add-member-dialog";
+import DeleteMemberDialog from "../components/delete-member-dialog";
+import InviteMentorDialog from "../components/invite-mentor-dialog";
 
 type BadgeVariant = "success" | "info" | "destructive" | "outline";
 
@@ -67,6 +68,7 @@ const InvitationMentorTable: React.FC<{
       <TableRow>
         <TableHead>Name</TableHead>
         <TableHead>Email</TableHead>
+        <TableHead>Invited At</TableHead>
         <TableHead>Status</TableHead>
         <TableHead>Actions</TableHead>
       </TableRow>
@@ -80,7 +82,7 @@ const InvitationMentorTable: React.FC<{
               <Avatar>
                 <AvatarImage
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    mentor.name
+                    mentor.name,
                   )}&size=32`}
                   alt={mentor.name}
                 />
@@ -91,6 +93,12 @@ const InvitationMentorTable: React.FC<{
               </div>
             </TableCell>
             <TableCell>{mentor.email}</TableCell>
+            <TableCell>
+              <DateDisplay
+                date={new Date(invitationMentor.created_at)}
+                showTime={true}
+              />
+            </TableCell>
             <TableCell>
               <InvitingStatus
                 status={
@@ -138,7 +146,7 @@ const MentorTable: React.FC<{
             <Avatar>
               <AvatarImage
                 src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                  mentor.name
+                  mentor.name,
                 )}&size=32`}
                 alt={mentor.name}
               />
@@ -203,7 +211,7 @@ const MemberTable: React.FC<{
                 <Avatar>
                   <AvatarImage
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      member.name
+                      member.name,
                     )}&size=32`}
                     alt={member.name}
                   />
@@ -270,14 +278,14 @@ const Peoples = () => {
     {
       group_id: parseInt(groupId!),
     },
-    { skip: !groupId }
+    { skip: !groupId },
   );
 
   const { data: invitationMentorsData } = useGetInvitationMentorsQuery(
     {
       group_id: parseInt(groupId!),
     },
-    { skip: !groupId }
+    { skip: !groupId },
   );
 
   const [members, setMembers] = useState<GroupMember[]>([]);
