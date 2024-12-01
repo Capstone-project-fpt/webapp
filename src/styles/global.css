@@ -82,3 +82,7 @@
     @apply bg-slate-200 dark:bg-slate-800;
   }
 }
+
+.calendar-no-border .sx__calendar {
+  border: none;
+}

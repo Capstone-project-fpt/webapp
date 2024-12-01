@@ -2,9 +2,11 @@ import { LoadingTableLottie } from "@/components";
 import Comment from "@/components/common/comment";
 import DateDisplay from "@/components/common/date";
 import EmptyResources from "@/components/common/empty-resource";
+import { ReviewStatusBadge } from "@/components/common/status-badge";
 import { ActionDialog } from "@/components/custom/action-dialog";
 import { ActionCell } from "@/components/data-table";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,8 +32,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "./components/comment-composer";
 import SelectReportsDialog from "./components/select-reports";
-import { ReviewStatusBadge } from "@/components/common/status-badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ReviewHeaderProps {
   reviewSchedule: ScheduleType;
@@ -40,8 +40,8 @@ interface ReviewHeaderProps {
 const ReviewHeader: React.FC<ReviewHeaderProps> = ({ reviewSchedule }) => {
   return (
     <div>
-      <div className=" mb-4">
-        <div className="text-xl">{reviewSchedule.title}</div>
+      <div className="mb-4">
+        <div className="text-xl font-semibold">{reviewSchedule.title}</div>
         <span>{reviewSchedule.description}</span>
       </div>
 
@@ -318,7 +318,7 @@ const ReportDetail: React.FC = () => {
     {
       schedule_review_id: reviewData?.data.schedule_review_id || 0,
     },
-    { skip: !reviewData }
+    { skip: !reviewData },
   );
 
   const review = reviewData?.data;
@@ -338,7 +338,7 @@ const ReportDetail: React.FC = () => {
           title: `${reviewSchedule?.title || "Review"}`,
           link: `/groups/${groupId}/reviews/${reviewId}`, //TODO: Replace Report Name with actual report name
         },
-      ])
+      ]),
     );
   }, [dispatch, groupId, reviewId, currentGroup, reviewSchedule]);
 

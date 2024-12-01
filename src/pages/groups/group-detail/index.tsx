@@ -11,14 +11,13 @@ import Peoples from "./peoples";
 import Reports from "./reports";
 import Reviews from "./reviews";
 import Topics from "./topics";
-import Calendar from "./calendar";
 
 const TABS = [
   { name: "topics", label: "Topics", component: Topics },
   { name: "reports", label: "Reports", component: Reports },
   { name: "reviews", label: "Reviews", component: Reviews },
-  { name: "calendar", label: "Calendar", component: Calendar },
   { name: "peoples", label: "Peoples", component: Peoples },
+  // { name: "grade", label: "Grades", component: Peoples },
 ];
 
 const TABS_NAMES = TABS.reduce((acc, tab) => {
