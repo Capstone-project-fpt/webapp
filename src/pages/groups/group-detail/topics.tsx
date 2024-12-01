@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
   useGetMembersQuery,
+  useGetTopicQuery,
   useGetTopicsQuery,
   useSetGroupTopicMutation,
 } from "@/store/api/v1/endpoints/groups";
@@ -51,6 +52,12 @@ const Topics: React.FC = () => {
       group_id: parseInt(groupId!),
     },
     { skip: !groupId }
+  );
+
+  const {data: groupTopicData} = useGetTopicQuery({
+    group_id: parseInt(groupId!),
+    topic_id: currentGroup?.topic_id || 0},
+    {skip: !currentGroup || !currentGroup.topic_id}
   );
 
   const [setGroupTopicMutation] = useSetGroupTopicMutation();
@@ -102,14 +109,21 @@ const Topics: React.FC = () => {
       />
 
       <SettingCard title="Group's Topic">
-        <Alert variant="destructive">
+        {currentGroup && currentGroup.topic_id ? (
+          <div>
+            <h3>{groupTopicData?.data.topic}</h3>
+            <div>
+            <FileDownload pathFile={groupTopicData?.data.document_path || ''} />
+            </div>
+          </div>
+        ) :  (<Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>No group's topic</AlertTitle>
           <AlertDescription>
             Your group has not select topics yet. Please submit a topic to
             review and set group's topic.
           </AlertDescription>
-        </Alert>
+        </Alert>)}
       </SettingCard>
       <SettingCard
         title="Reviewing Topics"
