@@ -21,8 +21,8 @@ const TABS = [
     component: EvaluationCommittee,
   },
   {
-    name: "evaluation-topic",
-    label: "Evaluation Topic",
+    name: "verifier-topic",
+    label: "Verifier Topic",
     component: Decentralization,
   },
 ];

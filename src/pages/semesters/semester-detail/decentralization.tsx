@@ -45,16 +45,16 @@ const DeleteTeacherDialog: React.FC<{
 
       toast({
         duration: 1000,
-        title: "Delete lecturer from evaluation topic",
+        title: "Delete lecturer from verifier topic",
         description:
-          res.data || "Teacher removed from evaluation topic successfully.",
+          res.data || "Teacher removed from verifier topic successfully.",
       });
       onOpenChange(false);
     } catch (error) {
       toast({
         duration: 1000,
         variant: "destructive",
-        title: "Delete lecturer from evaluation topic",
+        title: "Delete lecturer from verifier topic",
         description:
           (error as ResponseErrorType)?.data?.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator",
@@ -66,7 +66,7 @@ const DeleteTeacherDialog: React.FC<{
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Delete lecturer from evaluation topic"
+      title="Delete lecturer from verifier topic"
       danger
       cancelButton
       okButton={{
@@ -74,7 +74,7 @@ const DeleteTeacherDialog: React.FC<{
         onClick: handleDelete,
         isLoading,
       }}
-      confirmText="This action cannot be undone. The selected lecturer will be deleted from the evaluation topic."
+      confirmText="This action cannot be undone. The selected lecturer will be deleted from the verifier topic."
     >
       {`Are you sure you want to deleted this lecturer?`}
     </ActionDialog>
@@ -179,7 +179,7 @@ const Decentralization: React.FC = () => {
         onOpenChange={setIsAddTeacherModalOpen}
       />
       <SettingCard
-        title="Evaluation Topic"
+        title="Verifier Topic"
         actions={
           <Button onClick={() => setIsAddTeacherModalOpen(true)}>
             Add Lecturer
