@@ -12,8 +12,7 @@ const DeleteMemberDialog: React.FC<{
   onDelete: () => void;
 }> = ({ groupId, open, onOpenChange, memberId, onDelete }) => {
   const { toast } = useToast();
-  const [updateMembersMutation, { isSuccess, isLoading }] =
-    useUpdateMembersMutation();
+  const [updateMembersMutation, { isLoading }] = useUpdateMembersMutation();
 
   const handleDelete = async () => {
     try {
@@ -22,15 +21,13 @@ const DeleteMemberDialog: React.FC<{
         student_ids: [memberId],
       }).unwrap();
 
-      if (isSuccess) {
-        toast({
-          duration: 3000,
-          title: "Member Removed",
-          description: "The member was successfully removed from the group.",
-        });
-        onDelete();
-        onOpenChange(false);
-      }
+      toast({
+        duration: 3000,
+        title: "Member Removed",
+        description: "The member was successfully removed from the group.",
+      });
+      onDelete();
+      onOpenChange(false);
     } catch (error) {
       toast({
         duration: 3000,

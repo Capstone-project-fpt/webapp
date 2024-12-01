@@ -32,6 +32,9 @@ import { useParams } from "react-router-dom";
 import AddMemberDialog from "../components/add-member-dialog";
 import DeleteMemberDialog from "../components/delete-member-dialog";
 import InviteMentorDialog from "../components/invite-mentor-dialog";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
 
 type BadgeVariant = "success" | "info" | "destructive" | "outline";
 
@@ -185,6 +188,7 @@ const MemberTable: React.FC<{
 }> = ({ members, leaderId, groupId }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
+  const currentUser = useSelector((state: RootState) => state.auth.user)!;
 
   const handleDelete = () => {
     setSelectedMemberId(null);
@@ -246,6 +250,8 @@ const MemberTable: React.FC<{
                         setSelectedMemberId(member.id);
                         setDeleteDialogOpen(true);
                       },
+                      isHide:
+                        currentUser.common_info.user_type !== UserTypes.ADMIN,
                     },
                   ]}
                 />
@@ -269,6 +275,7 @@ const MemberTable: React.FC<{
 
 const Peoples = () => {
   const { groupId } = useParams<{ groupId: string }>();
+  const currentUser = useSelector((state: RootState) => state.auth.user)!;
 
   const {
     data: membersData,
@@ -373,16 +380,20 @@ const Peoples = () => {
           leaderId={leaderId}
           groupId={parseInt(groupId!)}
         />
-        <div className="flex justify-end mt-4">
-          <Button onClick={() => setAddDialogOpen(true)}>Add Member</Button>
-        </div>
-        <AddMemberDialog
-          groupId={parseInt(groupId!)}
-          open={isAddDialogOpen}
-          onOpenChange={setAddDialogOpen}
-          onAddMember={handleAddMember}
-          selectedMembers={members}
-        />
+        {currentUser.common_info.user_type === UserTypes.ADMIN && (
+          <>
+            <div className="flex justify-end mt-4">
+              <Button onClick={() => setAddDialogOpen(true)}>Add Member</Button>
+            </div>
+            <AddMemberDialog
+              groupId={parseInt(groupId!)}
+              open={isAddDialogOpen}
+              onOpenChange={setAddDialogOpen}
+              onAddMember={handleAddMember}
+              selectedMembers={members}
+            />
+          </>
+        )}
       </SettingCard>
     </div>
   );
