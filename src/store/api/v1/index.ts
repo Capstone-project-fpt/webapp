@@ -1,21 +1,64 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { token } from "../../../store/slice/auth";
+import { RootState } from "@/store";
+
+const API_VERSION = "v1";
 
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://api.escuelajs.co/api/v1",
-    prepareHeaders: (headers) => {
-      
+    baseUrl: import.meta.env.VITE_APP_API_URL + "/" + API_VERSION,
+    prepareHeaders: (headers, { getState }) => {
+      const authState = (getState() as RootState).auth;
+      const authToken = token(authState);
       headers.set("Content-Type", "application/json");
-
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
+      if (authToken) {
+        headers.set("authorization", `Bearer ${authToken}`);
       }
-      
+
       return headers;
     },
   }),
-  tagTypes: ["Category","Product","User"],
+  tagTypes: [
+    "Category",
+    "Product",
+    "User",
+    "Topic",
+    "Account",
+    "Group",
+    "Semester",
+    "EvaluationCommittee",
+    "Schedule",
+    "Upload",
+  ],
+  endpoints: () => ({}),
+});
+
+export const apiMultipart = createApi({
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_APP_API_URL + "/" + API_VERSION,
+    prepareHeaders: (headers, { getState }) => {
+      const authState = (getState() as RootState).auth;
+      const authToken = token(authState);
+      if (authToken) {
+        headers.set("authorization", `Bearer ${authToken}`);
+      }
+
+      return headers;
+    },
+  }),
+  tagTypes: [
+    "Category",
+    "Product",
+    "User",
+    "Topic",
+    "Account",
+    "Group",
+    "Semester",
+    "EvaluationCommittee",
+    "Schedule",
+    "Upload",
+  ],
   endpoints: () => ({}),
 });

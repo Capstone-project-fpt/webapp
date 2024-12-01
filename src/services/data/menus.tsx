@@ -1,18 +1,15 @@
-import { FaBookOpen } from "react-icons/fa";
-import {
-  Category2,
-  Home,
-  Package,
-  Settings2,
-  Users
-} from "tabler-icons-react";
+import { FaRegLightbulb } from "react-icons/fa";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { LiaObjectUngroupSolid } from "react-icons/lia";
+import { LuCalendarCheck } from "react-icons/lu";
+import { Home, Settings2, Users } from "tabler-icons-react";
 
-interface MenuItem {
+export interface MenuItem {
   title: string;
   link?: string;
   icon?: JSX.Element;
   children?: MenuItem[];
-  isOpen?: boolean; // New property to track open/closed state
+  isOpen?: boolean;
 }
 
 const menus: MenuItem[] = [
@@ -22,28 +19,64 @@ const menus: MenuItem[] = [
     link: "/dashboard",
     isOpen: false,
   },
-  // {
-  //   icon: <Category2 size={18} strokeWidth={2} />,
-  //   title: "Categories",
-  //   link: "/categories",
-  //   isOpen: false,
-  // },
-  // {
-  //   icon: <Package size={18} strokeWidth={2} />,
-  //   title: "Products",
-  //   link: "/products",
-  //   isOpen: false,
-  // },
   {
-    icon: <Users size={18} strokeWidth={2} />,
-    title: "Students",
-    link: "/students",
+    icon: <LuCalendarCheck size={18} strokeWidth={2} />,
+    title: "Semesters",
     isOpen: false,
+    children: [
+      {
+        title: "List",
+        link: "/semesters",
+      },
+      {
+        title: "Current semester",
+        link: "/semesters/current",
+      },
+    ],
   },
   {
-    icon: <FaBookOpen size={18} strokeWidth={2} />,
-    title: "Major",
-    link: "/majors",
+    icon: <HiOutlineUserGroup size={18} strokeWidth={2} />,
+    title: "Group",
+    children: [
+      {
+        title: "List",
+        link: "/groups",
+      },
+      {
+        title: "Your groups",
+        link: "/groups/me",
+      },
+      {
+        title: "Verify groups",
+        link: "/groups/verify",
+      },
+    ],
+  },
+  {
+    icon: <LiaObjectUngroupSolid size={18} />,
+    title: "Evaluation Committee",
+    link: "/evaluation-committees",
+  },
+  {
+    icon: <Users size={18} strokeWidth={2} />,
+    title: "Accounts",
+    children: [
+      {
+        title: "Students",
+        link: "/accounts/students",
+        icon: <Users size={18} strokeWidth={2} />,
+      },
+      {
+        title: "Lecturers",
+        link: "/accounts/lecturers",
+        icon: <Users size={18} strokeWidth={2} />,
+      },
+    ],
+  },
+  {
+    icon: <FaRegLightbulb size={18} strokeWidth={2} />,
+    title: "Topics",
+    link: "/topics",
     isOpen: false,
   },
   {

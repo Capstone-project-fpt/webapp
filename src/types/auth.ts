@@ -6,3 +6,8 @@ export interface SignInType {
 export interface ForgotPasswordType {
   email: string;
 }
+
+export interface ResetPasswordType {
+  password: string;
+  token?: string;
+}

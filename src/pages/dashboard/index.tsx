@@ -1,24 +1,25 @@
 import { setBreadCrumb } from "@/store/slice/app";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import Overview from "./components/overview";
-import TotalIncome from "./components/totalIncome";
-import TopProducts from "./components/top-product";
+import ReportCurrentSemester from "./components/report-current-semester";
+import ReportChart from "./components/report-chart";
+
 
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
-  dispatch(setBreadCrumb([{ title: "Home", link: "/" }]));
+  useEffect(() => {
+    dispatch(setBreadCrumb([{ title: "Home", link: "/" }]));
+  }, [dispatch]);
 
   return (
     <>
-      <Overview />
-      <div className=" flex flex-col lg:flex-row mt-6 gap-3 ">
-        <div className=" basis-6/12 ">
-          <TotalIncome />
-        </div>
-        <div className=" basis-6/12 ">
-          <TopProducts />
-        </div>
+      <div>
+        <ReportCurrentSemester />
+        <div className="pt-4"> 
+          <ReportChart />
+          </div>
+
+        {/* <CarouselHome/> */}
       </div>
     </>
   );

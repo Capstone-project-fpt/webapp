@@ -1,0 +1,58 @@
+import { ScheduleStatus, ScheduleType } from "@/types/schedule";
+import { CalendarConfig } from "@schedule-x/calendar";
+import dayjs from "dayjs";
+
+export const getDateTime = (date: Date) => {
+  if (date) {
+    const format = "YYYY-MM-DD HH:mm";
+    return dayjs(date).format(format);
+  }
+  return "";
+};
+
+export const parseSchedulesToCalendarEvents = (
+  schedules: ScheduleType[],
+): CalendarConfig["events"] => {
+  const groupSchedules = (schedules || []).map((item) => ({
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    start: getDateTime(item.start_time),
+    end: getDateTime(item.end_time),
+    people: [item.capstone_group?.name_group, item.evaluation_committee?.name],
+    location: item.link_meeting,
+  }));
+  return groupSchedules;
+};
+
+export const getDuration = ({
+  startTime,
+  endTime,
+}: {
+  startTime: Date;
+  endTime: Date;
+}) => {
+  if (startTime && endTime) {
+    const duration = dayjs(endTime).diff(dayjs(startTime), "minute");
+    return `${duration} minutes`;
+  }
+  return "";
+};
+
+export const getStatus = (schedule: ScheduleType): ScheduleStatus => {
+  const now = new Date();
+  const startTime = new Date(schedule.start_time);
+  const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  if (startTime < now) {
+    if (schedule.capstone_group_review.feedback) {
+      return ScheduleStatus.Archived;
+    } else {
+      return ScheduleStatus.Reviewing;
+    }
+  } else if (startTime <= oneWeekFromNow) {
+    return ScheduleStatus.InProgress;
+  } else {
+    return ScheduleStatus.Incoming;
+  }
+};

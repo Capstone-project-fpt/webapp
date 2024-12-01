@@ -1,0 +1,99 @@
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { setBreadCrumb } from "@/store/slice/app";
+import { useEffect, useState } from "react";
+import { FaWpforms } from "react-icons/fa";
+import { GoPlus } from "react-icons/go";
+import { LuFileSpreadsheet } from "react-icons/lu";
+import { useDispatch, useSelector } from "react-redux";
+import CreateUpdateDialog from "./components/create-update-dialog";
+import { LecturesTable } from "./components/table";
+import UploadSheetDialog from "./components/upload-sheet-dialog";
+import { Input } from "@/components/ui/input";
+import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
+
+const Lectures = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const user = useSelector((state: RootState) => state.auth).user!;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setBreadCrumb([
+        { title: "Home", link: "/" },
+        { title: "Accounts", link: "/accounts" },
+        { title: "Lectures", link: "/accounts/lectures" },
+      ])
+    );
+  }, [dispatch]);
+
+  function openModalCreateLecture(value: string): void {
+    setModalType(value);
+    setIsModalOpen(true);
+  }
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col gap-2">
+          <Input
+            title="Search"
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-48"
+          />
+        </div>
+        {user.common_info.user_type === UserTypes.ADMIN && (
+          <div className="flex items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-1">
+                  <GoPlus className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Create Lecturers</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup onValueChange={openModalCreateLecture}>
+                  <DropdownMenuRadioItem value="form">
+                    <FaWpforms className="mr-1" />
+                    Form
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="sheet">
+                    <LuFileSpreadsheet className="mr-1" />
+                    Sheets
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+
+        {modalType === "form" ? (
+          <CreateUpdateDialog
+            open={isModalOpen}
+            onOpenChange={setIsModalOpen}
+          />
+        ) : (
+          <UploadSheetDialog open={isModalOpen} onOpenChange={setIsModalOpen} />
+        )}
+      </div>
+      <LecturesTable searchKey={searchTerm} />
+    </>
+  );
+};
+
+export default Lectures;

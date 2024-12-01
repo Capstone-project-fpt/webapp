@@ -1,10 +1,6 @@
-import React from "react";
-import { BreadCrumb, MobileSideBar, ToggleMode } from "@/components";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { RiMenuUnfoldLine, RiMenuFoldLine } from "react-icons/ri";
+import { BreadCrumb, MobileSideBar } from "@/components";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleSideBarOpen } from "@/store/slice/app";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,15 +9,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, useNavigate } from "react-router-dom";
-import { UserCircle2 } from "lucide-react";
-import { Logout, Settings2 } from "tabler-icons-react";
+import { RootState } from "@/store";
+import { toggleSideBarOpen } from "@/store/slice/app";
 import { removeUserInfo } from "@/store/slice/auth";
+import { UserCircle2 } from "lucide-react";
+import React from "react";
+import { FaUser } from "react-icons/fa";
+import { RiMenuFoldLine, RiMenuUnfoldLine } from "react-icons/ri";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { Logout, Settings2 } from "tabler-icons-react";
 
 const TopHeader: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isSideBarOpen = useSelector((state: any) => state.app.isSideBarOpen);
+  const isSideBarOpen = useSelector((state: RootState) => state.app.isSideBarOpen);
 
   const handleLogout = () => {
     dispatch(removeUserInfo());
@@ -45,7 +47,7 @@ const TopHeader: React.FC = () => {
         </Button>
 
         {/* Only For Mobile Layout */}
-        <MobileSideBar/>
+        <MobileSideBar />
 
         <BreadCrumb />
       </div>
@@ -54,8 +56,9 @@ const TopHeader: React.FC = () => {
         <DropdownMenu>
           <DropdownMenuTrigger className=" focus-visible:outline-none ">
             <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>AP</AvatarFallback>
+              <AvatarFallback>
+                <FaUser />
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent

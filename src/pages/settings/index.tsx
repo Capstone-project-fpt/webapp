@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch } from "react-redux";
 import { setBreadCrumb } from "@/store/slice/app";
@@ -8,18 +8,14 @@ import Appearance from "./components/tabs/appearance";
 
 const Settings: React.FC = () => {
   const dispatch = useDispatch();
-  dispatch(
-    setBreadCrumb([
-      {
-        title: "Home",
-        link: "/dashboard",
-      },
-      {
-        title: "Settings",
-        link: "/settings",
-      },
-    ])
-  );
+  useEffect(() => {
+    dispatch(
+      setBreadCrumb([
+        { title: "Home", link: "/dashboard" },
+        { title: "Settings", link: "/settings" },
+      ])
+    );
+  }, [dispatch]);
 
   return (
     <div>
@@ -32,7 +28,7 @@ const Settings: React.FC = () => {
             Change Password
           </TabsTrigger>
           <TabsTrigger value="apperance" className=" lg:w-[150px] w-full ">
-            Apperance
+            Appearance
           </TabsTrigger>
         </TabsList>
         <TabsContent value="account" className=" mt-4 ">

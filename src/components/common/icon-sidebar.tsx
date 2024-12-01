@@ -1,8 +1,4 @@
-import React from "react";
 import { Card } from "@/components/ui/card";
-import { SiPlatzi } from "react-icons/si";
-import menusList from "@/services/data/menus";
-import { useLocation } from "react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +13,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import menusList, { MenuItem } from "@/services/data/menus";
+import React from "react";
+import { SiPlatzi } from "react-icons/si";
+import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 
 const IconSidebar: React.FC = () => {
@@ -31,7 +31,7 @@ const IconSidebar: React.FC = () => {
           </div>
         </div>
 
-        {menusList?.map((menu: any, index) => (
+        {menusList?.map((menu: MenuItem, index) => (
           <React.Fragment key={index}>
             {menu.children ? (
               <Tooltip delayDuration={100}>
@@ -57,13 +57,15 @@ const IconSidebar: React.FC = () => {
                       <DropdownMenuLabel>{menu.title}</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        {menu?.children.map((child: any) => (
-                          <Link to={child.link}>
-                            <DropdownMenuItem className=" cursor-pointer z-[3000] ">
-                              {child.title}
-                            </DropdownMenuItem>
-                          </Link>
-                        ))}
+                        {menu?.children.map(
+                          (child: MenuItem, index: number) => (
+                            <Link to={child?.link || ""} key={index}>
+                              <DropdownMenuItem className=" cursor-pointer z-[3000] ">
+                                {child.title}
+                              </DropdownMenuItem>
+                            </Link>
+                          )
+                        )}
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -80,7 +82,7 @@ const IconSidebar: React.FC = () => {
                       "nav-link hover:nav-active " +
                       (pathname == menu.link && "nav-active")
                     }
-                    to={menu.link}
+                    to={menu.link || ""}
                   >
                     {menu.icon && menu.icon}
                   </Link>

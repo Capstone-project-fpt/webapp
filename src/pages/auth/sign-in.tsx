@@ -2,50 +2,62 @@ import { InputPassword } from "@/components";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useTheme } from "@/services/providers/theme-provider";
 import { signInSchema } from "@/services/schemas";
 import { useSignInMutation } from "@/store/api/v1/endpoints/auth";
-import { saveUserInfo } from "@/store/slice/auth";
+import { saveUserInfo, setUserInfo } from "@/store/slice/auth";
 import { SignInType } from "@/types";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { ErrorMessage, Form, Formik } from "formik";
+import { ErrorMessage, Form, Formik, FormikHelpers } from "formik";
 import React, { useEffect } from "react";
-import { FaGoogle } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "./components/logo";
 import MobileLogo from "./components/mobile-logo";
+import { FaGoogle } from "react-icons/fa";
+import { useLazyGetMeQuery } from "@/store/api/v1/endpoints/user";
 
 const SignIn: React.FC = () => {
   const { theme } = useTheme();
-  const [signIn, data] = useSignInMutation();
+  const [signIn, signInData] = useSignInMutation();
+  const [triggerGetMe] = useLazyGetMeQuery();
   const navigate = useNavigate();
   const { toast } = useToast();
   const dispatch = useDispatch();
 
+  // TODO: Remove this values
   const initialValues: SignInType = {
-    email: "john@mail.com",
-    password: "changeme",
+    email: "admin@gmail.com",
+    password: "123456",
   };
 
-  const handleSubmit = async (values: SignInType, action: any) => {
+  const handleSubmit = async (
+    values: SignInType,
+    action: FormikHelpers<SignInType>
+  ) => {
     await signIn(values);
-    data.isSuccess && action.resetForm();
+    signInData.isSuccess && action.resetForm();
   };
 
   useEffect(() => {
-    const isSuccess = data?.isSuccess;
+    const isSuccess = signInData?.isSuccess;
     if (isSuccess) {
       dispatch(
         saveUserInfo({
-          token: data?.data?.access_token,
+          token: signInData?.data?.data?.access_token,
         })
       );
       navigate("/");
+      triggerGetMe({})
+        .unwrap()
+        .then((data) => {
+          dispatch(setUserInfo(data?.data));
+        })
+        .catch((error) => console.log("Failed to fetch user data:", error));
     }
     // Toast
-    if (data?.data || data?.error) {
+    if (signInData?.data || signInData?.error) {
       toast({
         duration: 1000,
         variant: `${isSuccess ? "default" : "destructive"}`,
@@ -55,7 +67,7 @@ const SignIn: React.FC = () => {
         }`,
       });
     }
-  }, [data]);
+  }, [signInData]);
 
   return (
     <div className=" w-screen h-screen flex flex-col lg:flex-row gap-5 lg:gap-0 justify-center items-center">
@@ -126,12 +138,12 @@ const SignIn: React.FC = () => {
               </Form>
             )}
           </Formik>
-          {/* <div className="flex justify-center items-center gap-2 mt-4">
+          <div className="flex justify-center items-center gap-2 mt-4">
             <Button variant="outline" className="w-full disabled">
               <FaGoogle className="mr-1" />
               Sign In with Google
             </Button>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>

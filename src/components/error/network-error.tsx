@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const NetworkError: React.FC = () => {
   return (
-    <div className="h-svh">
+    <div>
       <div className="m-auto flex h-full w-full flex-col items-center justify-center">
         <div className=" w-[250px] ">
           <NetworkErrorLottie />

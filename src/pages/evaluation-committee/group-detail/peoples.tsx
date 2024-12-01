@@ -1,0 +1,198 @@
+import { LoadingTableLottie } from "@/components";
+import EmptyResources from "@/components/common/empty-resource";
+import SubMajor from "@/components/common/major";
+import { SettingCard } from "@/components/custom/setting";
+import { ActionCell } from "@/components/data-table";
+import ErrorBoundaryComponent from "@/components/error/error-boundary";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import AddTeacherDialog from "@/pages/evaluation-committee/components/add-teacher-dialog";
+import DeleteTeacherDialog from "@/pages/evaluation-committee/components/delete-teacher-dialog";
+import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
+import {
+  MemberEvaluationGroup,
+  UpdateEvaluationGroup,
+} from "@/types/evaluation";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+const MemberTable: React.FC<{
+  members: MemberEvaluationGroup[];
+  groupInfo: UpdateEvaluationGroup;
+  onDeleteMember: (teacherId: number) => void;
+}> = ({ members, groupInfo, onDeleteMember }) => {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<number | null>(null);
+
+  const openDeleteDialog = (teacherId: number) => {
+    setIsAddModalOpen(teacherId);
+    setIsDeleteModalOpen(true);
+  };
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Email</TableHead>
+          <TableHead>Phone Number</TableHead>
+          <TableHead>Major</TableHead>
+          <TableHead>Actions</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {members.map((member: MemberEvaluationGroup) => (
+          <TableRow key={member.id}>
+            <TableCell className="flex items-center space-x-2">
+              <Avatar>
+                <AvatarImage
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    member.name
+                  )}&size=32`}
+                  alt={member.name}
+                />
+                <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p>{member.name}</p>
+              </div>
+            </TableCell>
+            <TableCell>{member.email}</TableCell>
+            <TableCell>{member.phone_number}</TableCell>
+            <TableCell>
+              <SubMajor id={member.sub_major_id} />
+            </TableCell>
+            <TableCell>
+              <DeleteTeacherDialog
+                group={groupInfo}
+                open={isDeleteModalOpen && isAddModalOpen === member.id}
+                onOpenChange={setIsDeleteModalOpen}
+                teacherId={member.id}
+                onDelete={() => onDeleteMember(member.id)}
+              />
+              <ActionCell
+                items={[
+                  {
+                    item: "Delete",
+                    danger: true,
+                    onClick: () => openDeleteDialog(member.id),
+                  },
+                ]}
+              />
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+};
+
+const EvaluationCommittee = () => {
+  const { evaluationId } = useParams<{ evaluationId: string }>();
+  const {
+    data: committeeData,
+    error,
+    isLoading,
+  } = useGetEvaluationQuery(
+    { id: parseInt(evaluationId!) },
+    { skip: !evaluationId }
+  );
+  const [members, setMembers] = useState<MemberEvaluationGroup[]>([]);
+  const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(
+    null
+  );
+  const [isAddTeacherModalOpen, setIsAddTeacherModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (committeeData && committeeData.data) {
+      setMembers(committeeData.data.teachers);
+      setGroupInfo({
+        id: committeeData.data.id,
+        name: committeeData.data.name,
+        teacher_ids: committeeData.data.teachers.map((teacher) => teacher.id),
+        assign_group_ids: (committeeData.data.assign_groups || []).map(
+          (group) => group.id
+        ),
+      });
+    }
+  }, [committeeData]);
+
+  const handleAddTeacher = () => {
+    setIsAddTeacherModalOpen(false);
+  };
+
+  const handleDeleteMember = (teacherId: number) => {
+    setMembers((prevMembers) =>
+      prevMembers.filter((member) => member.id !== teacherId)
+    );
+
+    if (groupInfo) {
+      setGroupInfo({
+        ...groupInfo,
+        teacher_ids: groupInfo.teacher_ids.filter((id) => id !== teacherId),
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center pt-10">
+        <div className="w-[250px]">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-full">
+        <ErrorBoundaryComponent />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 flex flex-col gap-4">
+      {groupInfo && (
+        <AddTeacherDialog
+          group={groupInfo}
+          open={isAddTeacherModalOpen}
+          onOpenChange={setIsAddTeacherModalOpen}
+          onAdd={handleAddTeacher}
+        />
+      )}
+      <SettingCard
+        title={`Lecturers ${members.length ? `(${members.length})` : ""}`}
+        actions={
+          <Button onClick={() => setIsAddTeacherModalOpen(true)}>
+            Add Lecturer
+          </Button>
+        }
+      >
+        {members.length ? (
+          <MemberTable
+            members={members}
+            groupInfo={groupInfo!}
+            onDeleteMember={handleDeleteMember}
+          />
+        ) : (
+          <EmptyResources
+            title="No lecturers assigned"
+            content="Your group does not have any lecturers assigned. Please add a lecturer."
+          ></EmptyResources>
+        )}
+      </SettingCard>
+    </div>
+  );
+};
+
+export default EvaluationCommittee;
