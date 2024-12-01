@@ -232,7 +232,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
                   onChange={(e) => setNewScore(Number(e.target.value))}
                 />
               ) : (
-                <div>{studentScore.score}</div>
+                <div>{studentScore.score ? studentScore.score : "-"}</div>
               )}
             </TableCell>
             <TableCell>
