@@ -14,7 +14,7 @@ const Actions: React.FC<{ row: Row<EvaluationType> }> = ({ row }) => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const showDeleteAction =
-    currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER ;
+    currentUser?.common_info.user_type === UserTypes.ADMIN;
 
   return (
     <>
@@ -31,15 +31,14 @@ const Actions: React.FC<{ row: Row<EvaluationType> }> = ({ row }) => {
               navigate(`/evaluation-committees/${row.original.id}`);
             },
           },
-          "-",
           ...(showDeleteAction
             ? [
-              {
-                item: "Delete",
-                danger: true,
-                onClick: () => setIsDeleteModalOpen(true),
-              },
-            ]
+                {
+                  item: "Delete",
+                  danger: true,
+                  onClick: () => setIsDeleteModalOpen(true),
+                },
+              ]
             : []),
         ]}
       />

@@ -17,14 +17,14 @@ const AddTeacherDialog: React.FC<{
   const [updateEvaluationCommitteeMutation, { isLoading }] =
     useUpdateEvaluationMutation();
   const [selectedLecture, setSelectedLecture] = useState<OptionType | null>(
-    null
+    null,
   );
 
   const handleAdd = async () => {
     try {
       if (!selectedLecture || !selectedLecture.value.extra_info.teacher) {
         toast({
-          duration: 2000,
+          duration: 3000,
           title: "Invalid Lecturer",
           description: "Please select a valid lecturer to add.",
         });
@@ -35,17 +35,17 @@ const AddTeacherDialog: React.FC<{
         ...group.teacher_ids,
         selectedLecture.value.extra_info.teacher.teacher_id,
       ];
-      const updateData = await updateEvaluationCommitteeMutation({
+      await updateEvaluationCommitteeMutation({
         id: group.id,
         name: group.name,
         teacher_ids: updatedTeacherIds,
         assign_group_ids: group.assign_group_ids,
       }).unwrap();
+
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Lecturer Added",
         description:
-          updateData.data ||
           "Lecturer successfully added to the evaluation committee group.",
       });
       setSelectedLecture(null);
@@ -53,7 +53,7 @@ const AddTeacherDialog: React.FC<{
       onOpenChange(false);
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Error Adding Lecturer",
         description:

@@ -16,12 +16,15 @@ import {
 } from "@/components/ui/table";
 import AddTeacherDialog from "@/pages/evaluation-committee/components/add-teacher-dialog";
 import DeleteTeacherDialog from "@/pages/evaluation-committee/components/delete-teacher-dialog";
+import { RootState } from "@/store";
 import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
+import { UserTypes } from "@/types/accounts";
 import {
   MemberEvaluationGroup,
   UpdateEvaluationGroup,
 } from "@/types/evaluation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
 const MemberTable: React.FC<{
@@ -31,6 +34,8 @@ const MemberTable: React.FC<{
 }> = ({ members, groupInfo, onDeleteMember }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<number | null>(null);
+
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const openDeleteDialog = (teacherId: number) => {
     setIsAddModalOpen(teacherId);
@@ -45,7 +50,7 @@ const MemberTable: React.FC<{
           <TableHead>Email</TableHead>
           <TableHead>Phone Number</TableHead>
           <TableHead>Major</TableHead>
-          <TableHead>Actions</TableHead>
+          <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -55,7 +60,7 @@ const MemberTable: React.FC<{
               <Avatar>
                 <AvatarImage
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    member.name
+                    member.name,
                   )}&size=32`}
                   alt={member.name}
                 />
@@ -86,6 +91,9 @@ const MemberTable: React.FC<{
                     onClick: () => openDeleteDialog(member.id),
                   },
                 ]}
+                invisible={
+                  currentUser?.common_info.user_type !== UserTypes.ADMIN
+                }
               />
             </TableCell>
           </TableRow>
@@ -103,11 +111,12 @@ const EvaluationCommittee = () => {
     isLoading,
   } = useGetEvaluationQuery(
     { id: parseInt(evaluationId!) },
-    { skip: !evaluationId }
+    { skip: !evaluationId },
   );
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const [members, setMembers] = useState<MemberEvaluationGroup[]>([]);
   const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(
-    null
+    null,
   );
   const [isAddTeacherModalOpen, setIsAddTeacherModalOpen] = useState(false);
 
@@ -119,7 +128,7 @@ const EvaluationCommittee = () => {
         name: committeeData.data.name,
         teacher_ids: committeeData.data.teachers.map((teacher) => teacher.id),
         assign_group_ids: (committeeData.data.assign_groups || []).map(
-          (group) => group.id
+          (group) => group.id,
         ),
       });
     }
@@ -131,7 +140,7 @@ const EvaluationCommittee = () => {
 
   const handleDeleteMember = (teacherId: number) => {
     setMembers((prevMembers) =>
-      prevMembers.filter((member) => member.id !== teacherId)
+      prevMembers.filter((member) => member.id !== teacherId),
     );
 
     if (groupInfo) {
@@ -173,9 +182,11 @@ const EvaluationCommittee = () => {
       <SettingCard
         title={`Lecturers ${members.length ? `(${members.length})` : ""}`}
         actions={
-          <Button onClick={() => setIsAddTeacherModalOpen(true)}>
-            Add Lecturer
-          </Button>
+          currentUser?.common_info.user_type === UserTypes.ADMIN && (
+            <Button onClick={() => setIsAddTeacherModalOpen(true)}>
+              Add Lecturer
+            </Button>
+          )
         }
       >
         {members.length ? (
