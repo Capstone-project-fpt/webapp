@@ -76,14 +76,16 @@ const Reports: React.FC = () => {
     <SettingCard
       title="Reports"
       actions={
-        <Button
-          onClick={() => {
-            handleOpenCreateUpdateReportDocumentDialog();
-          }}
-        >
-          <FiFilePlus />
-          Submit Report
-        </Button>
+        false && (
+          <Button
+            onClick={() => {
+              handleOpenCreateUpdateReportDocumentDialog();
+            }}
+          >
+            <FiFilePlus />
+            Submit Report
+          </Button>
+        )
       }
     >
       <CreateUpdateReportDocumentDialog

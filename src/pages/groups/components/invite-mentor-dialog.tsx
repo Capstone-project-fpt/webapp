@@ -8,9 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useInviteMentorMutation } from "@/store/api/v1/endpoints/groups";
+import { ResponseErrorType } from "@/types";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { OptionType } from "../type";
 import SelectLecture from "./select-lecture";
 
@@ -26,38 +27,44 @@ const InviteMentorDialog: React.FC<Props> = ({
   groupId,
 }) => {
   const { toast } = useToast();
-  const [inviteMentor, { isLoading, isError, isSuccess }] =
-    useInviteMentorMutation();
+  const [inviteMentor, { isLoading }] = useInviteMentorMutation();
   const [selectLecture, setSelectLecture] = useState<OptionType | null>(null);
 
   const sendInvite = async () => {
     if (selectLecture && selectLecture.value.extra_info.teacher) {
-      await inviteMentor({
-        group_id: groupId,
-        semester_id: 1,
-        teacher_id: selectLecture.value.extra_info.teacher.teacher_id,
+      try {
+        const inviteData = await inviteMentor({
+          group_id: groupId,
+          semester_id: 1,
+          teacher_id: selectLecture.value.extra_info.teacher.teacher_id,
+        }).unwrap();
+
+        toast({
+          duration: 3000,
+          title: "Invite Mentor",
+          description: inviteData.data || "Invite Mentor Successful.",
+        });
+        setSelectLecture(null);
+        onOpenChange(false);
+      } catch (error) {
+        toast({
+          duration: 3000,
+          variant: "destructive",
+          title: "Invite Mentor",
+          description:
+            (error as ResponseErrorType)?.data?.error ||
+            "Invite Mentor Failed.",
+        });
+      }
+    } else {
+      toast({
+        duration: 3000,
+        variant: "destructive",
+        title: "Invite Mentor",
+        description: "Please select a mentor.",
       });
     }
   };
-
-  useEffect(() => {
-    if (isSuccess) {
-      toast({
-        title: "Invite Mentor",
-        description: "Invite Mentor Successful.",
-      });
-      setSelectLecture(null);
-      onOpenChange(false);
-    }
-
-    if (isError) {
-      toast({
-        variant: "destructive",
-        title: "Invite Mentor",
-        description: "Invite Mentor Failed.",
-      });
-    }
-  }, [isError, isSuccess, onOpenChange, toast]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
