@@ -22,7 +22,7 @@ const DeleteDialog: React.FC<{
   useEffect(() => {
     if (data.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Delete evaluation committee group",
         description: "Delete evaluation committee group successfully.",
       });
@@ -31,7 +31,7 @@ const DeleteDialog: React.FC<{
 
     if (data.isError) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete evaluation committee group",
         description:

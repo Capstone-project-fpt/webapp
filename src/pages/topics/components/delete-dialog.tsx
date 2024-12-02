@@ -16,7 +16,7 @@ const DeleteDialog: React.FC<{
     await deleteTopicMutation({ id: topic.id });
     if (data.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Delete topic",
         description: "Delete topic successfully.",
       });
@@ -25,7 +25,7 @@ const DeleteDialog: React.FC<{
 
     if (data.isError) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete topic",
         description:

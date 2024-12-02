@@ -116,7 +116,7 @@ export function FileUploader(props: FileUploaderProps) {
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       if (!multiple && maxFileCount === 1 && acceptedFiles.length > 1) {
         toast({
-          duration: 1000,
+          duration: 3000,
           variant: "destructive",
           title: "Upload file",
           description: "Cannot upload more than 1 file at a time.",
@@ -126,7 +126,7 @@ export function FileUploader(props: FileUploaderProps) {
 
       if ((files?.length ?? 0) + acceptedFiles.length > maxFileCount) {
         toast({
-          duration: 1000,
+          duration: 3000,
           variant: "destructive",
           title: "Upload file",
           description: `Cannot upload more than ${maxFileCount} files`,
@@ -147,7 +147,7 @@ export function FileUploader(props: FileUploaderProps) {
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file }) => {
           toast({
-            duration: 1000,
+            duration: 3000,
             variant: "destructive",
             title: "Upload file",
             description: `File ${file.name} not supported`,

@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
     // Toast
     if (signInData?.data || signInData?.error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: `${isSuccess ? "default" : "destructive"}`,
         title: `${isSuccess ? "Sign In" : "Sign In Failed"}`,
         description: `${

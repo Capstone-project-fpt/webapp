@@ -61,7 +61,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
           report_id: parseInt(reportId),
         }).unwrap();
         toast({
-          duration: 1000,
+          duration: 3000,
           title: "Delete Comment Report",
           description: deleteData.data || "Delete comment successfully.",
         });
@@ -70,7 +70,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
       }
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete Comment Report",
         description:
@@ -142,7 +142,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       setComment("");
       refetchComments();
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Comment Report",
         description: createData.data || "Comment Topic Successfully.",

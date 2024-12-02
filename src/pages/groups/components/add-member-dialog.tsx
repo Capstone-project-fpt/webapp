@@ -35,7 +35,7 @@ const AddMemberDialog: React.FC<{
   const handleAddMember = async () => {
     if (!selectedStudent || !selectedStudent.value.extra_info.student) {
       toast({
-        duration: 2000,
+        duration: 3000,
         title: "Invalid Student",
         description: "Please select a valid student to add.",
       });

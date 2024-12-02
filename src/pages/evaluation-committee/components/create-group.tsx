@@ -72,7 +72,7 @@ const CreateEvaluationGroup: React.FC = () => {
   useEffect(() => {
     if (createEvaluationGroupData.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Create Evaluation Group",
         description: "Created the Evaluation Group successfully.",

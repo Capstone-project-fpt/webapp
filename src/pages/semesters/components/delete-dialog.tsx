@@ -16,7 +16,7 @@ const DeleteDialog: React.FC<{
     await deleteSemestersMutation({ id: semester.id });
     if (data.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Delete semester",
         description: "Delete semester successfully.",
       });
@@ -25,7 +25,7 @@ const DeleteDialog: React.FC<{
 
     if (data.isError) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete semester",
         description:

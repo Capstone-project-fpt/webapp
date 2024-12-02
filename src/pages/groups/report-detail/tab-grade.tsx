@@ -156,7 +156,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
   const handleUpdateScore = async (id: number, newScore: number) => {
     if (newScore < 0 || newScore > 10) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Update student score",
         description: "score need to be in range from 0 to 10",
@@ -176,7 +176,7 @@ const ReportDocumentScoreTable: React.FC<ReportDocumentScoreTablePros> = ({
         title: "Update student score",
         description: (error as ResponseErrorType).data.error,
         variant: "destructive",
-        duration: 1000,
+        duration: 3000,
       });
     }
     handleCancelUpdateScore();

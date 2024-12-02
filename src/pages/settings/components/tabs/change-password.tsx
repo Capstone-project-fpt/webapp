@@ -30,7 +30,7 @@ const ChangePassword: React.FC = () => {
     const isSuccess = changePasswordData?.isSuccess;
     if (changePasswordData?.data || changePasswordData?.error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: `${isSuccess ? "default" : "destructive"}`,
         title: `${
           isSuccess ? "Change Password Successfully" : "Change Password Failed"

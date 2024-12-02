@@ -39,7 +39,7 @@ const ResetPassword: React.FC = () => {
 
     if (resetPasswordData?.data) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Reset Password",
         description: "Reset Password Successfully.",
@@ -47,7 +47,7 @@ const ResetPassword: React.FC = () => {
     }
     if (resetPasswordData?.error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Reset Password",
         description:
@@ -60,7 +60,7 @@ const ResetPassword: React.FC = () => {
     if (token) {
       const isExpired = isTokenExpired(token);
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Reset Password",
         description:
