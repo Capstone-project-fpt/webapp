@@ -30,11 +30,14 @@ export const columns = (currentUserType: UserTypes): ColumnDef<TopicType>[] => [
     ),
   },
   {
-    id: "actions",
-    cell: ({ row }) => <Actions row={row} currentUserType={currentUserType} />,
+    id: "download",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} columnTitle="File" />
+    ),
+    cell: ({ row }) => <FileDownload pathFile={row.original.path} />,
   },
   {
-    id: "download",
-    cell: ({ row }) => <FileDownload pathFile={row.original.path} />,
+    id: "actions",
+    cell: ({ row }) => <Actions row={row} currentUserType={currentUserType} />,
   },
 ];

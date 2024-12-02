@@ -23,7 +23,7 @@ const Topics: React.FC = () => {
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Topics", link: "/topics" },
-      ])
+      ]),
     );
   }, [dispatch]);
 
@@ -40,13 +40,15 @@ const Topics: React.FC = () => {
             className="w-48"
           />
         </div>
-        <Button
-          variant="outline"
-          className="ml-1"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <GoPlus className="h-4 w-4" />
-        </Button>
+        {currentUserType !== UserTypes.STUDENT && (
+          <Button
+            variant="outline"
+            className="ml-1"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <GoPlus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       {isCreateModalOpen && (
         <CreateUpdateDialog
