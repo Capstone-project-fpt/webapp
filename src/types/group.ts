@@ -57,6 +57,7 @@ export interface CreateGroupBody {
   semester_id: number;
   student_ids: number[];
   name_group: string;
+  leader_id: number;
 }
 
 export interface GroupMember {

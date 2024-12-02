@@ -6,7 +6,6 @@ export enum MemberRole {
 }
 
 export interface Member extends UserType {
-  role?: MemberRole;
   studentId: number;
 }
 
