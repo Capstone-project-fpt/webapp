@@ -67,7 +67,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
           topic_id: parseInt(topicId),
         }).unwrap();
         toast({
-          duration: 1000,
+          duration: 3000,
           title: "Delete feedback",
           description: deleteData.data || "Delete student successfully.",
         });
@@ -76,7 +76,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
       }
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete feedback",
         description:
@@ -220,14 +220,14 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       setFeedback("");
       refetchFeedbacks();
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Feedback Topic",
         description: createData.data || "Feedback Topic Successfully.",
       });
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Feedback Topic",
         description:

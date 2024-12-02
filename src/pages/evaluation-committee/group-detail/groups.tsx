@@ -25,6 +25,9 @@ import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { SettingCard } from "@/components/custom/setting";
 import { Button } from "@/components/ui/button";
 import EmptyResources from "@/components/common/empty-resource";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { UserTypes } from "@/types/accounts";
 
 const DeleteGroupDialog: React.FC<{
   group: UpdateEvaluationGroup;
@@ -40,7 +43,7 @@ const DeleteGroupDialog: React.FC<{
   const handleDelete = async () => {
     try {
       const updatedGroupIds = group.assign_group_ids.filter(
-        (id) => id !== groupId
+        (id) => id !== groupId,
       );
       const res = await updateEvaluationCommitteeMutation({
         id: group.id,
@@ -50,7 +53,7 @@ const DeleteGroupDialog: React.FC<{
       }).unwrap();
 
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Group removed",
         description:
           res.data ||
@@ -60,7 +63,7 @@ const DeleteGroupDialog: React.FC<{
       onOpenChange(false);
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Error removing Group",
         description:
@@ -78,7 +81,7 @@ const DeleteGroupDialog: React.FC<{
       danger
       cancelButton
       okButton={{
-        label: "Confirm Removal",
+        label: "Confirm",
         onClick: handleDelete,
         isLoading,
       }}
@@ -105,7 +108,7 @@ const AddGroupDialog: React.FC<{
     try {
       if (!selectedGroup || !selectedGroup.value) {
         toast({
-          duration: 2000,
+          duration: 3000,
           title: "Invalid Group",
           description: "Please select a valid group.",
         });
@@ -125,7 +128,7 @@ const AddGroupDialog: React.FC<{
       }).unwrap();
 
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Group Added",
         description: res.data || "Group has been added successfully.",
       });
@@ -134,7 +137,7 @@ const AddGroupDialog: React.FC<{
       onOpenChange(false);
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         description:
           (error as ResponseErrorType)?.data?.error ||
@@ -174,6 +177,7 @@ const GroupTable: React.FC<{
 }> = ({ groups, groupInfo, onDeleteMember }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [groupIdDelete, setGroupIdDelete] = useState<number | null>(null);
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const navigate = useNavigate();
   const openDeleteDialog = (groupId: number) => {
@@ -217,11 +221,15 @@ const GroupTable: React.FC<{
                       navigate(`/groups/${group.id}`);
                     },
                   },
-                  {
-                    item: "Delete",
-                    danger: true,
-                    onClick: () => openDeleteDialog(group.id),
-                  },
+                  ...(currentUser?.common_info.user_type === UserTypes.ADMIN
+                    ? [
+                        {
+                          item: "Delete",
+                          danger: true,
+                          onClick: () => openDeleteDialog(group.id),
+                        },
+                      ]
+                    : []),
                 ]}
               />
             </TableCell>
@@ -240,11 +248,13 @@ const EvaluationCommittee = () => {
     isLoading,
   } = useGetEvaluationQuery(
     { id: parseInt(evaluationId!) },
-    { skip: !evaluationId }
+    { skip: !evaluationId },
   );
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+
   const [groups, setGroups] = useState<GroupType[]>([]);
   const [groupInfo, setGroupInfo] = useState<UpdateEvaluationGroup | null>(
-    null
+    null,
   );
   const [isAddTeacherModalOpen, setIsAddTeacherModalOpen] = useState(false);
 
@@ -256,7 +266,7 @@ const EvaluationCommittee = () => {
         name: committeeData.data.name,
         teacher_ids: committeeData.data.teachers.map((teacher) => teacher.id),
         assign_group_ids: (committeeData.data.assign_groups || []).map(
-          (group) => group.id
+          (group) => group.id,
         ),
       });
     }
@@ -268,14 +278,14 @@ const EvaluationCommittee = () => {
 
   const handleDeleteMember = (groupId: number) => {
     setGroups((prevMembers) =>
-      prevMembers.filter((group) => group.id !== groupId)
+      prevMembers.filter((group) => group.id !== groupId),
     );
 
     if (groupInfo) {
       setGroupInfo({
         ...groupInfo,
         assign_group_ids: groupInfo.assign_group_ids?.filter(
-          (id) => id !== groupId
+          (id) => id !== groupId,
         ),
       });
     }
@@ -314,9 +324,11 @@ const EvaluationCommittee = () => {
           groups.length ? `(${groups.length})` : ""
         }`}
         actions={
-          <Button onClick={() => setIsAddTeacherModalOpen(true)}>
-            Assign capstone group
-          </Button>
+          currentUser?.common_info.user_type === UserTypes.ADMIN && (
+            <Button onClick={() => setIsAddTeacherModalOpen(true)}>
+              Assign capstone group
+            </Button>
+          )
         }
       >
         {groups && groups.length ? (

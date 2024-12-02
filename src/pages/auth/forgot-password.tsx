@@ -34,7 +34,7 @@ const ForgotPassword: React.FC = () => {
   useEffect(() => {
     if (forgotPasswordData?.data) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Forgot Password",
         description: "Forgot Password Successfully.",

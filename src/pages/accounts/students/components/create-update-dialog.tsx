@@ -66,7 +66,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
   useEffect(() => {
     if (createStudentData.isSuccess || updateStudentData.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         title: student ? "Update Student" : "Create Student",
         description: student
           ? "Update Student Successfully"
@@ -84,7 +84,7 @@ const CreateUpdateDialog: React.FC<FormProps> = ({
           ? data.error
           : "Something went wrong, please try again. If the problem persists, please contact the administrator.";
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: student ? "Update Student" : "Create Student",
         description: messageError,

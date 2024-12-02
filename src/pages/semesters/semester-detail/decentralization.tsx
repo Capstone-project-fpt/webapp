@@ -26,6 +26,8 @@ import { UserItem } from "@/types/accounts";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import SelectLecture from "../components/select-lecture";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 const DeleteTeacherDialog: React.FC<{
   open: boolean;
@@ -44,17 +46,17 @@ const DeleteTeacherDialog: React.FC<{
       }).unwrap();
 
       toast({
-        duration: 1000,
-        title: "Delete lecturer from evaluation topic",
+        duration: 3000,
+        title: "Delete lecturer from verifier topic",
         description:
-          res.data || "Teacher removed from evaluation topic successfully.",
+          res.data || "Teacher removed from verifier topic successfully.",
       });
       onOpenChange(false);
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
-        title: "Delete lecturer from evaluation topic",
+        title: "Delete lecturer from verifier topic",
         description:
           (error as ResponseErrorType)?.data?.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator",
@@ -66,7 +68,7 @@ const DeleteTeacherDialog: React.FC<{
     <ActionDialog
       open={open}
       onOpenChange={onOpenChange}
-      title="Delete lecturer from evaluation topic"
+      title="Delete lecturer from verifier topic"
       danger
       cancelButton
       okButton={{
@@ -74,7 +76,7 @@ const DeleteTeacherDialog: React.FC<{
         onClick: handleDelete,
         isLoading,
       }}
-      confirmText="This action cannot be undone. The selected lecturer will be deleted from the evaluation topic."
+      confirmText="This action cannot be undone. The selected lecturer will be deleted from the verifier topic."
     >
       {`Are you sure you want to deleted this lecturer?`}
     </ActionDialog>
@@ -99,6 +101,7 @@ const AddTeacherDialog: React.FC<{
           teacher_id: selectedLecture.value.extra_info.teacher.teacher_id,
         }).unwrap();
         toast({
+          duration: 3000,
           title: "Assign lecturer to verification topic",
           description:
             assignData.data ||
@@ -107,7 +110,7 @@ const AddTeacherDialog: React.FC<{
         onOpenChange(false);
       } catch (error) {
         toast({
-          duration: 1000,
+          duration: 3000,
           variant: "destructive",
           title: "Assign lecturer to verification topic",
           description:
@@ -152,6 +155,9 @@ const Decentralization: React.FC = () => {
     error,
     isLoading,
   } = useGetTopicVerifiersQuery({ semester_id: Number(semesterId!) });
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester,
+  );
   const openDeleteDialog = (teacherId: number) => {
     setIsAddModalOpen(teacherId);
     setIsDeleteModalOpen(true);
@@ -179,16 +185,21 @@ const Decentralization: React.FC = () => {
         onOpenChange={setIsAddTeacherModalOpen}
       />
       <SettingCard
-        title="Evaluation Topic"
+        title="Verifier Topic"
         actions={
-          <Button onClick={() => setIsAddTeacherModalOpen(true)}>
-            Add Lecturer
-          </Button>
+          currentSemester?.id === Number(semesterId) && (
+            <Button onClick={() => setIsAddTeacherModalOpen(true)}>
+              Add Lecturer
+            </Button>
+          )
         }
       >
         {!queryData || !queryData.data || !queryData.data.length ? (
           <div>
-            <EmptyResources title="No topic verifier yet"></EmptyResources>
+            <EmptyResources title="No topic verifier yet"
+              content="There are currently no topic verifiers in this semester."
+              shape="empty-contact"
+            ></EmptyResources>
           </div>
         ) : (
           <Table>
@@ -208,7 +219,7 @@ const Decentralization: React.FC = () => {
                     <Avatar>
                       <AvatarImage
                         src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          member.name
+                          member.name,
                         )}&size=32`}
                         alt={member.name}
                       />
@@ -234,6 +245,7 @@ const Decentralization: React.FC = () => {
                           item: "Delete",
                           danger: true,
                           onClick: () => openDeleteDialog(member.id),
+                          isDisable: currentSemester?.id !== Number(semesterId),
                         },
                       ]}
                     />

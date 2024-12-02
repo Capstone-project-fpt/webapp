@@ -39,7 +39,7 @@ const Actions: React.FC<{
             onClick: () => setIsDeleteModalOpen(true),
           },
         ]}
-        invisible={currentUserType !== UserTypes.TEACHER}
+        invisible={currentUserType !== UserTypes.ADMIN}
       />
     </>
   );

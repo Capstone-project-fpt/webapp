@@ -96,7 +96,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
       toast({
         title: "Update student score",
         description: "Update student score successfully",
-        duration: 1000,
+        duration: 3000,
       });
       onOpenChange(false);
     } catch (error) {
@@ -104,7 +104,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
         title: "Update student score",
         description: (error as ResponseErrorType).data.error,
         variant: "destructive",
-        duration: 1000,
+        duration: 3000,
       });
     }
   };
@@ -142,7 +142,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
                       </Avatar>
                       <div>
                         <p>{member.name}</p>
-                        <p className="text-sm text-gray-500">{member.email}</p>
+                        <p className="text-sm">{member.email}</p>
                       </div>
                     </div>
                   </TableCell>

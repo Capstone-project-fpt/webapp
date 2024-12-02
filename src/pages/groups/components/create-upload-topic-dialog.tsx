@@ -45,7 +45,7 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   useEffect(() => {
     if (createTopicData.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: topicId ? "Update Topic" : "Submit Topic",
         description: "Submit Topic Successfully.",
@@ -63,7 +63,7 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
           ? data.error
           : "Something went wrong, please try again. If the problem persists, please contact the administrator.";
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: topicId ? "Update Topic" : "Submit Topic",
         description: messageError,

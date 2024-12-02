@@ -21,7 +21,7 @@ const DeleteDialog: React.FC<{
   useEffect(() => {
     if (data.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Delete student",
         description: "Delete student successfully.",
       });
@@ -30,7 +30,7 @@ const DeleteDialog: React.FC<{
 
     if (data.isError) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete student",
         description:

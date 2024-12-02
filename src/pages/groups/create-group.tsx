@@ -106,7 +106,7 @@ const CreateGroup: React.FC = () => {
   useEffect(() => {
     if (createGroupData.isSuccess) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Create Capstone Group",
         description: "Create Capstone Group Successfully",

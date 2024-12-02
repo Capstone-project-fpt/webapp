@@ -20,7 +20,7 @@ const DeleteTeacherDialog: React.FC<{
     try {
       if (group.teacher_ids.length <= 2) {
         toast({
-          duration: 2000,
+          duration: 3000,
           variant: "destructive",
           title: "Delete lecturer from evaluation committee group",
           description: "The evaluation committee must have at least 2 members",
@@ -29,7 +29,7 @@ const DeleteTeacherDialog: React.FC<{
       }
 
       const updatedTeacherIds = group.teacher_ids.filter(
-        (id) => id !== teacherId
+        (id) => id !== teacherId,
       );
 
       const res = await updateEvaluationCommitteeMutation({
@@ -40,7 +40,7 @@ const DeleteTeacherDialog: React.FC<{
       }).unwrap();
 
       toast({
-        duration: 1000,
+        duration: 3000,
         title: "Delete lecturer from evaluation committee group",
         description:
           res.data ||
@@ -50,7 +50,7 @@ const DeleteTeacherDialog: React.FC<{
       onOpenChange(false);
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Error removing teacher",
         description:
@@ -68,7 +68,7 @@ const DeleteTeacherDialog: React.FC<{
       danger
       cancelButton
       okButton={{
-        label: "Confirm Removal",
+        label: "Confirm",
         onClick: handleDelete,
         isLoading,
       }}

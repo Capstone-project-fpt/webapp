@@ -61,7 +61,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
           report_id: parseInt(reportId),
         }).unwrap();
         toast({
-          duration: 1000,
+          duration: 3000,
           title: "Delete Comment Report",
           description: deleteData.data || "Delete comment successfully.",
         });
@@ -70,7 +70,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = ({
       }
     } catch (error) {
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "destructive",
         title: "Delete Comment Report",
         description:
@@ -142,7 +142,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       setComment("");
       refetchComments();
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: "Comment Report",
         description: createData.data || "Comment Topic Successfully.",
@@ -339,7 +339,7 @@ const ReportDetail: React.FC = () => {
       {/* Attachments */}
       <div className="my-6">
         <div className="flex items-center gap-2 mb-2">
-          <h2 className="">Attachments</h2>
+          <h2 className="">Files</h2>
         </div>
         <div className="flex gap-4 flex-wrap">
           {reportData?.file_ids.map((file, index) => (

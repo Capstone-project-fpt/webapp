@@ -207,7 +207,7 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
 
       setFeedback("");
       toast({
-        duration: 1000,
+        duration: 3000,
         variant: "default",
         title: `${isDelete ? "Delete feedback review" : "isDelete"}`,
         description: commentData.data || "Feedback review Successfully.",

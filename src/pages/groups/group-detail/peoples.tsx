@@ -139,6 +139,7 @@ const MentorTable: React.FC<{
       <TableRow>
         <TableHead>Name</TableHead>
         <TableHead>Email</TableHead>
+        <TableHead>Phone number</TableHead>
         <TableHead>Actions</TableHead>
       </TableRow>
     </TableHeader>
@@ -160,9 +161,7 @@ const MentorTable: React.FC<{
             </div>
           </TableCell>
           <TableCell>{mentor.email}</TableCell>
-          <TableCell>
-            <InvitingStatus status={InvitationMentorStatus.Approve} />
-          </TableCell>
+          <TableCell>{mentor.phone_number}</TableCell>
           <TableCell>
             <ActionCell
               items={[
@@ -348,7 +347,7 @@ const Peoples = () => {
         groupId={parseInt(groupId!)}
       />
       <SettingCard
-        title={`Mentors ${mentor ? "(1)" : ""}`}
+        title={`Mentor`}
         actions={
           !mentor && (
             <Button onClick={() => setIsInviteModalOpen(true)}>

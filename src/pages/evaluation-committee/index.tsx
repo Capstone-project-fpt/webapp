@@ -16,14 +16,14 @@ const EvaluationCommittee: React.FC = () => {
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Evaluation Committee", link: "/evaluation-committees" },
-      ])
+      ]),
     );
   }, [dispatch]);
   return (
     <div>
       <div className="flex justify-end mb-2">
         <Link to="/evaluation-committees/create">
-          {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER  && (
+          {currentUser?.common_info.user_type === UserTypes.ADMIN && (
             <Button variant="outline">
               <GoPlus className="h-4 w-4" />
             </Button>
