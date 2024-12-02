@@ -68,7 +68,7 @@ const DeleteTeacherDialog: React.FC<{
       danger
       cancelButton
       okButton={{
-        label: "Confirm Removal",
+        label: "Confirm",
         onClick: handleDelete,
         isLoading,
       }}
