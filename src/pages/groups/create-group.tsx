@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import { useCreateGroupMutation } from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
+import { ResponseErrorType } from "@/types";
+import { UserTypes } from "@/types/accounts";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -21,7 +22,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import SelectStudent from "./components/select-student";
 import { Member, MemberRole, OptionType } from "./type";
-import { UserTypes } from "@/types/accounts";
 
 const CreateGroup: React.FC = () => {
   const { toast } = useToast();
@@ -29,10 +29,9 @@ const CreateGroup: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
-  const [createGroup, createGroupData] = useCreateGroupMutation();
-  const { isLoading } = createGroupData;
+  const [createGroup, { isLoading }] = useCreateGroupMutation();
 
   const initialMembers: Member[] =
     user && user.extra_info.student
@@ -40,7 +39,6 @@ const CreateGroup: React.FC = () => {
           {
             ...user.common_info,
             studentId: user.extra_info.student.student_id,
-            role: MemberRole.LEADER,
           },
         ]
       : [];
@@ -49,18 +47,13 @@ const CreateGroup: React.FC = () => {
   const [groupName, setGroupName] = useState(initGroupName);
   const [formValid, setFormValid] = useState(false);
   const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
-  const [_, setCurrentLeader] = useState<Member | null>(
-    user && user.extra_info.student
-      ? {
-          ...user.common_info,
-          studentId: user.extra_info.student.student_id,
-          role: MemberRole.LEADER,
-        }
-      : null
+  const [currentLeaderId, setCurrentLeaderId] = useState<number | null>(
+    user && user.extra_info.student ? user.extra_info.student.student_id : null,
   );
 
   if (!currentSemester) {
     toast({
+      duration: 3000,
       title: "Get Current Semester",
       description:
         "Can not get current semester, please inform to Admin to create current semester",
@@ -76,7 +69,7 @@ const CreateGroup: React.FC = () => {
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
         { title: "Create", link: "/groups/create" },
-      ])
+      ]),
     );
   }, [dispatch]);
 
@@ -84,7 +77,7 @@ const CreateGroup: React.FC = () => {
     const numberMembersValid =
       user && user.common_info.user_type === UserTypes.ADMIN ? 3 : 4;
     setFormValid(
-      groupName.trim() === "" || members.length < numberMembersValid
+      groupName.trim() === "" || members.length < numberMembersValid,
     );
   }, [groupName, members, user]);
 
@@ -96,75 +89,70 @@ const CreateGroup: React.FC = () => {
         {
           ...value.common_info,
           studentId: value.extra_info.student?.student_id as number,
-          role: MemberRole.MEMBER,
         },
       ]);
       setSelectStudent(null);
     }
   }, [selectStudent]);
 
-  useEffect(() => {
-    if (createGroupData.isSuccess) {
-      toast({
-        duration: 3000,
-        variant: "default",
-        title: "Create Capstone Group",
-        description: "Create Capstone Group Successfully",
-      });
-      const { data } = createGroupData.data;
-      const groupId = data.id;
-      navigate(`/groups/${groupId}`);
-    }
-
-    if (createGroupData.error) {
-      toast({
-        title: "Create Capstone Group",
-        description:
-          "Something went wrong, please try again. If the problem persists, contact support.",
-        variant: "destructive",
-      });
-    }
-  }, [
-    createGroupData.data,
-    createGroupData.error,
-    createGroupData.isSuccess,
-    navigate,
-    toast,
-  ]);
-
   const updateRoleMember = (member: Member, role: MemberRole) => {
-    setMembers((prevMembers) =>
-      prevMembers.map((m) => {
-        if (m.id === member.id) {
-          return { ...m, role };
-        }
-        if (role === MemberRole.LEADER && m.role === MemberRole.LEADER) {
-          return { ...m, role: MemberRole.MEMBER };
-        }
-        return m;
-      })
-    );
     if (role === MemberRole.LEADER) {
-      setCurrentLeader(member);
+      setCurrentLeaderId(member.studentId);
+    }
+
+    if (role === MemberRole.MEMBER) {
+      if (member.studentId === currentLeaderId) {
+        setCurrentLeaderId(null);
+      }
     }
   };
 
   const handleRemoveMember = (member: Member) => {
     setMembers((prevMembers) => prevMembers.filter((m) => m.id !== member.id));
-    if (member.role === MemberRole.LEADER) {
-      setCurrentLeader(null);
+    if (member.studentId === currentLeaderId) {
+      setCurrentLeaderId(null);
     }
   };
 
   const handleCreateForm = async () => {
     const studentIds = members.map((member) => member.studentId);
 
-    await createGroup({
-      major_id: 1, // TODO: Handle select major instead fix
-      semester_id: currentSemester!.id,
-      student_ids: studentIds,
-      name_group: groupName,
-    });
+    if (!currentLeaderId) {
+      toast({
+        duration: 3000,
+        title: "Create Group",
+        description: "Please select a leader for the group",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const createGroupData = await createGroup({
+        major_id: 1,
+        semester_id: currentSemester!.id,
+        student_ids: studentIds,
+        name_group: groupName,
+        leader_id: currentLeaderId,
+      }).unwrap();
+      toast({
+        duration: 3000,
+        variant: "default",
+        title: "Create Capstone Group",
+        description: "Create Capstone Group Successfully",
+      });
+      const { data } = createGroupData;
+      const groupId = data.id;
+      navigate(`/groups/${groupId}`);
+    } catch (error) {
+      toast({
+        title: "Create Capstone Group",
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, contact support.",
+        variant: "destructive",
+      });
+    }
   };
 
   const MemberItem: React.FC<{ member: Member }> = ({ member }) => (
@@ -173,7 +161,7 @@ const CreateGroup: React.FC = () => {
         <Avatar>
           <AvatarImage
             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-              member.name
+              member.name,
             )}&size=32`}
             alt={member.name}
           />
@@ -181,16 +169,19 @@ const CreateGroup: React.FC = () => {
         </Avatar>
         <div>
           <p>{member.name}</p>
-          <p className="text-sm text-gray-500">{member.email}</p>
+          <p className="text-sm">{member.email}</p>
         </div>
       </div>
       <div className="flex items-center space-x-2">
         <Select
-          value={member.role}
+          value={
+            member.studentId === currentLeaderId
+              ? MemberRole.LEADER
+              : MemberRole.MEMBER
+          }
           onValueChange={(value) =>
             updateRoleMember(member, value as MemberRole)
           }
-          disabled={true}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Role" />

@@ -11,22 +11,26 @@ import Peoples from "./peoples";
 import Reports from "./reports";
 import Reviews from "./reviews";
 import Topics from "./topics";
-
-const TABS = [
-  { name: "topics", label: "Topics", component: Topics },
-  { name: "reports", label: "Reports", component: Reports },
-  { name: "reviews", label: "Reviews", component: Reviews },
-  { name: "peoples", label: "Peoples", component: Peoples },
-  // { name: "grade", label: "Grades", component: Peoples },
-];
-
-const TABS_NAMES = TABS.reduce((acc, tab) => {
-  acc[tab.name] = tab.label;
-  return acc;
-}, {} as Record<string, string>);
+import Score from "./score";
 
 const GroupDetail: React.FC = () => {
   const { groupId, tab } = useParams<{ groupId: string; tab?: string }>();
+
+  const TABS = [
+    { name: "topics", label: "Topics", component: Topics },
+    { name: "reports", label: "Reports", component: Reports },
+    { name: "reviews", label: "Reviews", component: Reviews },
+    { name: "peoples", label: "Peoples", component: Peoples },
+    { name: "score", label: "Score", component: Score },
+  ];
+
+  const TABS_NAMES = TABS.reduce(
+    (acc, tab) => {
+      acc[tab.name] = tab.label;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
   const {
     data: groupData,

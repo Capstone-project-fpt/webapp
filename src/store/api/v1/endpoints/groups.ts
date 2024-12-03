@@ -2,6 +2,7 @@ import { ListPaginationType, PaginationType, ResponseType } from "@/types";
 import { StudentType } from "@/types/accounts";
 import {
   CreateGroupBody,
+  FinalScoreStudent,
   GroupReview,
   GroupType,
   InvitationMentor,
@@ -145,7 +146,7 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
         method: "POST",
       }),
-      invalidatesTags: ["Topic"],
+      invalidatesTags: ["Topic", "Group"],
     }),
     reviewTopic: builder.mutation<
       ResponseType<string>,
@@ -447,6 +448,15 @@ const groupsApi = api.injectEndpoints({
       },
     }),
     //#endregion
+    finalizedScoreStudent: builder.mutation<
+      ResponseType<FinalScoreStudent[]>,
+      { capstone_group_id: number }
+    >({
+      query: ({ capstone_group_id }) => ({
+        url: `/capstone-groups/${capstone_group_id}/finalized-scores`,
+        method: "PATCH",
+      }),
+    }),
   }),
 });
 
@@ -504,4 +514,5 @@ export const {
   useAdminUpdateStudentScoreReportDocumentMutation,
 
   useGetCurrentGroupsSemesterQuery,
+  useFinalizedScoreStudentMutation,
 } = groupsApi;

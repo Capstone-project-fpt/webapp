@@ -5,15 +5,32 @@ import { ScheduleStatus } from "@/types/schedule";
 export const GroupStatusBadge: React.FC<{ status: GroupStatus }> = ({
   status,
 }) => {
-  const statusName = {
-    [GroupStatus.InProgress]: "In Progress",
-    [GroupStatus.ReviewingTopic]: "Reviewing Topic",
+  const statusData: {
+    [key in GroupStatus]: {
+      name: string;
+      variant:
+        | "default"
+        | "warning"
+        | "outline"
+        | "info"
+        | "secondary"
+        | "success"
+        | "destructive";
+    };
+  } = {
+    [GroupStatus.InProgress]: { name: "In Progress", variant: "secondary" },
+    [GroupStatus.ReviewingTopic]: {
+      name: "Reviewing Topic",
+      variant: "default",
+    },
+    [GroupStatus.FinalizedScore]: {
+      name: "Finalized Score",
+      variant: "outline",
+    },
   };
   return (
-    <Badge
-      variant={status === GroupStatus.InProgress ? "secondary" : "outline"}
-    >
-      {statusName[status]}
+    <Badge variant={statusData[status].variant}>
+      {statusData[status].name}
     </Badge>
   );
 };

@@ -307,6 +307,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const { toast } = useToast();
   const [reviewTopic, reviewTopicData] = useReviewTopicMutation();
   const [loadingBtn, setLoadingBtn] = useState<TopicReviewStatus>();
+  const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const handleReviewTopic = async (status: TopicReviewStatus) => {
     try {
@@ -333,30 +334,40 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
     <div className="mt-4">
       {topic.status_review === TopicReviewStatus.Reviewing && (
         <>
-          <Button
-            className="mr-2"
-            onClick={() => {
-              handleReviewTopic(TopicReviewStatus.Approved);
-            }}
-          >
-            {reviewTopicData.isLoading &&
-              loadingBtn === TopicReviewStatus.Approved && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-            Approve
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => {
-              handleReviewTopic(TopicReviewStatus.Rejected);
-            }}
-          >
-            {reviewTopicData.isLoading &&
-              loadingBtn === TopicReviewStatus.Rejected && (
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              )}
-            Reject
-          </Button>
+          <EmptyResources
+            title="No review yet."
+            content="The verifier topic has not reviewed this topic yet."
+            shape="empty-messages"
+          />
+          {/* TODO: Just display for verifier topic */}
+          {currentUser?.common_info.user_type === "teacher" && (
+            <div className="w-full flex justify-center">
+              <Button
+                className="mr-2"
+                onClick={() => {
+                  handleReviewTopic(TopicReviewStatus.Approved);
+                }}
+              >
+                {reviewTopicData.isLoading &&
+                  loadingBtn === TopicReviewStatus.Approved && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                Approve
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  handleReviewTopic(TopicReviewStatus.Rejected);
+                }}
+              >
+                {reviewTopicData.isLoading &&
+                  loadingBtn === TopicReviewStatus.Rejected && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                Reject
+              </Button>
+            </div>
+          )}
         </>
       )}
 
@@ -372,7 +383,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   <Avatar>
                     <AvatarImage
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        topic.approved_by.name
+                        topic.approved_by.name,
                       )}&size=32`}
                       alt={topic.approved_by.name}
                     />
@@ -400,7 +411,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 <Avatar>
                   <AvatarImage
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      topic.rejected_by.name
+                      topic.rejected_by.name,
                     )}&size=32`}
                     alt={topic.rejected_by.name}
                   />
@@ -454,7 +465,7 @@ const TopicDetail: React.FC = () => {
           title: `${topic?.topic || "Topic " + topicId}`,
           link: `/groups/${groupId}/topics/${topicId}`,
         },
-      ])
+      ]),
     );
   }, [currentGroup?.name_group, dispatch, groupId, topic?.topic, topicId]);
 

@@ -24,13 +24,14 @@ import { CommentType } from "@/types/common";
 import { ReportComment } from "@/types/group";
 import { getFileName, getUrlFile } from "@/utils/generate-key-s3";
 import { Content } from "@tiptap/core";
-import { FileIcon } from "lucide-react";
+import { AlertCircle, FileIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import CommentComposer from "../components/comment-composer";
 import CreateUpdateReportDocumentDialog from "../components/create-update-report-document-dialog";
 import TabGrade from "./tab-grade";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface DeleteDialogProps {
   comment: CommentType;
@@ -128,7 +129,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       }));
       setComments(comments);
     }
-    console.log(commentsData);
   }, [commentsData]);
 
   const handleComment = async () => {
@@ -342,7 +342,18 @@ const ReportDetail: React.FC = () => {
           <h2 className="">Files</h2>
         </div>
         <div className="flex gap-4 flex-wrap">
-          {reportData?.file_ids.map((file, index) => (
+          {!reportData ||
+            !reportData.file_ids ||
+            (reportData.file_ids.length === 0 && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>No file's reports</AlertTitle>
+                <AlertDescription>
+                  Please submit the report files for review.
+                </AlertDescription>
+              </Alert>
+            ))}
+          {(reportData?.file_ids || []).map((file, index) => (
             <div
               key={index}
               className="flex items-center border px-5 py-3 rounded-lg max-w-[512px]"

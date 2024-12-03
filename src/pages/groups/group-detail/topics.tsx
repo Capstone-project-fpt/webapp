@@ -16,6 +16,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/store";
 import {
+  useGetGroupQuery,
   useGetMembersQuery,
   useGetTopicQuery,
   useGetTopicsQuery,
@@ -33,9 +34,12 @@ import ReviewStatus from "../components/topic-review-status";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
-  const currentGroup = useSelector(
-    (state: RootState) => state.resource.currentGroup
+  const { data: currentGroupData, refetch: refetchGroup } = useGetGroupQuery(
+    { id: parseInt(groupId!) },
+    { skip: !groupId },
   );
+  const currentGroup = currentGroupData?.data;
+
   const user = useSelector((state: RootState) => state.auth.user);
   const { toast } = useToast();
 
@@ -51,13 +55,15 @@ const Topics: React.FC = () => {
     {
       group_id: parseInt(groupId!),
     },
-    { skip: !groupId }
+    { skip: !groupId },
   );
 
-  const {data: groupTopicData} = useGetTopicQuery({
-    group_id: parseInt(groupId!),
-    topic_id: currentGroup?.topic_id || 0},
-    {skip: !currentGroup || !currentGroup.topic_id}
+  const { data: groupTopicData } = useGetTopicQuery(
+    {
+      group_id: parseInt(groupId!),
+      topic_id: currentGroup?.topic_id || 0,
+    },
+    { skip: !currentGroup || !currentGroup.topic_id },
   );
 
   const [setGroupTopicMutation] = useSetGroupTopicMutation();
@@ -77,18 +83,22 @@ const Topics: React.FC = () => {
 
   const setGroupTopic = async (topicId: number) => {
     try {
-      const data = await setGroupTopicMutation({
+      const setGroupTopicData = await setGroupTopicMutation({
         group_id: parseInt(groupId!),
         topic_id: topicId,
       }).unwrap();
 
+      refetchGroup();
       toast({
         title: "Set group's topic",
-        description: data.message || "Set group's topic successfully",
+        duration: 3000,
+        description: setGroupTopicData.data || "Set group's topic successfully",
       });
     } catch (error) {
+      refetchGroup();
       toast({
         title: "Set group's topic",
+        duration: 3000,
         description:
           (error as ResponseErrorType).data.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
@@ -113,17 +123,21 @@ const Topics: React.FC = () => {
           <div>
             <h3>{groupTopicData?.data.topic}</h3>
             <div>
-            <FileDownload pathFile={groupTopicData?.data.document_path || ''} />
+              <FileDownload
+                pathFile={groupTopicData?.data.document_path || ""}
+              />
             </div>
           </div>
-        ) :  (<Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>No group's topic</AlertTitle>
-          <AlertDescription>
-            Your group has not select topics yet. Please submit a topic to
-            review and set group's topic.
-          </AlertDescription>
-        </Alert>)}
+        ) : (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>No group's topic</AlertTitle>
+            <AlertDescription>
+              Your group has not select topics yet. Please submit a topic to
+              review and set group's topic.
+            </AlertDescription>
+          </Alert>
+        )}
       </SettingCard>
       <SettingCard
         title="Reviewing Topics"
@@ -212,7 +226,7 @@ const Topics: React.FC = () => {
                                 setGroupTopic(topic.id);
                               },
                               isHide: !membersData?.data.members.find(
-                                (c) => c.user_id === user?.common_info.id
+                                (c) => c.user_id === user?.common_info.id,
                               ),
                             },
                           {
