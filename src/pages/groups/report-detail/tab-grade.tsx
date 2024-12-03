@@ -33,11 +33,11 @@ import {
   ReportDocumentCategoryType,
   ReportDocumentType,
 } from "@/types/report-document";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import UpdateScoreDialog from "./update-score-dialog";
-import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface TabGradePros {
   members: GroupMember[];
@@ -99,8 +99,9 @@ const TabGrade: React.FC<TabGradePros> = ({
           />
           {report?.type_report ===
             ReportDocumentCategoryType.SEVENTH_REPORT && (
-            <div>
-              <Label>Conclusion: {report.conclusion}</Label>
+            <div className="mt-6 flex flex-col gap-1">
+              <Label>Conclusion</Label>
+              <span>{report.conclusion}</span>
             </div>
           )}
         </div>

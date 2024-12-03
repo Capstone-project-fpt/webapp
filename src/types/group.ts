@@ -4,6 +4,7 @@ import { PaginationType } from "./utils";
 export enum GroupStatus {
   ReviewingTopic = "reviewing_topic",
   InProgress = "in_progress",
+  FinalizedScore = "finalized_score",
 }
 
 export interface QueryGroupsParams extends PaginationType {
@@ -172,4 +173,11 @@ export interface UpdateListStudentScore {
   student_score_data: UpdateStudentScore[];
   capstone_group_id: number;
   conclusion: string | null;
+}
+
+export interface FinalScoreStudent {
+  score: number;
+  status: "pass" | "fail";
+  student_id: number;
+  student: GroupMember;
 }

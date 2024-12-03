@@ -174,6 +174,7 @@ const UpdateScoreDialog: React.FC<UpdateScoreDialogProps> = ({
               type="text"
               value={conclusion ? conclusion : ""}
               onChange={(e) => setConclusion(e.target.value)}
+              placeholder="Enter conclusion"
             />
           </div>
         )}
