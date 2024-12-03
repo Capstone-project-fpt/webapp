@@ -145,7 +145,7 @@ const groupsApi = api.injectEndpoints({
         url: `/capstone-groups/${group_id}/capstone-group-topics/${topic_id}`,
         method: "POST",
       }),
-      invalidatesTags: ["Topic"],
+      invalidatesTags: ["Topic", "Group"],
     }),
     reviewTopic: builder.mutation<
       ResponseType<string>,

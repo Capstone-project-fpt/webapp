@@ -275,7 +275,7 @@ const MemberTable: React.FC<{
 const Peoples = () => {
   const { groupId } = useParams<{ groupId: string }>();
   const currentUser = useSelector((state: RootState) => state.auth.user)!;
-
+  const currentGroup = useSelector((state: RootState) => state.resource.currentGroup);
   const {
     data: membersData,
     error,
@@ -349,7 +349,8 @@ const Peoples = () => {
       <SettingCard
         title={`Mentor`}
         actions={
-          !mentor && (
+          !mentor &&
+          currentUser.common_info.user_type === UserTypes.STUDENT && currentUser.extra_info.student?.student_id === currentGroup?.leader_id  && (
             <Button onClick={() => setIsInviteModalOpen(true)}>
               Invite Mentor
             </Button>

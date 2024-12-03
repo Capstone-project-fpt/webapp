@@ -40,6 +40,7 @@ const Actions: React.FC<{
   const currentUser = useSelector((state: RootState) => state.auth.user)!;
 
   const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
+    // TODO: Verifier can view detail capstone group
     if (
       [UserTypes.STUDENT, UserTypes.TEACHER].includes(
         currentUser.common_info.user_type

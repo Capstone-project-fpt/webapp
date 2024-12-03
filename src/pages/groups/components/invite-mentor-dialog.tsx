@@ -33,7 +33,7 @@ const InviteMentorDialog: React.FC<Props> = ({
   const sendInvite = async () => {
     if (selectLecture && selectLecture.value.extra_info.teacher) {
       try {
-        const inviteData = await inviteMentor({
+        await inviteMentor({
           group_id: groupId,
           semester_id: 1,
           teacher_id: selectLecture.value.extra_info.teacher.teacher_id,
@@ -42,7 +42,7 @@ const InviteMentorDialog: React.FC<Props> = ({
         toast({
           duration: 3000,
           title: "Invite Mentor",
-          description: inviteData.data || "Invite Mentor Successful.",
+          description: "Invite Mentor Successful.",
         });
         setSelectLecture(null);
         onOpenChange(false);
