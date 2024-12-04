@@ -1,10 +1,13 @@
-import { SemestersType, SemesterType } from "@/types/semester";
+import { SemesterType, SemesterWithCountType } from "@/types/semester";
 import { api } from "..";
-import { PaginationType, ResponseType } from "@/types";
+import { ListPaginationType, PaginationType, ResponseType } from "@/types";
 
 const semesterApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getSemesters: builder.query<ResponseType<SemestersType>, PaginationType>({
+    getSemesters: builder.query<
+      ResponseType<ListPaginationType<SemesterType>>,
+      PaginationType
+    >({
       query: ({ limit = 10, page = 1, order_by = "DESC" }) => ({
         url: "/semesters/",
         params: { limit, page, order_by },
@@ -52,7 +55,7 @@ const semesterApi = api.injectEndpoints({
     }),
 
     getSemestersWithCount: builder.query<
-      ResponseType<SemestersType>,
+      ResponseType<ListPaginationType<SemesterWithCountType>>,
       PaginationType
     >({
       query: ({ limit = 10, page = 1, order_by = "DESC" }) => ({
