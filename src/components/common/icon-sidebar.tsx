@@ -14,13 +14,48 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import menusList, { MenuItem } from "@/services/data/menus";
-import React from "react";
+import { RootState } from "@/store";
+import { MenuItemType } from "@/types";
+import { UserTypes } from "@/types/accounts";
+import React, { useCallback, useEffect, useState } from "react";
 import { SiPlatzi } from "react-icons/si";
+import { useSelector } from "react-redux";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 
 const IconSidebar: React.FC = () => {
   const { pathname } = useLocation();
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const [menus, setMenus] = useState<MenuItem[]>(menusList);
+  const filterMenus = useCallback(
+    (menus: MenuItemType[]): MenuItemType[] => {
+      return menus
+        .filter((menu) => {
+          if (
+            menu.title === "Your groups" &&
+            currentUser?.common_info.user_type === UserTypes.ADMIN
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .map((menu) => {
+          if (menu.children) {
+            return {
+              ...menu,
+              children: filterMenus(menu.children),
+            };
+          }
+          return menu;
+        });
+    },
+    [currentUser],
+  );
+
+  useEffect(() => {
+    const filteredMenus = filterMenus(menusList);
+    setMenus(filteredMenus);
+  }, [currentUser, filterMenus]);
 
   return (
     <Card className="hidden z-[2000] w-14 h-screen fixed top-0 start-0 lg:flex border-e-2 dark:border-foreground justify-center overflow-y-auto rounded-none ">
@@ -31,7 +66,7 @@ const IconSidebar: React.FC = () => {
           </div>
         </div>
 
-        {menusList?.map((menu: MenuItem, index) => (
+        {menus?.map((menu: MenuItem, index) => (
           <React.Fragment key={index}>
             {menu.children ? (
               <Tooltip delayDuration={100}>
@@ -64,7 +99,7 @@ const IconSidebar: React.FC = () => {
                                 {child.title}
                               </DropdownMenuItem>
                             </Link>
-                          )
+                          ),
                         )}
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
