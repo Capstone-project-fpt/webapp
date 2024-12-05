@@ -209,7 +209,7 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       toast({
         duration: 3000,
         variant: "default",
-        title: `${isDelete ? "Delete feedback review" : "isDelete"}`,
+        title: `${isDelete ? "Delete feedback review" : "Feedback review"}`,
         description: commentData.data || "Feedback review Successfully.",
       });
 
@@ -218,7 +218,8 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
       }
     } catch (error) {
       toast({
-        title: `${isDelete ? "Delete feedback review" : "isDelete"}`,
+        duration: 3000,
+        title: `${isDelete ? "Delete feedback review" : "Feedback review"}`,
         description:
           (error as ResponseErrorType)?.data?.error ||
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",

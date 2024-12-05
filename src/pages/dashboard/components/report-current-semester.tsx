@@ -42,7 +42,7 @@ const ReportStatis: React.FC = () => {
 
             <Card className="flex-1">
                 <CardHeader>
-                    <CardTitle>Total Evaluation Commitee </CardTitle>
+                    <CardTitle>Total Evaluation Committee </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <p className="text-2xl font-bold">{evaluationCommittees}</p>

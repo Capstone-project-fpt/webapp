@@ -47,7 +47,7 @@ export function ReportChart() {
         semester: semester.name,
         capstone: semester.total_capstone_groups,
         evaluations: semester.total_evaluation_committees,
-      }));
+      })).reverse();
 
       setChartData(formattedData);
     }

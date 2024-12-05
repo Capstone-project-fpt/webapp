@@ -12,10 +12,7 @@ export interface SemesterType {
   end_time: Date;
 }
 
-export interface SemestersType {
-  items: SemesterType[];
-  meta: {
-    current_page: number;
-    total: number;
-  };
+export interface SemesterWithCountType extends SemesterType {
+  total_capstone_groups: number;
+  total_evaluation_committees: number;
 }

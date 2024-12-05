@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -6,12 +5,18 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import menusList from "@/services/data/menus";
-import { LetterI, ChevronUp, ChevronDown } from "tabler-icons-react";
-import { useLocation, useNavigate } from "react-router";
-import { SiGitbook } from "react-icons/si";
+import { RootState } from "@/store";
 import { MenuItemType } from "@/types";
+import { UserTypes } from "@/types/accounts";
+import React, { useCallback, useEffect, useState } from "react";
+import { SiGitbook } from "react-icons/si";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router";
+import { ChevronDown, ChevronUp, LetterI } from "tabler-icons-react";
 
 const SheetSideBar: React.FC = () => {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+
   const [menus, setMenus] = useState<MenuItemType[]>(menusList);
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -25,6 +30,36 @@ const SheetSideBar: React.FC = () => {
   const handleNavigate = (menus: MenuItemType) => {
     navigate(`${menus.link}`);
   };
+
+  const filterMenus = useCallback(
+    (menus: MenuItemType[]): MenuItemType[] => {
+      return menus
+        .filter((menu) => {
+          if (
+            menu.title === "Your groups" &&
+            currentUser?.common_info.user_type === UserTypes.ADMIN
+          ) {
+            return false;
+          }
+          return true;
+        })
+        .map((menu) => {
+          if (menu.children) {
+            return {
+              ...menu,
+              children: filterMenus(menu.children),
+            };
+          }
+          return menu;
+        });
+    },
+    [currentUser],
+  );
+
+  useEffect(() => {
+    const filteredMenus = filterMenus(menusList);
+    setMenus(filteredMenus);
+  }, [currentUser, filterMenus]);
 
   // Disable Pointer Envent None
   useEffect(() => {
@@ -59,9 +94,7 @@ const SheetSideBar: React.FC = () => {
               <SiGitbook className=" lg:text-xl " />
               FCPMS
             </div>
-            <div className=" text-sm px-[44px] ">
-              By FPTU
-            </div>
+            <div className=" text-sm px-[44px] ">By FPTU</div>
           </div>
 
           <div className="flex flex-col dark:text-light">
