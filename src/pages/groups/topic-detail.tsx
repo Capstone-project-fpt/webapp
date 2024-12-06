@@ -37,6 +37,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import CommentComposer from "./components/comment-composer";
 import UploadTopicDialog from "./components/create-upload-topic-dialog";
 import ReviewStatus from "./components/topic-review-status";
+import { UserTypes } from "@/types/accounts";
 
 interface DeleteDialogProps {
   feedback: CommentType;
@@ -112,7 +113,7 @@ interface TopicHeaderProps {
 const TopicHeader: React.FC<TopicHeaderProps> = ({ topic }) => {
   return (
     <div>
-      <div className="text-xl mb-4">{topic.topic}</div>
+      <div className="text-xl mb-2">{topic.topic}</div>
       <div className="grid grid-cols-[max-content_max-content] gap-y-2 gap-x-4 items-center">
         <span>Status</span>
         <div>
@@ -190,6 +191,7 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   topicId,
   refetchFeedbacks,
 }) => {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const { toast } = useToast();
   const [createTopicFeedback, createTopicFeedbackData] =
     useCreateTopicFeedbackMutation();
@@ -240,7 +242,7 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
   return (
     <div className="mt-4">
       {feedbacks.length > 0 ? (
-        feedbacks.map((feedback) => (
+        feedbacks.map((feedback: CommentType) => (
           <div key={feedback.id}>
             <DeleteDialog
               feedback={feedback}
@@ -282,12 +284,14 @@ const FeedbackSection: React.FC<FeedbackSectionProps> = ({
         />
       )}
       <div>
-        <CommentComposer
-          value={feedback}
-          setValue={setFeedback}
-          handleComment={handleComment}
-          isLoading={createTopicFeedbackData.isLoading}
-        />
+        {currentUser?.common_info.user_type !== UserTypes.STUDENT && (
+          <CommentComposer
+            value={feedback}
+            setValue={setFeedback}
+            handleComment={handleComment}
+            isLoading={createTopicFeedbackData.isLoading}
+          />
+        )}
       </div>
     </div>
   );
@@ -340,7 +344,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             shape="empty-messages"
           />
           {/* TODO: Just display for verifier topic */}
-          {currentUser?.common_info.user_type === "teacher" && (
+          {currentUser?.common_info.user_type === UserTypes.STUDENT && (
             <div className="w-full flex justify-center">
               <Button
                 className="mr-2"

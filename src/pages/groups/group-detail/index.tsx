@@ -57,7 +57,7 @@ const GroupDetail: React.FC = () => {
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, group, groupId]);
+  }, [TABS_NAMES, currentTab, dispatch, group, groupId]);
 
   const handleTabChange = (tab: string) => {
     setCurrentTab(tab);

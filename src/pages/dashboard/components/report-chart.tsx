@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { LoadingTableLottie } from "@/components";
 import {
   Card,
   CardContent,
@@ -43,18 +44,26 @@ export function ReportChart() {
   useEffect(() => {
     if (countData) {
       const filteredData = filterLast5Years(countData.data.items);
-      const formattedData = filteredData.map((semester) => ({
-        semester: semester.name,
-        capstone: semester.total_capstone_groups,
-        evaluations: semester.total_evaluation_committees,
-      })).reverse();
+      const formattedData = filteredData
+        .map((semester) => ({
+          semester: semester.name,
+          capstone: semester.total_capstone_groups,
+          evaluations: semester.total_evaluation_committees,
+        }))
+        .reverse();
 
       setChartData(formattedData);
     }
   }, [countData]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center pt-10">
+        <div className="w-[250px]">
+          <LoadingTableLottie />
+        </div>
+      </div>
+    );
   }
 
   if (error) {

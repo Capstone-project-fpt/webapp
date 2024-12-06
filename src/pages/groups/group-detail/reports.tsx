@@ -93,17 +93,17 @@ const Reports: React.FC = () => {
         onOpenChange={setIsCreateUpdateModelOpen}
         reportDocument={undefined}
       />
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {reportData && reportData.length > 0 && (
+      {reportData && reportData.length > 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             <>
               {reportData.map((report) => (
                 <TableRow>
@@ -127,9 +127,9 @@ const Reports: React.FC = () => {
                 </TableRow>
               ))}
             </>
-          )}
-        </TableBody>
-      </Table>
+          </TableBody>
+        </Table>
+      )}
       {(!reportData || !reportData.length) && (
         <EmptyResources title="Empty Report" content="There is no report " />
       )}
