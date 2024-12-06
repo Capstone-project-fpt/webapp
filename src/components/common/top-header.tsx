@@ -23,8 +23,11 @@ import { Logout, Settings2 } from "tabler-icons-react";
 const TopHeader: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isSideBarOpen = useSelector((state: RootState) => state.app.isSideBarOpen);
+  const isSideBarOpen = useSelector(
+    (state: RootState) => state.app.isSideBarOpen,
+  );
 
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const handleLogout = () => {
     dispatch(removeUserInfo());
     navigate("/auth/sign-in");
@@ -65,7 +68,9 @@ const TopHeader: React.FC = () => {
             side="bottom"
             className=" focus-visible:outline-none me-5 w-[150px] "
           >
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>
+              {currentUser?.common_info.name || "My account"}
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <Link to="/settings">
               <DropdownMenuItem className=" flex items-center gap-2 ">
