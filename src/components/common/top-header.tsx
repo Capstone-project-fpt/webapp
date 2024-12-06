@@ -13,12 +13,19 @@ import { RootState } from "@/store";
 import { toggleSideBarOpen } from "@/store/slice/app";
 import { removeUserInfo } from "@/store/slice/auth";
 import { UserCircle2 } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaUser } from "react-icons/fa";
+import { MdOutlineSupportAgent } from "react-icons/md";
 import { RiMenuFoldLine, RiMenuUnfoldLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Logout, Settings2 } from "tabler-icons-react";
+
+declare global {
+  interface Window {
+    chativeApi: (action: string, user?: object) => void;
+  }
+}
 
 const TopHeader: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,9 +35,44 @@ const TopHeader: React.FC = () => {
   );
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    if (window && window.chativeApi) {
+      const api = window.chativeApi;
+      api("shutdown");
+      if (currentUser) {
+        const user = {
+          user_id: currentUser.common_info.id,
+          user: {
+            email: currentUser.common_info.email,
+            last_name: currentUser.common_info.name,
+            phone: currentUser.common_info.phone_number,
+          },
+          isHidden: true,
+        };
+
+        api("boot", user);
+      }
+      api("addEventListener", { event: "closed", callback: () => api("hide") });
+      api("addEventListener", {
+        event: "new-agent-message",
+        callback: () => api("show"),
+      });
+    }
+  }, [currentUser]);
+
+  const openLiveChat = () => {
+    if (window && window.chativeApi) {
+      window.chativeApi("openChatWindow");
+    }
+  };
+
   const handleLogout = () => {
     dispatch(removeUserInfo());
     navigate("/auth/sign-in");
+    if (window && window.chativeApi) {
+      window.chativeApi("shutdown");
+    }
   };
 
   return (
@@ -84,6 +126,13 @@ const TopHeader: React.FC = () => {
                 Settings
               </DropdownMenuItem>
             </Link>
+            <DropdownMenuItem
+              className=" flex items-center gap-2 "
+              onClick={openLiveChat}
+            >
+              <MdOutlineSupportAgent size={18} />
+              Support
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className=" flex items-center gap-2 "

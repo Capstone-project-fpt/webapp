@@ -15,6 +15,11 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+  <script>
+    const channelId = 's30c7b800-6685-46a8-9df5-32d35bb474e8';
+
+    !function(t,e,i){e.chativeApi=function(t,i){e.ChativeApi?e.ChativeApi(t,i):(e.ChativeEvents||=[],e.ChativeEvents.push([t,i]))},function n(){if(t.body){const n=t.createElement("script");n.src=`https://messenger.svc.chative.io/static/v1.0/channels/${i}/script.js?mode=livechat&state=off&hostname=${e.location.hostname}`,n.async=!0,t.body.appendChild(n)}else setTimeout(n,100)}()}(document,window,channelId);
+    </script>
 </body>
 
 </html>
