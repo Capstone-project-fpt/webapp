@@ -54,7 +54,7 @@ const ResetPassword: React.FC = () => {
           "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-  }, [resetPasswordData]);
+  }, [navigate, resetPasswordData]);
 
   useEffect(() => {
     if (token) {
