@@ -17,6 +17,7 @@ import Topics from "./topics";
 import Score from "./score";
 import { RootState } from "@/store";
 import { useToast } from "@/hooks/use-toast";
+import { UserTypes } from "@/types/accounts";
 
 const GroupDetail: React.FC = () => {
   const { groupId, tab } = useParams<{ groupId: string; tab?: string }>();
@@ -84,7 +85,7 @@ const GroupDetail: React.FC = () => {
   }, [dispatch, group, groupData]);
 
   useEffect(() => {
-    if (group && membersData && currentUser) {
+    if (group && membersData && currentUser && currentUser.common_info.user_type === UserTypes.STUDENT) {
       if (
         !membersData.data.members.some(
           (member) => member.user_id === currentUser.common_info.id,
