@@ -94,7 +94,7 @@ const SheetSideBar: React.FC = () => {
               <SiGitbook className=" lg:text-xl " />
               FCPMS
             </div>
-            <div className=" text-sm px-[44px] ">By FPTU</div>
+            <div className=" text-sm px-[44px] ">By SE01</div>
           </div>
 
           <div className="flex flex-col dark:text-light">
