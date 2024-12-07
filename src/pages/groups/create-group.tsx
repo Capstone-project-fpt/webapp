@@ -43,7 +43,7 @@ const CreateGroup: React.FC = () => {
         ]
       : [];
   const [members, setMembers] = useState<Member[]>(initialMembers);
-  const initGroupName = user ? `${user.common_info.name}'s Group` : "";
+  const initGroupName = user ? `${user.common_info.name}'s Group` : "SE";
   const [groupName, setGroupName] = useState(initGroupName);
   const [formValid, setFormValid] = useState(false);
   const [selectStudent, setSelectStudent] = useState<OptionType | null>(null);
@@ -219,8 +219,9 @@ const CreateGroup: React.FC = () => {
       <div>
         <Label>Members</Label>
         <p className="text-xs text-slate-500">
-          (At least 4 members are required to create a group. You can add up to
-          5 members.)
+          {user?.common_info.user_type === UserTypes.ADMIN
+            ? "At least 3 members are required to create a group. You can add up to 6 members."
+            : "At least 4 members are required to create a group. You can add up to 5 members."}
         </p>
         <div className="mt-2 space-y-2">
           {members.map((member) => (
