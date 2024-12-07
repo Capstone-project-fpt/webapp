@@ -38,33 +38,40 @@ const Actions: React.FC<{
   const navigate = useNavigate();
   const { toast } = useToast();
   const currentUser = useSelector((state: RootState) => state.auth.user)!;
+  const currentVerifiers = useSelector(
+    (state: RootState) => state.resource.currentVerifiers,
+  );
 
   const handleViewDetailCapstoneGroup = async (capstone_group_id: number) => {
-    // TODO: Verifier can view detail capstone group
-    if (
-      [UserTypes.STUDENT, UserTypes.TEACHER].includes(
-        currentUser.common_info.user_type,
-      )
-    ) {
+    const { user_type, id } = currentUser.common_info;
+
+    if (user_type === UserTypes.TEACHER) {
+      const isVerifier = currentVerifiers.some(
+        (verifier) => verifier.user_id === id,
+      );
+      if (isVerifier) {
+        return navigate("/groups/" + capstone_group_id);
+      }
+    }
+
+    if ([UserTypes.STUDENT, UserTypes.TEACHER].includes(user_type)) {
       const {
         data: { members, mentor },
       } = await triggerGetMentorAndListMembersGroup({
         capstone_group_id,
       }).unwrap();
 
-      if (currentUser.common_info.user_type === UserTypes.STUDENT) {
-        if (
-          !members
-            .map((m) => m.id)
-            .includes(currentUser.extra_info.student!.student_id)
-        ) {
-          toast({
+      if (user_type === UserTypes.STUDENT) {
+        const isMember = members.some(
+          (member) => member.id === currentUser.extra_info.student!.student_id,
+        );
+        if (!isMember) {
+          return toast({
             duration: 3000,
             title: "View Detail Capstone Group",
             description: "You are not a member of this capstone group",
             variant: "destructive",
           });
-          return;
         }
       } else {
         if (currentUser.extra_info.teacher!.teacher_id !== mentor?.id) {

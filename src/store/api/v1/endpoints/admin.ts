@@ -1,12 +1,11 @@
+import { ResponseType } from "@/types";
 import {
   LectureType,
   StudentType,
-  UpdateStudentPayload,
   UpdateLecturePayload,
-  UserType,
+  UpdateStudentPayload,
 } from "@/types/accounts";
 import { api, apiMultipart } from "..";
-import { ResponseType } from "@/types";
 
 const adminImportEndpoint = apiMultipart.injectEndpoints({
   endpoints: (builder) => ({
@@ -96,15 +95,6 @@ const adminEndPoint = api.injectEndpoints({
     }),
     // #endregion
     // #region Verifier Topic
-    getTopicVerifiers: builder.query<
-      ResponseType<UserType[]>,
-      { semester_id: number }
-    >({
-      query: ({ semester_id }) => ({
-        url: `admin/verifiers-topic/semesters/${semester_id}`,
-      }),
-      providesTags: ["Account"],
-    }),
     assignTopicVerifier: builder.mutation<
       ResponseType<string>,
       { semester_id: number; teacher_id: number }
@@ -139,7 +129,6 @@ export const {
   useCreateLectureMutation,
   useUpdateLectureMutation,
 
-  useGetTopicVerifiersQuery,
   useAssignTopicVerifierMutation,
   useRemoveTopicVerifierMutation,
 } = adminEndPoint;

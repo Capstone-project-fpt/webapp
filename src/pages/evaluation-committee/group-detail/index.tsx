@@ -1,31 +1,63 @@
 import { LoadingTableLottie } from "@/components";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RootState } from "@/store";
 import { useGetEvaluationQuery } from "@/store/api/v1/endpoints/evaluations";
 import { setBreadCrumb } from "@/store/slice/app";
-import React, { useEffect, useState } from "react";
+import { UserTypes } from "@/types/accounts";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Calendar from "./calendar";
 import Assign from "./groups";
 import Peoples from "./peoples";
 import Reviews from "./reviews";
-import { RootState } from "@/store";
-import { UserTypes } from "@/types/accounts";
 
-const TABS = [
-  { name: "reviews", label: "Reviews", component: Reviews },
-  { name: "calendar", label: "Calendar", component: Calendar },
-  { name: "peoples", label: "Peoples", component: Peoples },
-  { name: "group-assign", label: "Assign", component: Assign },
-];
-
-const TABS_NAMES = TABS.reduce((acc, tab) => {
-  acc[tab.name] = tab.label;
-  return acc;
-}, {} as Record<string, string>);
+interface Tab {
+  name: string;
+  label: string;
+  component: () => JSX.Element;
+  display: UserTypes[];
+}
 
 const EvaluationDetail: React.FC = () => {
+  const TABS: Tab[] = useMemo(() => {
+    return [
+      {
+        name: "reviews",
+        label: "Reviews",
+        component: Reviews,
+        display: [UserTypes.ADMIN, UserTypes.TEACHER],
+      },
+      {
+        name: "calendar",
+        label: "Calendar",
+        component: Calendar,
+        display: [UserTypes.ADMIN, UserTypes.TEACHER],
+      },
+      {
+        name: "peoples",
+        label: "Peoples",
+        component: Peoples,
+        display: [UserTypes.ADMIN, UserTypes.STUDENT, UserTypes.TEACHER],
+      },
+      {
+        name: "group-assign",
+        label: "Assign",
+        component: Assign,
+        display: [UserTypes.ADMIN, UserTypes.TEACHER],
+      },
+    ];
+  }, []);
+
+  const TABS_NAMES = TABS.reduce(
+    (acc, tab) => {
+      acc[tab.name] = tab.label;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
   const { evaluationId, tab } = useParams<{
     evaluationId: string;
     tab?: string;
@@ -37,23 +69,34 @@ const EvaluationDetail: React.FC = () => {
     error,
   } = useGetEvaluationQuery(
     { id: Number(evaluationId) },
-    { skip: !evaluationId }
+    { skip: !evaluationId },
   );
 
   const evaluation = evaluationData?.data;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState(tab || "reviews");
+  const [currentTab, setCurrentTab] = useState(tab || "peoples");
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
-  const filteredTabs = TABS.filter(
-    (tab) => !(tab.name === "assign" && currentUser?.common_info.user_type !== UserTypes.STUDENT )
+  const [filteredTabs, setFilteredTabs] = useState<Tab[]>(TABS);
+
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      setCurrentTab(tab);
+      navigate(`/evaluation-committees/${evaluationId}/${tab}`);
+    },
+    [evaluationId, navigate],
   );
 
-  const handleTabChange = (tab: string) => {
-    setCurrentTab(tab);
-    navigate(`/evaluation-committees/${evaluationId}/${tab}`);
-  };
+  useEffect(() => {
+    if (currentUser) {
+      const filteredTabs = TABS.filter((tab) =>
+        tab.display.includes(currentUser?.common_info.user_type),
+      );
+      setFilteredTabs(filteredTabs);
+      handleTabChange(filteredTabs[0].name);
+    }
+  }, [TABS, currentUser, handleTabChange]);
 
   useEffect(() => {
     const breadcrumb = [
@@ -69,7 +112,7 @@ const EvaluationDetail: React.FC = () => {
       },
     ];
     dispatch(setBreadCrumb(breadcrumb));
-  }, [currentTab, dispatch, evaluation, evaluationId]);
+  }, [TABS_NAMES, currentTab, dispatch, evaluation, evaluationId]);
 
   if (isLoading) {
     return (

@@ -42,7 +42,7 @@ const MobileLogo: React.FC = () => {
       </div>
       <div className="text-dark text-center mt-8">
         <div>FPTU</div>
-        <div className="text-xs text-slate-500 mt-4">-- By FPT --</div>
+        <div className="text-xs text-slate-500 mt-4">-- By SE01 --</div>
       </div>
     </div>
   );

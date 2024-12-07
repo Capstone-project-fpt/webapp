@@ -1,7 +1,7 @@
 import { FaRegLightbulb } from "react-icons/fa";
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { LiaObjectUngroupSolid } from "react-icons/lia";
 import { LuCalendarCheck } from "react-icons/lu";
+import { MdOutlinePersonSearch } from "react-icons/md";
 import { Home, Settings2, Users } from "tabler-icons-react";
 
 export interface MenuItem {
@@ -53,7 +53,7 @@ const menus: MenuItem[] = [
     ],
   },
   {
-    icon: <LiaObjectUngroupSolid size={18} />,
+    icon: <MdOutlinePersonSearch size={18} />,
     title: "Evaluation Committee",
     link: "/evaluation-committees",
   },

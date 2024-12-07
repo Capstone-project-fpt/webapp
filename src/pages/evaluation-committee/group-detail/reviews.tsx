@@ -21,12 +21,25 @@ import CreateScheduleDialog from "../components/create-schedule-dialog";
 import { getStatus } from "@/lib/schedule-review";
 import { ScheduleStatus, ScheduleType } from "@/types/schedule";
 import { UserTypes } from "@/types/accounts";
+import { useState } from "react";
+import UpdateScheduleDialog from "../components/update-schedule-dialog";
 
-const ReviewsTable: React.FC<{ reviews: ScheduleType[]; title: string }> = ({
-  reviews = [],
-  title,
-}) => {
+const ReviewsTable: React.FC<{
+  reviews: ScheduleType[];
+  title: string;
+  refetchSchedules: () => void;
+}> = ({ reviews = [], title, refetchSchedules }) => {
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [selectedReview, setSelectedReview] = useState<ScheduleType | null>(
+    null,
+  );
+
+  const openUpdateDialog = (review: ScheduleType) => {
+    setSelectedReview(review);
+    setIsUpdateDialogOpen(true);
+  };
 
   return (
     <SettingCard title={`${title} (${reviews.length})`}>
@@ -42,6 +55,14 @@ const ReviewsTable: React.FC<{ reviews: ScheduleType[]; title: string }> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
+            {selectedReview && (
+              <UpdateScheduleDialog
+                open={isUpdateDialogOpen}
+                schedule={selectedReview}
+                onOpenChange={setIsUpdateDialogOpen}
+                refetchSchedules={refetchSchedules}
+              />
+            )}
             {reviews.length > 0 && (
               <>
                 {reviews.map((scheduleReview) => (
@@ -67,10 +88,21 @@ const ReviewsTable: React.FC<{ reviews: ScheduleType[]; title: string }> = ({
                           item: "View details",
                           onClick: () => {
                             navigate(
-                              `/groups/${scheduleReview.capstone_group.id}/reviews/${scheduleReview.capstone_group_review.id}`
+                              `/groups/${scheduleReview.capstone_group.id}/reviews/${scheduleReview.capstone_group_review.id}`,
                             );
                           },
                         },
+                        ...(currentUser?.common_info.user_type ===
+                        UserTypes.ADMIN
+                          ? [
+                              {
+                                item: "Edit",
+                                onClick: () => {
+                                  openUpdateDialog(scheduleReview);
+                                },
+                              },
+                            ]
+                          : []),
                       ]}
                     ></ActionCell>
                   </TableRow>
@@ -95,7 +127,7 @@ const Reviews = () => {
   const { evaluationId } = useParams<{ evaluationId: string }>();
 
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
@@ -110,7 +142,7 @@ const Reviews = () => {
       start_time: currentSemester?.start_time.toString() || "",
       end_time: currentSemester?.end_time.toString() || "",
     },
-    { skip: !currentSemester }
+    { skip: !currentSemester },
   );
 
   const scheduleReviews = scheduleReviewsData?.data || [];
@@ -131,33 +163,37 @@ const Reviews = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-end mb-2">
-        {currentUser?.common_info.user_type !== UserTypes.STUDENT && currentUser?.common_info.user_type !== UserTypes.TEACHER  && (
+        {currentUser?.common_info.user_type === UserTypes.ADMIN && (
           <CreateScheduleDialog refetchSchedules={refetchSchedules} />
         )}
       </div>
       <ReviewsTable
         title="Reviewing"
         reviews={scheduleReviews.filter(
-          (review) => getStatus(review) === ScheduleStatus.Reviewing
+          (review) => getStatus(review) === ScheduleStatus.Reviewing,
         )}
+        refetchSchedules={refetchSchedules}
       />
       <ReviewsTable
         title="In Progress"
         reviews={scheduleReviews.filter(
-          (review) => getStatus(review) === ScheduleStatus.InProgress
+          (review) => getStatus(review) === ScheduleStatus.InProgress,
         )}
+        refetchSchedules={refetchSchedules}
       />
       <ReviewsTable
         title="Incoming"
         reviews={scheduleReviews.filter(
-          (review) => getStatus(review) === ScheduleStatus.Incoming
+          (review) => getStatus(review) === ScheduleStatus.Incoming,
         )}
+        refetchSchedules={refetchSchedules}
       />
       <ReviewsTable
         title="Archived"
         reviews={scheduleReviews.filter(
-          (review) => getStatus(review) === ScheduleStatus.Archived
+          (review) => getStatus(review) === ScheduleStatus.Archived,
         )}
+        refetchSchedules={refetchSchedules}
       />
     </div>
   );

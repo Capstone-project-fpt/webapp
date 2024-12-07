@@ -18,6 +18,7 @@ interface SelectGroupStudentProps {
       ) => void)
     | undefined;
   isSwapDisabled?: boolean;
+  disabled?: boolean;
 }
 
 const defaultAdditional = { page: 1 };
@@ -27,6 +28,7 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   onChangeValue,
   selectedGroups = [],
   isSwapDisabled = false,
+  disabled = false,
 }) => {
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester
@@ -71,6 +73,7 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
       loadOptions={loadPageOptions}
       onChange={onChangeValue}
       isOptionDisabled={(option) => option.disabled}
+      isDisabled={disabled}
     />
   );
 };

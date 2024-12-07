@@ -31,6 +31,7 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import UploadTopicDialog from "../components/create-upload-topic-dialog";
 import ReviewStatus from "../components/topic-review-status";
+import { UserTypes } from "@/types/accounts";
 
 const Topics: React.FC = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -142,7 +143,8 @@ const Topics: React.FC = () => {
       <SettingCard
         title="Reviewing Topics"
         actions={
-          groupTopicStatus === GroupStatus.ReviewingTopic && (
+          groupTopicStatus === GroupStatus.ReviewingTopic &&
+          user?.common_info.user_type === UserTypes.STUDENT && (
             <Button
               onClick={() => {
                 setIsModalOpen(true);

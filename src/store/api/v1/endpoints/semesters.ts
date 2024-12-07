@@ -1,6 +1,7 @@
 import { SemesterType, SemesterWithCountType } from "@/types/semester";
 import { api } from "..";
 import { ListPaginationType, PaginationType, ResponseType } from "@/types";
+import { UserType } from "@/types/accounts";
 
 const semesterApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -64,6 +65,15 @@ const semesterApi = api.injectEndpoints({
       }),
       providesTags: ["Semester"],
     }),
+    getVerifiersTopic: builder.query<
+      ResponseType<UserType[]>,
+      { semester_id: number }
+    >({
+      query: ({ semester_id }) => ({
+        url: `/verifiers-topic/semesters/${semester_id}`,
+      }),
+      providesTags: ["Semester"],
+    }),
   }),
 });
 
@@ -75,4 +85,5 @@ export const {
   useUpdateSemestersMutation,
   useDeleteSemestersMutation,
   useGetSemestersWithCountQuery,
+  useGetVerifiersTopicQuery,
 } = semesterApi;

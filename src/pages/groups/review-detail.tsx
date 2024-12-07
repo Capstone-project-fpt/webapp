@@ -337,7 +337,7 @@ const ReportDetail: React.FC = () => {
         { title: "Reviews", link: `/groups/${groupId}/reviews` },
         {
           title: `${reviewSchedule?.title || "Review"}`,
-          link: `/groups/${groupId}/reviews/${reviewId}`, //TODO: Replace Report Name with actual report name
+          link: `/groups/${groupId}/reviews/${reviewId}`,
         },
       ]),
     );

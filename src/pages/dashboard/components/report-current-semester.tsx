@@ -3,6 +3,8 @@ import { LoadingTableLottie } from "@/components";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RootState } from "@/store";
 import { useGetSemestersWithCountQuery } from "@/store/api/v1/endpoints/semesters";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { MdOutlinePersonSearch } from "react-icons/md";
 import { useSelector } from "react-redux";
 
 const ReportStatis: React.FC = () => {
@@ -44,7 +46,10 @@ const ReportStatis: React.FC = () => {
     <div className="flex flex-col md:flex-row md:justify-between gap-4">
       <Card className="flex-1">
         <CardHeader>
-          <CardTitle>Total Capstone Groups</CardTitle>
+          <CardTitle className="flex gap-1">
+            <HiOutlineUserGroup size={18} />
+            Total Capstone Groups
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">{capstoneGroups}</p>
@@ -53,7 +58,10 @@ const ReportStatis: React.FC = () => {
 
       <Card className="flex-1">
         <CardHeader>
-          <CardTitle>Total Evaluation Committee </CardTitle>
+          <CardTitle className="flex gap-1">
+            <MdOutlinePersonSearch size={18} />
+            Total Evaluation Committee{" "}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">{evaluationCommittees}</p>

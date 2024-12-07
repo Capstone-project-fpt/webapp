@@ -29,23 +29,20 @@ const YourGroups = () => {
         { title: "Home", link: "/" },
         { title: "Groups", link: "/groups" },
         { title: "Your Groups", link: "/me" },
-      ])
+      ]),
     );
   }, [dispatch]);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
 
-  const {
-    data: queryData,
-    isLoading,
-  } = useGetCurrentGroupsSemesterQuery(
+  const { data: queryData, isLoading } = useGetCurrentGroupsSemesterQuery(
     {
       semester_id: Number(currentSemester?.id),
     },
-    { skip: !currentSemester }
+    { skip: !currentSemester },
   );
 
   const groups = useMemo(() => queryData?.data, [queryData]);
@@ -112,8 +109,16 @@ const YourGroups = () => {
         </>
       ) : (
         <EmptyResources
-          title="Your do not have any groups in this semester"
-          content="You can create a new group"
+          title={
+            currentUser?.common_info.user_type === UserTypes.TEACHER
+              ? "You don't mentor any groups this semester"
+              : "You don't have group in this semester"
+          }
+          content={
+            currentUser?.common_info.user_type === UserTypes.TEACHER
+              ? ""
+              : "You can create a new group"
+          }
         >
           <Link to="/groups">
             {currentUser?.common_info.user_type !== UserTypes.TEACHER && (

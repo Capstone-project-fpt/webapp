@@ -1,17 +1,23 @@
 import { LoadingTableLottie } from "@/components";
 import ErrorBoundaryComponent from "@/components/error/error-boundary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetGroupQuery } from "@/store/api/v1/endpoints/groups";
+import {
+  useGetGroupQuery,
+  useGetMembersQuery,
+} from "@/store/api/v1/endpoints/groups";
 import { setBreadCrumb } from "@/store/slice/app";
 import { setCurrentGroup } from "@/store/slice/resource";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import Peoples from "./peoples";
 import Reports from "./reports";
 import Reviews from "./reviews";
 import Topics from "./topics";
 import Score from "./score";
+import { RootState } from "@/store";
+import { useToast } from "@/hooks/use-toast";
+import { UserTypes } from "@/types/accounts";
 
 const GroupDetail: React.FC = () => {
   const { groupId, tab } = useParams<{ groupId: string; tab?: string }>();
@@ -42,6 +48,14 @@ const GroupDetail: React.FC = () => {
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(tab || "topics");
   const navigate = useNavigate();
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const { toast } = useToast();
+  const { data: membersData } = useGetMembersQuery(
+    {
+      group_id: parseInt(groupId!),
+    },
+    { skip: !groupId },
+  );
 
   useEffect(() => {
     const breadcrumb = [
@@ -69,6 +83,24 @@ const GroupDetail: React.FC = () => {
       dispatch(setCurrentGroup(group));
     }
   }, [dispatch, group, groupData]);
+
+  useEffect(() => {
+    if (group && membersData && currentUser && currentUser.common_info.user_type === UserTypes.STUDENT) {
+      if (
+        !membersData.data.members.some(
+          (member) => member.user_id === currentUser.common_info.id,
+        )
+      ) {
+        navigate("/groups");
+        toast({
+          title: "View Detail Capstone Group",
+          description: "You are not a member of this capstone group",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    }
+  }, [currentUser, group, membersData, navigate, toast]);
 
   if (isLoading) {
     return (
