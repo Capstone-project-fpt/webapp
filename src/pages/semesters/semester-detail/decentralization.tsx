@@ -188,7 +188,8 @@ const Decentralization: React.FC = () => {
       <SettingCard
         title="Verifier Topic"
         actions={
-          currentSemester?.id === Number(semesterId) && (
+          currentSemester?.id === Number(semesterId) &&
+          currentUser?.common_info.user_type === UserTypes.ADMIN && (
             <Button onClick={() => setIsAddTeacherModalOpen(true)}>
               Add Lecturer
             </Button>
