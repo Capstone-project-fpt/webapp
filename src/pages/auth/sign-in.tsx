@@ -26,6 +26,8 @@ const SignIn: React.FC = () => {
   const { toast } = useToast();
   const dispatch = useDispatch();
 
+  const [errorSignInWithGoogle, setErrorSignInWithGoogle] = React.useState<string | null>(null);
+
   // TODO: Remove this values
   const initialValues: SignInType = {
     email: "admin@gmail.com",
@@ -38,6 +40,10 @@ const SignIn: React.FC = () => {
   ) => {
     await signIn(values);
     signInData.isSuccess && action.resetForm();
+  };
+
+  const handleSignInWithGoogle = async () => {
+    window.location.href = `${import.meta.env.VITE_APP_API_URL}/v1/login/google`;
   };
 
   useEffect(() => {
@@ -70,6 +76,47 @@ const SignIn: React.FC = () => {
       });
     }
   }, [dispatch, navigate, signInData, toast, triggerGetMe]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get("access_token");
+    const refreshToken = params.get("refresh_token");
+    const error = params.get("error");
+
+    if (accessToken && refreshToken) {
+      dispatch(
+        saveUserInfo({
+          token: accessToken,
+        }),
+      );
+
+      navigate("/");
+      triggerGetMe({})
+        .unwrap()
+        .then((data) => {
+          dispatch(setUserInfo(data?.data));
+        })
+        .catch((error) => console.log("Failed to fetch user data:", error));
+      return;
+    }
+
+    if (error) {
+      setErrorSignInWithGoogle(error);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return;
+    }
+  }, [dispatch, navigate, signInData, triggerGetMe, toast]);
+
+  useEffect(() => {
+    if (errorSignInWithGoogle) {
+      toast({
+        duration: 3000,
+        variant: "destructive",
+        title: "Sign In With Google Failed",
+        description: errorSignInWithGoogle,
+      });
+    }
+  }, [errorSignInWithGoogle, toast]);
 
   return (
     <div className=" w-screen h-screen flex flex-col lg:flex-row gap-5 lg:gap-0 justify-center items-center">
@@ -141,7 +188,11 @@ const SignIn: React.FC = () => {
             )}
           </Formik>
           <div className="flex justify-center items-center gap-2 mt-4">
-            <Button variant="outline" className="w-full disabled">
+            <Button
+              variant="outline"
+              className="w-full disabled"
+              onClick={() => handleSignInWithGoogle()}
+            >
               <FaGoogle className="mr-1" />
               Sign In with Google
             </Button>
