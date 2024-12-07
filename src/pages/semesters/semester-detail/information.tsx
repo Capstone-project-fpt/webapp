@@ -5,6 +5,8 @@ import {
   useGetSemesterQuery,
   useGetSemestersWithCountQuery,
 } from "@/store/api/v1/endpoints/semesters";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { MdOutlinePersonSearch } from "react-icons/md";
 import { useParams } from "react-router-dom";
 
 const Information = () => {
@@ -48,7 +50,10 @@ const Information = () => {
         <>
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Total Capstone Groups</CardTitle>
+              <CardTitle className="flex gap-1">
+                <HiOutlineUserGroup size={18} />
+                Total Capstone Groups
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">
@@ -59,7 +64,10 @@ const Information = () => {
 
           <Card className="flex-1">
             <CardHeader>
-              <CardTitle>Total Evaluation Committee </CardTitle>
+              <CardTitle className="flex gap-1">
+                <MdOutlinePersonSearch size={18} />
+                Total Evaluation Committee
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-2xl font-bold">

@@ -107,7 +107,7 @@ const EvaluationGroups: React.FC = () => {
   return (
     <div>
       <SettingCard
-        title={`Evaluation Committee Groups(${
+        title={`Evaluation Committee Groups (${
           queryData ? queryData.data.meta.total : 0
         })`}
       >
