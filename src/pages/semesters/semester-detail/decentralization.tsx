@@ -16,18 +16,18 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/store";
 import {
   useAssignTopicVerifierMutation,
-  useGetTopicVerifiersQuery,
   useRemoveTopicVerifierMutation,
 } from "@/store/api/v1/endpoints/admin";
 import { OptionType, ResponseErrorType } from "@/types";
-import { UserItem } from "@/types/accounts";
+import { UserItem, UserTypes } from "@/types/accounts";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import SelectLecture from "../components/select-lecture";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+import { useGetVerifiersTopicQuery } from "@/store/api/v1/endpoints/semesters";
 
 const DeleteTeacherDialog: React.FC<{
   open: boolean;
@@ -154,10 +154,11 @@ const Decentralization: React.FC = () => {
     data: queryData,
     error,
     isLoading,
-  } = useGetTopicVerifiersQuery({ semester_id: Number(semesterId!) });
+  } = useGetVerifiersTopicQuery({ semester_id: Number(semesterId!) });
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester,
   );
+  const currentUser = useSelector((state: RootState) => state.auth.user);
   const openDeleteDialog = (teacherId: number) => {
     setIsAddModalOpen(teacherId);
     setIsDeleteModalOpen(true);
@@ -196,7 +197,8 @@ const Decentralization: React.FC = () => {
       >
         {!queryData || !queryData.data || !queryData.data.length ? (
           <div>
-            <EmptyResources title="No topic verifier yet"
+            <EmptyResources
+              title="No topic verifier yet"
               content="There are currently no topic verifiers in this semester."
               shape="empty-contact"
             ></EmptyResources>
@@ -209,7 +211,7 @@ const Decentralization: React.FC = () => {
                 <TableHead>Email</TableHead>
                 <TableHead>Phone Number</TableHead>
                 <TableHead>Major</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -248,6 +250,9 @@ const Decentralization: React.FC = () => {
                           isDisable: currentSemester?.id !== Number(semesterId),
                         },
                       ]}
+                      invisible={
+                        currentUser?.common_info.user_type !== UserTypes.ADMIN
+                      }
                     />
                   </TableCell>
                 </TableRow>
