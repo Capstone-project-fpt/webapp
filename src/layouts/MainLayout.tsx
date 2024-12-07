@@ -1,8 +1,15 @@
 import { AuthGuard, LoadingAppLottie, SideBar, TopHeader } from "@/components";
 import { RootState } from "@/store";
 import { useGetSubMajorsQuery } from "@/store/api/v1/endpoints/major";
-import { useGetCurrentSemesterQuery } from "@/store/api/v1/endpoints/semesters";
-import { setCurrentSemester, setSubMajors } from "@/store/slice/resource";
+import {
+  useGetCurrentSemesterQuery,
+  useGetVerifiersTopicQuery,
+} from "@/store/api/v1/endpoints/semesters";
+import {
+  setCurrentSemester,
+  setCurrentVerifiers,
+  setSubMajors,
+} from "@/store/slice/resource";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
@@ -10,12 +17,21 @@ import { Outlet } from "react-router-dom";
 const MainLayout: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  const currentSemester = useSelector(
+    (state: RootState) => state.resource.currentSemester,
+  );
+  const isSideBarOpen = useSelector(
+    (state: RootState) => state.app.isSideBarOpen,
+  );
+
   const { data: subMajorsData } = useGetSubMajorsQuery({}, { skip: !user });
   const { data: currentSemesterData } = useGetCurrentSemesterQuery(null, {
     skip: !user,
   });
-  const isSideBarOpen = useSelector(
-    (state: RootState) => state.app.isSideBarOpen
+
+  const { data: currentVerifiersData } = useGetVerifiersTopicQuery(
+    { semester_id: Number(currentSemester?.id) },
+    { skip: !currentSemester },
   );
 
   // Get list sub majors from api and store to redux if already has user and once time
@@ -28,6 +44,12 @@ const MainLayout: React.FC = () => {
       dispatch(setCurrentSemester(currentSemesterData?.data));
     }
   }, [user, subMajorsData, dispatch, currentSemesterData]);
+
+  useEffect(() => {
+    if (currentVerifiersData && currentVerifiersData.data) {
+      dispatch(setCurrentVerifiers(currentVerifiersData.data));
+    }
+  }, [currentVerifiersData, dispatch]);
 
   return (
     <AuthGuard>

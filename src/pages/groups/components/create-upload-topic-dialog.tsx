@@ -17,10 +17,11 @@ import {
   useUpdateTopicMutation,
 } from "@/store/api/v1/endpoints/groups";
 import { useGeneratePresignUrlMutation } from "@/store/api/v1/endpoints/upload";
+import { ResponseErrorType } from "@/types";
 import { generateKeyS3 } from "@/utils/generate-key-s3";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { ErrorMessage, Form, Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 interface UploadTopicDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -36,40 +37,11 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
   topicId,
   refetchTopics,
 }) => {
-  const [createTopic, createTopicData] = useCreateTopicMutation();
+  const [createTopic] = useCreateTopicMutation();
   const [updateTopic] = useUpdateTopicMutation();
   const [generatePresignUrl] = useGeneratePresignUrlMutation();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
-
-  useEffect(() => {
-    if (createTopicData.isSuccess) {
-      toast({
-        duration: 3000,
-        variant: "default",
-        title: topicId ? "Update Topic" : "Submit Topic",
-        description: "Submit Topic Successfully.",
-      });
-      refetchTopics?.();
-      onOpenChange(false);
-    }
-
-    if (createTopicData.error) {
-      const { data } = createTopicData.error as {
-        data?: { code?: number; error?: string };
-      };
-      const messageError =
-        data?.code === 409
-          ? data.error
-          : "Something went wrong, please try again. If the problem persists, please contact the administrator.";
-      toast({
-        duration: 3000,
-        variant: "destructive",
-        title: topicId ? "Update Topic" : "Submit Topic",
-        description: messageError,
-      });
-    }
-  }, [createTopicData, topicId, onOpenChange, toast]);
 
   const initialValues = {
     name: "",
@@ -114,23 +86,46 @@ const CreateUploadTopicDialog: React.FC<UploadTopicDialogProps> = ({
       });
     }
 
-    const path = await onUploadFile();
-    if (topicId) {
-      await updateTopic({
-        topic_id: parseInt(topicId),
-        group_id: parseInt(groupId),
-        topic: name,
-        document_path: path,
+    try {
+      const path = await onUploadFile();
+      if (topicId) {
+        await updateTopic({
+          topic_id: parseInt(topicId),
+          group_id: parseInt(groupId),
+          topic: name,
+          document_path: path,
+        }).unwrap();
+      } else {
+        await createTopic({
+          group_id: parseInt(groupId),
+          topic: name,
+          document_path: path,
+        }).unwrap();
+      }
+
+      toast({
+        duration: 3000,
+        variant: "default",
+        title: topicId ? "Update Topic" : "Submit Topic",
+        description: topicId
+          ? "Update Topic Successfully"
+          : "Submit Topic Successfully.",
       });
-    } else {
-      await createTopic({
-        group_id: parseInt(groupId),
-        topic: name,
-        document_path: path,
+      if (refetchTopics) {
+        refetchTopics();
+      }
+
+      onOpenChange(false);
+    } catch (error) {
+      toast({
+        duration: 3000,
+        variant: "destructive",
+        title: topicId ? "Update Topic" : "Submit Topic",
+        description:
+          (error as ResponseErrorType)?.data?.error ||
+          "Something went wrong, please try again. If the problem persists, please contact the administrator.",
       });
     }
-
-    onOpenChange(false);
   };
 
   return (

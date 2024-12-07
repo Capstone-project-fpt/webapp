@@ -312,6 +312,9 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   const [reviewTopic, reviewTopicData] = useReviewTopicMutation();
   const [loadingBtn, setLoadingBtn] = useState<TopicReviewStatus>();
   const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentVerifiers = useSelector(
+    (state: RootState) => state.resource.currentVerifiers,
+  );
 
   const handleReviewTopic = async (status: TopicReviewStatus) => {
     try {
@@ -344,34 +347,37 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             shape="empty-messages"
           />
           {/* TODO: Just display for verifier topic */}
-          {currentUser?.common_info.user_type === UserTypes.STUDENT && (
-            <div className="w-full flex justify-center">
-              <Button
-                className="mr-2"
-                onClick={() => {
-                  handleReviewTopic(TopicReviewStatus.Approved);
-                }}
-              >
-                {reviewTopicData.isLoading &&
-                  loadingBtn === TopicReviewStatus.Approved && (
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                Approve
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  handleReviewTopic(TopicReviewStatus.Rejected);
-                }}
-              >
-                {reviewTopicData.isLoading &&
-                  loadingBtn === TopicReviewStatus.Rejected && (
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                Reject
-              </Button>
-            </div>
-          )}
+          {currentUser?.common_info.user_type === UserTypes.TEACHER &&
+            currentVerifiers.some(
+              (verifier) => verifier.user_id === currentUser.common_info.id,
+            ) && (
+              <div className="w-full flex justify-center">
+                <Button
+                  className="mr-2"
+                  onClick={() => {
+                    handleReviewTopic(TopicReviewStatus.Approved);
+                  }}
+                >
+                  {reviewTopicData.isLoading &&
+                    loadingBtn === TopicReviewStatus.Approved && (
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                  Approve
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    handleReviewTopic(TopicReviewStatus.Rejected);
+                  }}
+                >
+                  {reviewTopicData.isLoading &&
+                    loadingBtn === TopicReviewStatus.Rejected && (
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                  Reject
+                </Button>
+              </div>
+            )}
         </>
       )}
 
