@@ -13,7 +13,7 @@ interface SelectLectureProps {
   onChangeValue:
     | ((
         newValue: SingleValue<OptionType>,
-        actionMeta: ActionMeta<OptionType>
+        actionMeta: ActionMeta<OptionType>,
       ) => void)
     | undefined;
 }
@@ -24,11 +24,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
-  const loadPageOptions = async (
-    q: string,
-    _: any,
-    additional: any
-  ) => {
+  const loadPageOptions = async (q: string, _: any, additional: any) => {
     const { page } = additional;
     const limit = 10;
     try {
@@ -41,7 +37,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         user_types: UserTypes.TEACHER,
       }).unwrap();
 
-      const options = items.map((item) => ({
+      const options = (items || []).map((item) => ({
         value: item,
         label: item.common_info.email,
         disabled: false,
@@ -52,7 +48,8 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch {
+    } catch (error) {
+      console.error(error);
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };
