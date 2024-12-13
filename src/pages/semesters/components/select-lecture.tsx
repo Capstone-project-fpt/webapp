@@ -24,7 +24,7 @@ interface SelectLectureProps {
   onChangeValue:
     | ((
         newValue: SingleValue<OptionType>,
-        actionMeta: ActionMeta<OptionType>
+        actionMeta: ActionMeta<OptionType>,
       ) => void)
     | undefined;
   selectedMembers: Member[];
@@ -33,14 +33,14 @@ interface SelectLectureProps {
 const SelectLecture: React.FC<SelectLectureProps> = ({
   value,
   onChangeValue,
-  selectedMembers,
+  selectedMembers = [],
 }) => {
   const [getUsers] = useLazyGetUsersByUserQuery();
 
   const loadPageOptions = async (
     q: string,
     _prevOptions: unknown,
-    additional: any
+    additional: any,
   ) => {
     const { page } = additional;
     const limit = 10;
@@ -55,14 +55,14 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
       }).unwrap();
 
       const disableTeacherIds: number[] = [
-        ...selectedMembers.map((t) => t.teacherId),
+        ...(selectedMembers || []).map((t) => t.teacherId),
       ];
 
-      const options = items.map((item) => ({
+      const options = (items || []).map((item) => ({
         value: item,
         label: item.common_info.email,
         disabled: disableTeacherIds.includes(
-          item.extra_info.teacher!.teacher_id
+          item.extra_info.teacher!.teacher_id,
         ),
       }));
 
@@ -71,7 +71,8 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch {
+    } catch (error) {
+      console.error(error);
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };

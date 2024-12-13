@@ -14,7 +14,7 @@ interface SelectGroupStudentProps {
   onChangeValue:
     | ((
         newValue: SingleValue<OptionType<GroupType>>,
-        actionMeta: ActionMeta<OptionType<GroupType>>
+        actionMeta: ActionMeta<OptionType<GroupType>>,
       ) => void)
     | undefined;
   isSwapDisabled?: boolean;
@@ -31,7 +31,7 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
   disabled = false,
 }) => {
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
   const [getGroups] = useLazyGetGroupsQuery();
 
@@ -47,7 +47,7 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
         semester_id: currentSemester?.id,
       }).unwrap();
 
-      const options = items.map((item) => ({
+      const options = (items || []).map((item) => ({
         value: item,
         label: item.name_group,
         disabled: isSwapDisabled
@@ -60,7 +60,8 @@ const SelectGroupStudent: React.FC<SelectGroupStudentProps> = ({
         hasMore: meta.current_page * limit < meta.total,
         additional: { page: page + 1 },
       };
-    } catch {
+    } catch (e) {
+      console.error(e);
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };

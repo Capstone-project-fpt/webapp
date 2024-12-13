@@ -16,7 +16,7 @@ interface SelectLectureProps {
   onChangeValue:
     | ((
         newValue: SingleValue<OptionType>,
-        actionMeta: ActionMeta<OptionType>
+        actionMeta: ActionMeta<OptionType>,
       ) => void)
     | undefined;
   selectedMembers: Member[];
@@ -28,12 +28,12 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
   selectedMembers,
 }) => {
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
   const { data: listTeacherHaveEvaluationCommitteeGroup } =
     useGetListTeachersHaveEvaluationComitteeGroupQuery(
       { semester_id: currentSemester?.id || 0 },
-      { skip: !currentSemester }
+      { skip: !currentSemester },
     );
   const [getUsers] = useLazyGetUsersByUserQuery();
 
@@ -53,15 +53,17 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
       const disableTeacherIds: number[] = [
         ...selectedMembers.map((t) => t.teacherId),
         ...(listTeacherHaveEvaluationCommitteeGroup
-          ? listTeacherHaveEvaluationCommitteeGroup.data.map((l) => l.id)
+          ? (listTeacherHaveEvaluationCommitteeGroup.data || []).map(
+              (l) => l.id,
+            )
           : []),
       ];
 
-      const options = items.map((item) => ({
+      const options = (items || []).map((item) => ({
         value: item,
         label: item.common_info.email,
         disabled: disableTeacherIds.includes(
-          item.extra_info.teacher!.teacher_id
+          item.extra_info.teacher!.teacher_id,
         ),
       }));
 
@@ -71,6 +73,7 @@ const SelectLecture: React.FC<SelectLectureProps> = ({
         additional: { page: page + 1 },
       };
     } catch (error) {
+      console.error(error);
       return { options: [], hasMore: false, additional: { page: 1 } };
     }
   };

@@ -20,9 +20,10 @@ const CreateEvaluationGroup: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentSemester = useSelector(
-    (state: RootState) => state.resource.currentSemester
+    (state: RootState) => state.resource.currentSemester,
   );
-  const [createEvaluationGroup, createEvaluationGroupData] = useCreateEvaluationMutation();
+  const [createEvaluationGroup, createEvaluationGroupData] =
+    useCreateEvaluationMutation();
   const { isLoading } = createEvaluationGroupData;
 
   const [members, setMembers] = useState<Member[]>([]);
@@ -30,24 +31,13 @@ const CreateEvaluationGroup: React.FC = () => {
   const [formValid, setFormValid] = useState(false);
   const [selectLecturer, setSelectLecturer] = useState<OptionType | null>(null);
 
-  if (!currentSemester) {
-    toast({
-      title: "Get Current Semester",
-      description:
-        "Cannot get current semester, please inform Admin to create the current semester.",
-      variant: "destructive",
-    });
-
-    navigate("/");
-  }
-
   useEffect(() => {
     dispatch(
       setBreadCrumb([
         { title: "Home", link: "/" },
         { title: "Evaluation Committee", link: "/evaluation-committees" },
         { title: "Create", link: "/evaluation-committees/create" },
-      ])
+      ]),
     );
   }, [dispatch]);
 
@@ -83,7 +73,8 @@ const CreateEvaluationGroup: React.FC = () => {
     if (createEvaluationGroupData.error) {
       toast({
         title: "Create Evaluation Group",
-        description: (createEvaluationGroupData.error as ResponseErrorType).data.error,
+        description: (createEvaluationGroupData.error as ResponseErrorType).data
+          .error,
         variant: "destructive",
       });
     }
@@ -115,7 +106,7 @@ const CreateEvaluationGroup: React.FC = () => {
         <Avatar>
           <AvatarImage
             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-              member.name
+              member.name,
             )}&size=32`}
             alt={member.name}
           />
@@ -140,45 +131,53 @@ const CreateEvaluationGroup: React.FC = () => {
   );
 
   return (
-    <div className="max-w-lg mx-auto p-4 space-y-6">
-      <h1 className="font-bold uppercase">Create Evaluation Committee Group</h1>
-      <div className="space-y-2">
-        <Label htmlFor="groupName">Group Name</Label>
-        <Input
-          type="text"
-          id="groupName"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          placeholder="Enter group name"
-        />
-      </div>
+    <>
+      {currentSemester && (
+        <div className="max-w-lg mx-auto p-4 space-y-6">
+          <h1 className="font-bold uppercase">
+            Create Evaluation Committee Group
+          </h1>
+          <div className="space-y-2">
+            <Label htmlFor="groupName">Group Name</Label>
+            <Input
+              type="text"
+              id="groupName"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="Enter group name"
+            />
+          </div>
 
-      <div>
-        <Label>Members</Label>
-        <p className="text-xs text-slate-500">
-          (At least 2 members are required to create an evaluation group.)
-        </p>
-        <div className="mt-2 space-y-2">
-          {members.map((member) => (
-            <MemberItem key={member.teacherId} member={member} />
-          ))}
+          <div>
+            <Label>Members</Label>
+            <p className="text-xs text-slate-500">
+              (At least 2 members are required to create an evaluation group.)
+            </p>
+            <div className="mt-2 space-y-2">
+              {members.map((member) => (
+                <MemberItem key={member.teacherId} member={member} />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="newMemberName">Add Lecturer</Label>
+            <SelectLecture
+              value={selectLecturer}
+              onChangeValue={setSelectLecturer}
+              selectedMembers={members}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleCreateForm} disabled={formValid}>
+              {isLoading && (
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Create Evaluation Group
+            </Button>
+          </div>
         </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="newMemberName">Add Lecturer</Label>
-        <SelectLecture
-          value={selectLecturer}
-          onChangeValue={setSelectLecturer}
-          selectedMembers={members}
-        />
-      </div>
-      <div className="flex justify-end">
-        <Button onClick={handleCreateForm} disabled={formValid}>
-          {isLoading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
-          Create Evaluation Group
-        </Button>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 
