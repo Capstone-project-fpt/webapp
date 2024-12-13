@@ -27,13 +27,7 @@ const Actions: React.FC<{ row: Row<LectureType> }> = ({ row }) => {
           {
             item: "Edit",
             onClick: () => setIsUpdateModalOpen(true),
-          },
-          "-",
-          {
-            item: "Delete",
-            danger: true,
-            onClick: () => setIsDeleteModalOpen(true),
-          },
+          }
         ]}
       />
     </>
