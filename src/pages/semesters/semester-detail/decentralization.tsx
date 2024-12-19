@@ -22,11 +22,11 @@ import {
   useRemoveTopicVerifierMutation,
 } from "@/store/api/v1/endpoints/admin";
 import { OptionType, ResponseErrorType } from "@/types";
-import { UserItem, UserTypes } from "@/types/accounts";
-import React, { useState } from "react";
+import { UserItem, UserType, UserTypes } from "@/types/accounts";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import SelectLecture from "../components/select-lecture";
+import SelectLecture, { Member } from "../components/select-lecture";
 import { useGetVerifiersTopicQuery } from "@/store/api/v1/endpoints/semesters";
 
 const DeleteTeacherDialog: React.FC<{
@@ -87,12 +87,18 @@ const AddTeacherDialog: React.FC<{
   semesterId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}> = ({ semesterId, open, onOpenChange }) => {
+  verifiers: UserType[];
+  refetchVerifiers: () => void;
+}> = ({ semesterId, open, onOpenChange, verifiers, refetchVerifiers }) => {
   const { toast } = useToast();
   const [assignTopicVerifier, { isLoading }] = useAssignTopicVerifierMutation();
   const [selectedLecture, setSelectedLecture] =
     useState<OptionType<UserItem> | null>(null);
+  const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
 
+  useEffect(() => {
+    setSelectedMembers(verifiers.map((v) => ({ ...v, teacherId: v.id })));
+  }, [verifiers]);
   const handleAdd = async () => {
     if (selectedLecture && selectedLecture.value.extra_info.teacher) {
       try {
@@ -108,6 +114,7 @@ const AddTeacherDialog: React.FC<{
             "Assign lecturer to verification topic successfully",
         });
         onOpenChange(false);
+        refetchVerifiers();
       } catch (error) {
         toast({
           duration: 3000,
@@ -138,7 +145,7 @@ const AddTeacherDialog: React.FC<{
         <SelectLecture
           value={selectedLecture}
           onChangeValue={setSelectedLecture}
-          selectedMembers={[]}
+          selectedMembers={selectedMembers}
         />
       </div>
     </ActionDialog>
@@ -154,6 +161,7 @@ const Decentralization: React.FC = () => {
     data: queryData,
     error,
     isLoading,
+    refetch: refetchVerifiers,
   } = useGetVerifiersTopicQuery({ semester_id: Number(semesterId!) });
   const currentSemester = useSelector(
     (state: RootState) => state.resource.currentSemester,
@@ -168,7 +176,7 @@ const Decentralization: React.FC = () => {
   if (isLoading) {
     return (
       <div className=" flex justify-center pt-10 p-5">
-        <div className=" w-[250px] ">
+        <div className="w-[250px]">
           <LoadingTableLottie />
         </div>
       </div>
@@ -184,6 +192,8 @@ const Decentralization: React.FC = () => {
         semesterId={Number(semesterId)}
         open={isAddTeacherModalOpen}
         onOpenChange={setIsAddTeacherModalOpen}
+        refetchVerifiers={refetchVerifiers}
+        verifiers={queryData?.data || []}
       />
       <SettingCard
         title="Verifier Topic"
