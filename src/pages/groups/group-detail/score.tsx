@@ -100,9 +100,9 @@ const Score: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   {studentScore.status === "pass" ? (
-                    <Badge variant="success"> Pass</Badge>
+                    <Badge variant="success">Allowed</Badge>
                   ) : (
-                    <Badge variant="destructive">Fail</Badge>
+                    <Badge variant="destructive">Denied</Badge>
                   )}
                 </TableCell>
               </TableRow>
